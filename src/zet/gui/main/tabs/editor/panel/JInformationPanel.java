@@ -20,7 +20,6 @@ import org.zetool.common.localization.Localization;
 import org.zetool.common.localization.LocalizationManager;
 import org.zetool.common.localization.Localized;
 import de.zet_evakuierung.model.ZControl;
-//@//import gui.GUIControl;
 import info.clearthought.layout.TableLayout;
 import java.text.NumberFormat;
 import java.util.Objects;
@@ -29,7 +28,6 @@ import javax.swing.JPanel;
 /**
  *
  * @param <E>
- * @param <C>
  * @param <U> The displayed object
  * @author Jan-Philipp Kappmeier
  */

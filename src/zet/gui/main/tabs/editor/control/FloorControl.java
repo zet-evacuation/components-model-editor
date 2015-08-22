@@ -26,8 +26,11 @@ import de.zet_evakuierung.model.exception.AssignmentException;
 import java.util.List;
 import java.util.Objects;
 import zet.gui.main.tabs.editor.EditMode;
+import zet.gui.main.tabs.editor.floor.CustomFloorCreatePointwiseDrawer;
+import zet.gui.main.tabs.editor.floor.CustomFloorCreateRectangleDrawer;
 import zet.gui.main.tabs.editor.floor.CustomFloorSelectionDrawer;
 import zet.gui.main.tabs.editor.floor.FloorClickCreatePointwiseHandler;
+import zet.gui.main.tabs.editor.floor.FloorClickCreateRectangleHandler;
 import zet.gui.main.tabs.editor.floor.FloorClickHandler;
 import zet.gui.main.tabs.editor.floor.FloorClickSelectionHandler;
 import zet.gui.main.tabs.editor.floor.JFloor;
@@ -130,20 +133,24 @@ public class FloorControl {
         //FloorClickHandler handler = new FloorClickCreationPostActionAdapter(editListener, stairHandler);
         //jfloor.setPostActionListener(stairHandler);
         //editListener.setZetObjectType(ZetObjectTypes.Evacuation);
-        FloorClickSelectionHandler handler;
+        
         switch( editMode ) {
             case Selection:
                 // Selection listener
-                handler = new FloorClickSelectionHandler(this);
-                view.setJFloorEditListener(handler);
-                view.setCustomDrawer(new CustomFloorSelectionDrawer(handler, view));
+                final FloorClickSelectionHandler selectionHandler = new FloorClickSelectionHandler(this);
+                view.setJFloorEditListener(selectionHandler);
+                view.setCustomDrawer(new CustomFloorSelectionDrawer(selectionHandler, view));
                 break;
             case CreationPointWise:
                 // Creation pointwise (normal)
-                view.setJFloorEditListener(new FloorClickCreatePointwiseHandler(this));
+                final FloorClickCreatePointwiseHandler pointwiseHandler = new FloorClickCreatePointwiseHandler(this);
+                view.setJFloorEditListener(pointwiseHandler);
+                view.setCustomDrawer(new CustomFloorCreatePointwiseDrawer(pointwiseHandler, view));
                 break;
             case CreationRectangle:
-                view.setJFloorEditListener(new FloorClickCreatePointwiseHandler(this));
+                final FloorClickCreateRectangleHandler rectangleHandler = new FloorClickCreateRectangleHandler(this);
+                view.setJFloorEditListener(rectangleHandler);
+                view.setCustomDrawer(new CustomFloorCreateRectangleDrawer(rectangleHandler, view));
                 break;
             default:
                 throw new AssertionError("Edit mode handling for floors not implemented: " + editMode);

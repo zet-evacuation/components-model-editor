@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import zet.gui.main.tabs.EditViewControl;
 import zet.gui.main.tabs.JEditView;
+import zet.gui.main.tabs.editor.EditMode;
 
 /**
  *
@@ -212,6 +213,7 @@ public class ComponentTestWindow extends JFrame {
                 // Adding a complete edit view
                 //JEditView editView = new JEditView();
                 EditViewControl evc = new EditViewControl(control, p.getBuildingPlan().getFloors());
+                evc.setEditMode(EditMode.CreationPointWise);
                 JEditView editView = evc.getView();
                 
                 testWindow.add(editView);
