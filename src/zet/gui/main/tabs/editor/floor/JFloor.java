@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 import javax.swing.SwingUtilities;
 import zet.gui.main.tabs.base.AbstractFloor;
 import zet.gui.main.tabs.base.JPolygon;
@@ -96,17 +97,26 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
      */
     private void initialize() {
         FloorViewModel floorModel = getFloorModel();
+        System.out.println("-------------------------------------------------------------------------------------------");
+        System.out.println("Displaying floor " + floorModel );
 
+        System.out.println("Currently, floor "+ floorModel.getName() + " contains " + this.getComponents().length + " rooms.");
+        System.out.println( "Clearing" );
         removeAll();
+        roomToPolygonMapping.clear();
+        System.out.println("Currently, floor "+ floorModel.getName() + " contains " + this.getComponents().length + " rooms.");
 
         updateOffsets(floorModel);
 
+        System.out.println("Size of the mapping:" + roomToPolygonMapping.size());
         for (Room r : floorModel.getRooms()) {
+            System.out.println("Adding polygon for room " + r.getName());
             JPolygon roomPolygon = new JPolygon(this, graphicsStyle.getWallColor());
             add(roomPolygon);
             roomPolygon.displayPolygon(r.getPolygon());
             roomToPolygonMapping.put(r, roomPolygon);
         }
+        System.out.println("Size of the mapping:" + roomToPolygonMapping.size());
 
         planImage.setOffsetX(-floorMin_x);
         planImage.setOffsetY(-floorMin_y);
@@ -186,6 +196,11 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
     private FloorClickHandler listener = new DefaultClickHandler();
     
     private PostActionHandler postActionListener = new DefaultPostActionHandler();
+    
+    public FloorClickHandler getJFloorEditListener() {
+        return listener;
+    }
+    
     public void setJFloorEditListener(FloorClickHandler editListener) {
         removeMouseListener(editMouseListener);
         editMouseListener = new FloorEditListenerAdapter(editListener);
@@ -236,8 +251,7 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
                 repaint();
             }
         }
-    };
-    
+    };    
 
     private JPolygon findPolygonToArea(JFloor base, PlanPolygon poly) {
         for (Component c : base.getComponents()) {
@@ -507,43 +521,28 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
     }
     
     protected void fireSelectionChanged(JPolygon polygon) {
-        // Guaranteed to return a non-null array
-        Object[] listeners = listenerList.getListenerList();
-        SelectionEvent selectionEvent = null;
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == SelectionListener.class) {
-                if (selectionEvent == null) {
-                    selectionEvent = new SelectionEvent(this, polygon);
-                }
-                ((SelectionListener) listeners[i + 1]).selectionChanged(selectionEvent);
-            }
-        }
+        fireSelectionEvent(() -> { return new SelectionEvent(this, polygon); });
+        
     }
     
     protected void fireSelectionEdge(JPolygon polygon, PlanEdge edge) {
-        // Guaranteed to return a non-null array
-        Object[] listeners = listenerList.getListenerList();
-        SelectionEvent selectionEvent = null;
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == SelectionListener.class) {
-                if (selectionEvent == null) {
-                    selectionEvent = new SelectionEvent(this, polygon, edge);
-                }
-                ((SelectionListener) listeners[i + 1]).selectionEdge(selectionEvent);
-            }
-        }
+        fireSelectionEvent(() -> { return new SelectionEvent(this, polygon, edge); });
     }
     
     protected void fireSelectionCleared() {
+        fireSelectionEvent(() -> { return new SelectionEvent(this); });
+    }
+    
+    private void fireSelectionEvent(Supplier<SelectionEvent> eventSupplier) {
         // Guaranteed to return a non-null array
         Object[] listeners = listenerList.getListenerList();
         SelectionEvent selectionEvent = null;
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == SelectionListener.class) {
                 if (selectionEvent == null) {
-                    selectionEvent = new SelectionEvent(this);
+                    selectionEvent = eventSupplier.get();
                 }
-                ((SelectionListener) listeners[i + 1]).selectionCleared(selectionEvent);
+                ((SelectionListener) listeners[i + 1]).selectionChanged(selectionEvent);
             }
         }
     }

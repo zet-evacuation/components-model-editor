@@ -14,6 +14,8 @@ import de.zet_evakuierung.model.SaveArea;
 import de.zet_evakuierung.model.StairArea;
 import de.zet_evakuierung.model.TeleportArea;
 import de.zet_evakuierung.model.ZControl;
+import de.zet_evakuierung.model.ZModelRoomEvent;
+import event.EventServer;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
@@ -200,7 +202,6 @@ public class ComponentTestWindow extends JFrame {
 //                editListener.setZetObjectType(ZetObjectTypes.Evacuation);
 //                jfloor.setJFloorEditListener(handler);
                 
-                //EventServer.getInstance().registerListener(jfloor, ZModelRoomEvent.class);
                 
                 
                 // Adding the floor directly                
@@ -213,7 +214,8 @@ public class ComponentTestWindow extends JFrame {
                 // Adding a complete edit view
                 //JEditView editView = new JEditView();
                 EditViewControl evc = new EditViewControl(control, p.getBuildingPlan().getFloors());
-                evc.setEditMode(EditMode.CreationPointWise);
+                EventServer.getInstance().registerListener(evc.getView(), ZModelRoomEvent.class);
+                evc.setEditMode(EditMode.Selection);
                 JEditView editView = evc.getView();
                 
                 testWindow.add(editView);

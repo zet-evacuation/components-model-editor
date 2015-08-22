@@ -26,14 +26,20 @@ import de.zet_evakuierung.model.exception.AssignmentException;
 import java.util.List;
 import java.util.Objects;
 import zet.gui.main.tabs.editor.EditMode;
+import zet.gui.main.tabs.editor.ZetObjectTypes;
 import zet.gui.main.tabs.editor.floor.CustomFloorCreatePointwiseDrawer;
 import zet.gui.main.tabs.editor.floor.CustomFloorCreateRectangleDrawer;
 import zet.gui.main.tabs.editor.floor.CustomFloorSelectionDrawer;
+import zet.gui.main.tabs.editor.floor.DefaultPostActionHandler;
 import zet.gui.main.tabs.editor.floor.FloorClickCreatePointwiseHandler;
 import zet.gui.main.tabs.editor.floor.FloorClickCreateRectangleHandler;
+import zet.gui.main.tabs.editor.floor.FloorClickCreationHandler;
+import zet.gui.main.tabs.editor.floor.FloorClickCreationPostActionAdapter;
 import zet.gui.main.tabs.editor.floor.FloorClickHandler;
 import zet.gui.main.tabs.editor.floor.FloorClickSelectionHandler;
 import zet.gui.main.tabs.editor.floor.JFloor;
+import zet.gui.main.tabs.editor.floor.PostActionHandler;
+import zet.gui.main.tabs.editor.floor.PostActionStairHandler;
 
 /**
  * Control class (in the MVC model) for a floor in the zet model. The class is coupled to a floor model instance but
@@ -45,6 +51,8 @@ public class FloorControl {
     private final ZControl zcontrol;
     private Floor floor;
     private final JFloor view;
+    private FloorClickHandler originalHandler;
+    private ZetObjectTypes zetObjectType = ZetObjectTypes.Room;
     /** The read only floor interface. */
 
     /**
@@ -74,8 +82,8 @@ public class FloorControl {
     }
     
     public void initView() {
-        FloorClickHandler handler = new FloorClickSelectionHandler(this);
-        view.setJFloorEditListener(handler);
+        originalHandler = new FloorClickSelectionHandler(this);
+        view.setJFloorEditListener(originalHandler);
     }
     
     public JFloor getView() {
@@ -130,9 +138,6 @@ public class FloorControl {
         //PostActionHandler stairHandler = new PostActionStairHandler();
         //PostActionHandler stairHandler = new DefaultPostActionHandler();
         //stairHandler.setFloor(jfloor);
-        //FloorClickHandler handler = new FloorClickCreationPostActionAdapter(editListener, stairHandler);
-        //jfloor.setPostActionListener(stairHandler);
-        //editListener.setZetObjectType(ZetObjectTypes.Evacuation);
         
         switch( editMode ) {
             case Selection:
@@ -140,20 +145,50 @@ public class FloorControl {
                 final FloorClickSelectionHandler selectionHandler = new FloorClickSelectionHandler(this);
                 view.setJFloorEditListener(selectionHandler);
                 view.setCustomDrawer(new CustomFloorSelectionDrawer(selectionHandler, view));
+                originalHandler = selectionHandler;
                 break;
             case CreationPointWise:
                 // Creation pointwise (normal)
                 final FloorClickCreatePointwiseHandler pointwiseHandler = new FloorClickCreatePointwiseHandler(this);
                 view.setJFloorEditListener(pointwiseHandler);
                 view.setCustomDrawer(new CustomFloorCreatePointwiseDrawer(pointwiseHandler, view));
+                originalHandler = pointwiseHandler;
                 break;
             case CreationRectangle:
                 final FloorClickCreateRectangleHandler rectangleHandler = new FloorClickCreateRectangleHandler(this);
                 view.setJFloorEditListener(rectangleHandler);
                 view.setCustomDrawer(new CustomFloorCreateRectangleDrawer(rectangleHandler, view));
+                originalHandler = rectangleHandler;
                 break;
             default:
                 throw new AssertionError("Edit mode handling for floors not implemented: " + editMode);
         }
+        setZetObjectTypeInternal();
+    }
+    
+    public void setZetObjectType(ZetObjectTypes type) {
+        //originalHandler.setZetObjectType(type);
+        this.zetObjectType = type;
+        setZetObjectTypeInternal();
+    }
+    
+    private void setZetObjectTypeInternal() {
+        if (!(originalHandler instanceof FloorClickCreationHandler)) {
+            return;
+        }
+        FloorClickCreationHandler handler = (FloorClickCreationHandler)originalHandler;
+        PostActionHandler stairHandler;
+        FloorClickHandler adaptedHandler;
+        if (zetObjectType == ZetObjectTypes.Stair) {
+            stairHandler = new PostActionStairHandler();
+            adaptedHandler = new FloorClickCreationPostActionAdapter((FloorClickCreationHandler)originalHandler, stairHandler);
+        } else {
+            stairHandler = new DefaultPostActionHandler();
+            adaptedHandler = originalHandler;
+        }
+        view.setJFloorEditListener(adaptedHandler);
+        view.setPostActionListener(stairHandler);
+        stairHandler.setFloor(view);
+        handler.setZetObjectType(zetObjectType);
     }
 }

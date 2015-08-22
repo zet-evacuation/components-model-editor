@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import zet.gui.main.tabs.base.JPolygon;
 import zet.gui.main.tabs.editor.EditMode;
+import zet.gui.main.tabs.editor.ZetObjectTypes;
 import zet.gui.main.tabs.editor.control.FloorControl;
 import zet.gui.main.tabs.editor.control.FloorViewModel;
 import zet.gui.main.tabs.editor.floor.SelectionEvent;
@@ -123,13 +124,27 @@ public class EditViewControl {
     public void setEditMode(EditMode editMode) {
         floorControl.setEditMode(editMode);
     }
+    
+    public void setZetObjectType(ZetObjectTypes type) {
+        floorControl.setZetObjectType(type);
+    }
+    
+    public void set() {
+        floorControl.setEditMode(EditMode.Selection);
+    }
 
+    public void setControlledProject(List<Floor> floors) {
+        this.floors = validatedFloorList(floors);
+        setCurrentFloor(floors.get(1));
+    }
+    
     public void setCurrentFloor(Floor floor) {
         if( !floors.contains(floor)) {
             throw new IllegalArgumentException( "Floor '" + floor + "' is not in the floor list!" );
         }
         currentFloor = floor;
         floorControl.setFloor(floor);
+        getView().setEditViewModel(generateViewModel());
         System.out.println("Stored new floor in model" );
     }
     

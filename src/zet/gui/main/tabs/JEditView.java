@@ -28,6 +28,7 @@ import de.zet_evakuierung.model.StairArea;
 import de.zet_evakuierung.model.TeleportArea;
 import de.zet_evakuierung.model.ZControl;
 import de.zet_evakuierung.model.ZModelRoomEvent;
+import event.EventListener;
 import event.EventServer;
 import gui.editor.Areas;
 import info.clearthought.layout.TableLayout;
@@ -84,7 +85,7 @@ import zet.gui.main.tabs.editor.panel.JTeleportAreaInformationPanel;
  * @author Jan-Philipp Kappmeier
  */
 @SuppressWarnings( "serial" )
-public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFloor>> implements Observer {
+public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFloor>> implements Observer, EventListener<ZModelRoomEvent> {
 	//@//private final EditStatus editStatus;
 	//@//private final SelectedFloorElements selection;
         
@@ -125,6 +126,22 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
 //			}
 //		}
 	}
+
+    @Override
+    public void handleEvent(ZModelRoomEvent event) {
+        System.out.println("Sending forward an event.");
+        getFloor().handleEvent(event);
+    }
+
+    /**
+     * Sets a new edit view model (with new / updated floors).
+     * @param editViewModel the edit view model containing the data displayed in the view
+     */
+    void setEditViewModel( EditViewModel editViewModel ) {
+        this.viewModel = editViewModel;
+        floorSelector.setModel(new FloorComboBoxModel(viewModel));
+        //roomSelector.setModel(new RoomComboBoxModel(viewModel.getCurrentFloor()));
+    }
 
 	/**
 	 * An enumeration of all possible panels visible in the edit view on the right part.
@@ -206,12 +223,7 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
 	private JPanel eastSubBar;
 
 	private boolean disableUpdate = false;
-	//@//private final GUIControl guiControl;
 
-        private static class GUIControl {
-            
-        }
-        
         public JEditView(EditViewModel viewModel) {
             super( new JFloorScrollPane<>( new JFloor( Objects.requireNonNull(viewModel).getCurrentFloor()) ));
             //super( new JFloorScrollPane<>( Objects.requireNonNull(viewModel).getJFloor() ));
@@ -300,6 +312,7 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
 		floorSelector.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed( ActionEvent e ) {
+                                System.out.println("ACTION-LISTENER CALLED!!!!");
 				if( floorSelector.getSelectedItem() == null )
 					return;
                                 

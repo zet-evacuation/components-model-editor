@@ -83,6 +83,8 @@ public class AbstractFloor extends JPanel {
         floorMax_y = Math.max(defaultArea.y + defaultArea.height, floorPosition.y + floorPosition.height);
         floorMin_x = Math.min(defaultArea.x, floorPosition.x);
         floorMin_y = Math.min(defaultArea.y, floorPosition.x);
+        
+        System.out.println("Floor sized to " + floorMax_x + " " + floorMax_y + " " + floorMin_x + " " + floorMin_y);
 
         int borderWidth = graphicsStyle.getBorderWidth();
         CoordinateTools.setOffsets(floorMin_x - borderWidth, floorMin_y - borderWidth);
