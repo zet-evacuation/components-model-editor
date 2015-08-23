@@ -1,4 +1,4 @@
-/* zet evacuation tool copyright (c) 2007-14 zet evacuation team
+/* zet evacuation tool copyright (c) 2007-15 zet evacuation team
  *
  * This program is free software; you can redistribute it and/or
  * as published by the Free Software Foundation; either version 2
@@ -20,7 +20,6 @@ import de.zet_evakuierung.components.model.editor.DefaultGraphicsStyle;
 import de.zet_evakuierung.components.model.editor.GraphicsStyle;
 import static org.zetool.common.util.Helper.in;
 import org.zetool.common.util.Selectable;
-//@//import ds.PropertyContainer;
 import de.zet_evakuierung.model.Area;
 import de.zet_evakuierung.model.Barrier;
 import de.zet_evakuierung.model.PlanEdge;
@@ -30,8 +29,6 @@ import de.zet_evakuierung.model.Room;
 import de.zet_evakuierung.model.RoomEdge;
 import de.zet_evakuierung.model.StairArea;
 import de.zet_evakuierung.model.TeleportEdge;
-//import gui.GUIControl;
-//import gui.GUIOptionManager;
 import gui.editor.Areas;
 import gui.editor.CoordinateTools;
 import java.awt.AWTEvent;
@@ -52,7 +49,9 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Objects;
 import javax.swing.SwingUtilities;
+import zet.gui.main.menu.popup.Popups;
 import zet.gui.main.tabs.editor.floor.JFloor;
 
 /**
@@ -185,11 +184,10 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
      * @param myFloor The {@link JFloor} on which this polygon is displayed
      * @param foreground the border color of the polygon
      */
-    public JPolygon(JFloor myFloor, Color foreground ) { //@//*, GUIControl guiControl) {
+    public JPolygon(JFloor myFloor, Color foreground) {
         super(foreground);
-        //this.guiControl = guiControl;
+        this.myFloor = Objects.requireNonNull(myFloor);
 
-        this.myFloor = myFloor;
         setOpaque(false);
 
         // Create a transparent color with which we will fill out the polygon
@@ -293,7 +291,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
                 EnumSet<Areas> areaVisibility = EnumSet.allOf( Areas.class ); //@//GUIOptionManager.getAreaVisibility();
                 if (areaVisibility.contains(Areas.Assignment)) {
                     for (Area a : room.getAssignmentAreas()) {
-                        JPolygon allignmentAreaPoly = new JPolygon(myFloor, graphicsStyle.getColorForArea(Areas.Assignment) );
+                        JPolygon allignmentAreaPoly = new JPolygon(myFloor, graphicsStyle.getColorForArea(Areas.Assignment));
                         add(allignmentAreaPoly);
                         allignmentAreaPoly.displayPolygon(a.getPolygon());
                     }
@@ -333,7 +331,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
                         inaccessiblePoly.displayPolygon(a.getPolygon());
                     }
                     for (Area a : room.getBarriers()) {
-                        JPolygon barrierPoly = new JPolygon(myFloor, graphicsStyle.getWallColor() );
+                        JPolygon barrierPoly = new JPolygon(myFloor, graphicsStyle.getWallColor());
                         add(barrierPoly);
                         barrierPoly.displayPolygon(a.getPolygon());
                     }
@@ -341,7 +339,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
                 // TODO area visiblity for teleport areas
                 if (areaVisibility.contains(Areas.Teleportation)) {
                     for (Area a : room.getTeleportAreas()) {
-                        JPolygon teleportPoly = new JPolygon(myFloor, graphicsStyle.getColorForArea(Areas.Teleportation) );
+                        JPolygon teleportPoly = new JPolygon(myFloor, graphicsStyle.getColorForArea(Areas.Teleportation));
                         add(teleportPoly);
                         teleportPoly.displayPolygon(a.getPolygon());
                     }
@@ -674,7 +672,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
         // 4. Else forward the event to parent object
 
         // Do not use e.isPopupTrigger() here - Won't work under linux
-        if (e.getID() == MouseEvent.MOUSE_RELEASED && e.getButton() == MouseEvent.BUTTON3 /* //@//&& myFloor.getEditStatus().isPopupEnabled()*/) {
+        if (e.getID() == MouseEvent.MOUSE_RELEASED && e.getButton() == MouseEvent.BUTTON3 && myFloor.getPopups().isPopupEnabled()) {
             if (!lastPosition.equals(e.getLocationOnScreen())) {
                 lastPosition = e.getLocationOnScreen();
                 selectedUsed = false;
@@ -694,6 +692,12 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
                 if (hitPoint == null) {
                     // Show edge popup
                     if (selectedUsed == false) {
+                        System.err.println("Showing an edge popup");
+                        
+                        PlanPoint newPoint = new PlanPoint(CoordinateTools.translateToModel(convertPointToFloorCoordinates((Component) e.getSource(), e.getPoint())));
+                        
+                        myFloor.getPopups().getEdgePopup().setPopupEdge(hitEdge.myEdge, newPoint);
+                        myFloor.getPopups().getEdgePopup().show(this, e.getX(), e.getY());
                         //@//guiControl.getEdgePopup().setPopupEdge(hitEdge.myEdge, guiControl.getEditView().convertPointToFloorCoordinates((Component) e.getSource(), e.getPoint()));
                         //@//guiControl.getEdgePopup().show(this, e.getX(), e.getY());
                     }
@@ -701,6 +705,9 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
                 } else {
                     // Show point popup
                     if (selectedUsed == false) {
+                        System.err.println("Showing a point popup");
+                        myFloor.getPopups().getPointPopup().setPopupPoint(hitEdge.myEdge, hitPoint);
+                        myFloor.getPopups().getPointPopup().show(this, e.getX(), e.getY());
                         //@//guiControl.getPointPopup().setPopupPoint(hitEdge.myEdge, hitPoint);
                         //@//guiControl.getPointPopup().show(this, e.getX(), e.getY());
                     }
@@ -708,8 +715,9 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
                 }
             } else if (Room.class.isInstance(myPolygon) && drawingPolygon.contains(e.getPoint())) {
                 if (selectedUsed == false) {
-                    //@//guiControl.getPolygonPopup().setPopupPolygon(myPolygon);
-                    //@//guiControl.getPolygonPopup().show(this, e.getX(), e.getY());
+                        System.err.println("Showing a polygon popup");
+                    myFloor.getPopups().getPolygonPopup().setPopupPolygon(myPolygon);
+                    myFloor.getPopups().getPolygonPopup().show(this, e.getX(), e.getY());
                 }
                 selectedUsed = isSelected();
             }
@@ -726,6 +734,21 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
             lastMouseEventToPassToFloor = e;
         }
     }
+
+	/**
+	 * This is a helper method for other GUI objects who need to transform
+	 * points that are given in their own coordinate space into the coordinate
+	 * space of the Floor.
+	 * @param source The Component in whose coordinate space the Point "toConvert"
+	 * is specified. It must be an object which is located directly or indirectly
+	 * upon the JEditorPanel's JFloor object.
+	 * @param toConvert The point to convert
+	 * @return The same point as "toConvert", but relative to the surrounding
+	 * JFloor object.
+	 */
+	public Point convertPointToFloorCoordinates( Component source, Point toConvert ) {
+		return SwingUtilities.convertPoint( source, toConvert, myFloor );
+	}
 
     /**
      * MouseEvents occurring on this component are also forwarded to the parent

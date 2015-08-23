@@ -183,6 +183,18 @@ public class ComponentTestWindow extends JFrame {
                 pe = s.getEdge(upperLevelStart, upperLevelEnd);
                 s.setUpperLevel(pe.getSource(), pe.getTarget());
                 
+                // create another room that is next to the last one to create teleport areas
+                control.createNewPolygon(Room.class, floor1);
+                control.addPoint(new PlanPoint(1000 + 0000,3000));
+                control.addPoint(new PlanPoint(1200 + 0000,2800));
+                control.addPoint(new PlanPoint(2000 + 1000,2800));
+                control.addPoint(new PlanPoint(2000 + 1000,4000));
+                control.addPoint(new PlanPoint(1000 + 0000,4000));
+                control.addPoint(new PlanPoint(1000 + 0000,3000));
+                assert floor1.getRooms().size() == 4;
+                Room room4 = (Room)control.latestPolygon();
+                
+                
 //                FloorControl floorControl = new FloorControl(control, (Floor)floor1);
 //                JFloor jfloor = floorControl.getView();
 //                floorControl.initView();

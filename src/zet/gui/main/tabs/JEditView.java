@@ -47,7 +47,6 @@ import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
 import org.zetool.components.JRuler;
 import zet.gui.components.editor.EditorLocalization;
 import zet.gui.components.model.FloorComboBoxModel;
@@ -57,7 +56,6 @@ import zet.gui.main.tabs.base.AbstractSplitPropertyWindow;
 import zet.gui.main.tabs.base.JFloorScrollPane;
 import zet.gui.main.tabs.editor.control.FloorViewModel;
 import zet.gui.main.tabs.editor.floor.JFloor;
-import zet.gui.main.tabs.editor.panel.ChangeListener;
 import zet.gui.main.tabs.editor.panel.JAssignmentAreaInformationPanel;
 import zet.gui.main.tabs.editor.panel.JDefaultInformationPanel;
 import zet.gui.main.tabs.editor.panel.JDelayAreaInformationPanel;
@@ -591,21 +589,6 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
 		leftRuler.setOffset( floor.getyOffset() );
 		topRuler.repaint();
 		leftRuler.repaint();
-	}
-
-	/**
-	 * This is a helper method for other GUI objects who need to transform
-	 * points that are given in their own coordinate space into the coordinate
-	 * space of the Floor.
-	 * @param source The Component in whose coordinate space the Point "toConvert"
-	 * is specified. It must be an object which is located directly or indirectly
-	 * upon the JEditorPanel's JFloor object.
-	 * @param toConvert The point to convert
-	 * @return The same point as "toConvert", but relative to the surrounding
-	 * JFloor object.
-	 */
-	public Point convertPointToFloorCoordinates( Component source, Point toConvert ) {
-		return SwingUtilities.convertPoint( source, toConvert, getFloor() );
 	}
 	/** Prohibits serialization. */
 	private synchronized void writeObject( java.io.ObjectOutputStream s ) throws IOException {

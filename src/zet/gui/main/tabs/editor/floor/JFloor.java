@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 import javax.swing.SwingUtilities;
+import zet.gui.main.menu.popup.Popups;
 import zet.gui.main.tabs.base.AbstractFloor;
 import zet.gui.main.tabs.base.JPolygon;
 import zet.gui.main.tabs.editor.control.FloorViewModel;
@@ -61,6 +62,7 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
 
     /** The background image. */
     private PlanImage planImage;
+    private Popups popups = new Popups(null);
 
     public final GraphicsStyle graphicsStyle = new DefaultGraphicsStyle();
     
@@ -160,6 +162,10 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
                 }
             }
         }
+    }
+
+    public Popups getPopups() {
+        return popups;
     }
     
     private static class DefaultClickHandler implements FloorClickHandler {
@@ -475,7 +481,7 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
         selection.addPolygon(toAdd);
         System.err.println("Add multiple polygons");
         if (!toAdd.isEmpty()) {
-            fireSelectionChanged(toAdd.get(0));
+            fireSelectionChangedEvent(toAdd.get(0));
         }
     }
 
@@ -484,20 +490,20 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
         selection.clearSelection();
         System.err.println("Selection cleared");
         if (!wasClear) {
-            fireSelectionCleared();
+            fireSelectionClearedEvent();
         }
     }
 
     void selectPolygon(JPolygon toSelect) {
         selection.selectPolygon(toSelect);
         System.err.println("Polygon selected");
-        fireSelectionChanged(toSelect);
+        fireSelectionChangedEvent(toSelect);
     }
 
     void selectEdge(JPolygon toSelect, PlanEdge edge) {
         selection.selectEdge(toSelect, edge);
         System.err.println("Edge selected");
-        fireSelectionEdge(toSelect, edge);
+        fireSelectionEdgeEvent(toSelect, edge);
     }
 
     public List<JPolygon> getSelectedPolygons() {
@@ -519,30 +525,43 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
     public void removeSelectionListener(SelectionListener l) {
         listenerList.remove(SelectionListener.class, l);
     }
-    
-    protected void fireSelectionChanged(JPolygon polygon) {
-        fireSelectionEvent(() -> { return new SelectionEvent(this, polygon); });
-        
-    }
-    
-    protected void fireSelectionEdge(JPolygon polygon, PlanEdge edge) {
-        fireSelectionEvent(() -> { return new SelectionEvent(this, polygon, edge); });
-    }
-    
-    protected void fireSelectionCleared() {
-        fireSelectionEvent(() -> { return new SelectionEvent(this); });
-    }
-    
-    private void fireSelectionEvent(Supplier<SelectionEvent> eventSupplier) {
+
+    private void fireSelectionChangedEvent(JPolygon polygon) {
         // Guaranteed to return a non-null array
         Object[] listeners = listenerList.getListenerList();
         SelectionEvent selectionEvent = null;
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == SelectionListener.class) {
                 if (selectionEvent == null) {
-                    selectionEvent = eventSupplier.get();
+                    selectionEvent = new SelectionEvent(this, polygon);
                 }
                 ((SelectionListener) listeners[i + 1]).selectionChanged(selectionEvent);
+            }
+        }
+    }
+    private void fireSelectionEdgeEvent(JPolygon polygon, PlanEdge edge) {
+        // Guaranteed to return a non-null array
+        Object[] listeners = listenerList.getListenerList();
+        SelectionEvent selectionEvent = null;
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == SelectionListener.class) {
+                if (selectionEvent == null) {
+                    selectionEvent = new SelectionEvent(this, polygon, edge);
+                }
+                ((SelectionListener) listeners[i + 1]).selectionEdge(selectionEvent);
+            }
+        }
+    }
+    private void fireSelectionClearedEvent() {
+        // Guaranteed to return a non-null array
+        Object[] listeners = listenerList.getListenerList();
+        SelectionEvent selectionEvent = null;
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == SelectionListener.class) {
+                if (selectionEvent == null) {
+                    selectionEvent = new SelectionEvent(this);
+                }
+                ((SelectionListener) listeners[i + 1]).selectionCleared(selectionEvent);
             }
         }
     }

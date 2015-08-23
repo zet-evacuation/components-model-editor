@@ -34,8 +34,10 @@ import zet.gui.main.tabs.editor.floor.SelectionListener;
 import zet.gui.main.tabs.editor.panel.AbstractInformationPanelControl;
 import zet.gui.main.tabs.editor.panel.AssignmentAreaControl;
 import zet.gui.main.tabs.editor.panel.ChangeEvent;
+import zet.gui.main.tabs.editor.panel.ChangeListener;
 import zet.gui.main.tabs.editor.panel.DefaultPanelControl;
 import zet.gui.main.tabs.editor.panel.DelayAreaControl;
+import zet.gui.main.tabs.editor.panel.EdgeChangeEvent;
 import zet.gui.main.tabs.editor.panel.EdgeControl;
 import zet.gui.main.tabs.editor.panel.EvacuationAreaControl;
 import zet.gui.main.tabs.editor.panel.FloorPanelControl;
@@ -54,7 +56,7 @@ public class EditViewControl {
     private Floor currentFloor;
     private List<Floor> floors;
     private final FloorControl floorControl;
-    private JEditView view;
+    private final JEditView view;
     private List<FloorViewModel> floorViewModels;
     private EnumMap<JEditView.Panels,InformationPanelControl> controlMap;
     //private EnumMap<JEditView.Panels,Component> componentMap;
@@ -85,9 +87,13 @@ public class EditViewControl {
         registerControlAndView(new InaccessibleAreaControl(), JEditView.Panels.InaccessibleArea, editView);
         registerControlAndView(new StairAreaControl(control), JEditView.Panels.StairArea, editView);
         registerControlAndView(new TeleportAreaControl(control), JEditView.Panels.TeleportArea, editView);
-        registerControlAndView(new EdgeControl(), JEditView.Panels.Edge, editView);
+        registerControlAndView(new EdgeControl(control), JEditView.Panels.Edge, editView);
         registerControlAndView(new DefaultPanelControl(), JEditView.Panels.Default, editView);
 
+        // Set up listener for popup menus
+        EdgeControl ec = (EdgeControl)controlMap.get(JEditView.Panels.Edge);
+        editView.getFloor().getPopups().getEdgePopup().addChangeListener(ec);
+        
         return editView;
     }
     
@@ -177,20 +183,17 @@ public class EditViewControl {
 
         @Override
         public void selectionChanged(SelectionEvent event) {
-            System.out.println("Selection changed!");
             JPolygon p = event.getSelectedPolygon();
             showPolygonPanel(JEditView.Panels.panelForPolygon(p.getPlanPolygon()), p.getPlanPolygon());
         }
 
         @Override
         public void selectionCleared(SelectionEvent event) {
-            // When the selection is cleared, we go back to floor panel
             showFloorPanel();
         }
 
         @Override
         public void selectionEdge(SelectionEvent event) {
-            System.out.println("Edge selected");
             showEdgePanel(event.getEdge());
         }
 
