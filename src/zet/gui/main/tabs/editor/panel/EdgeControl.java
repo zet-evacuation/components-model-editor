@@ -24,6 +24,7 @@ public class EdgeControl extends AbstractInformationPanelControl<JEdgeInformatio
 
     @Override
     public void changed(EdgeChangeEvent c) {
+        System.err.println("Source: " + c.getSource());
         switch(c.getChangeType()) {
             case CreateFloorPassage:
                 perform((MakeTeleportEvent)c);

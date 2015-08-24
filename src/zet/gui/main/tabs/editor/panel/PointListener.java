@@ -14,42 +14,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package zet.gui.main.menu.popup;
+package zet.gui.main.tabs.editor.panel;
 
-import de.zet_evakuierung.model.PlanEdge;
-import de.zet_evakuierung.model.PlanPoint;
-import de.zet_evakuierung.model.PlanPolygon;
 import de.zet_evakuierung.model.ZControl;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import zet.gui.main.tabs.editor.panel.ChangeListener;
+import zet.gui.main.tabs.editor.panel.PointChangeEvent;
 
 /**
  * This pop-up listener is responsible for handling menu events
  *
  * @author Timon Kelter, Jan-Philipp Kappmeier
  */
-public class PointPopupListener implements ActionListener {
+public class PointListener implements ChangeListener<PointChangeEvent> {
 
     /** The control class for changing the z data structure. */
-    ZControl projectControl;
-    /** The edge on which the point lies. */
-    private PlanEdge currentEdge;
-    /** The point for which the pop-up is used. */
-    private PlanPoint currentPoint;
+    ZControl control;
 
-    public PointPopupListener(ZControl projectControl) {
-        this.projectControl = projectControl;
-    }
-
-    /**
-     * This method should be called every time before the pop-up is shown.
-     *
-     * @param currentEdge one edge to that the point is adjacent
-     * @param currentPoint the PlanPoint on which the pop-up is shown.
-     */
-    public void setPoint(PlanEdge currentEdge, PlanPoint currentPoint) {
-        this.currentEdge = currentEdge;
-        this.currentPoint = currentPoint;
+    public PointListener(ZControl projectControl) {
+        this.control = projectControl;
     }
 
     /**
@@ -59,9 +42,13 @@ public class PointPopupListener implements ActionListener {
      * @param e
      */
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("deletePoint")) {
-            PlanPolygon poly = currentEdge.getAssociatedPolygon();
-            projectControl.deletePoint(poly, currentPoint);
+    }
+
+    @Override
+    public void changed(PointChangeEvent c) {
+        if (c.getChangeType() != PointChangeEvent.PointChange.Delete) {
+            throw new AssertionError("Unsupported change type: " + c.getChangeType());
         }
+        c.perform(control);
     }
 }

@@ -187,8 +187,8 @@ public class ComponentTestWindow extends JFrame {
                 control.createNewPolygon(Room.class, floor1);
                 control.addPoint(new PlanPoint(1000 + 0000,3000));
                 control.addPoint(new PlanPoint(1200 + 0000,2800));
-                control.addPoint(new PlanPoint(2000 + 1000,2800));
-                control.addPoint(new PlanPoint(2000 + 1000,4000));
+                control.addPoint(new PlanPoint(1800 + 1000,2800));
+                control.addPoint(new PlanPoint(1800 + 1000,4000));
                 control.addPoint(new PlanPoint(1000 + 0000,4000));
                 control.addPoint(new PlanPoint(1000 + 0000,3000));
                 assert floor1.getRooms().size() == 4;

@@ -22,7 +22,7 @@ public class Popups {
 
     public Popups(ZControl control) {
         popupMap.put(Types.Edge, new EdgePopup());
-        popupMap.put(Types.Point, new PointPopup(control));
+        popupMap.put(Types.Point, new PointPopup());
         popupMap.put(Types.Polygon, new PolygonPopup(control));
     }
 

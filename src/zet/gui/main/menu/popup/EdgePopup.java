@@ -43,7 +43,6 @@ public class EdgePopup extends JPopupMenu {
     private PlanEdge currentEdge;
     private Templates<Door> doors;
     private Templates<ExitDoor> exits;
-    
 
     public EdgePopup() {
         super();
@@ -57,7 +56,7 @@ public class EdgePopup extends JPopupMenu {
         for (Door d : doors) {
             Menu.addMenuItem(mCreateDoors, d.getName() + " (" + d.getSize() + ")", (ActionEvent e) -> {
                 Door door = doors.getDoor(Integer.parseInt(e.getActionCommand()));
-                fireChangeEvent(new CreateTemplatePassageEvent(this, currentEdge, mousePosition, door));
+                fireChangeEvent(new CreateTemplatePassageEvent(e.getSource(), currentEdge, mousePosition, door));
             },
             String.valueOf(i++));
         }
@@ -70,7 +69,7 @@ public class EdgePopup extends JPopupMenu {
         for (ExitDoor d : exitDoors) {
             Menu.addMenuItem(mCreateExitDoors, d.getName() + " (" + d.getSize() + ")", (ActionEvent e) -> {
                 ExitDoor exit = exits.getDoor(Integer.parseInt(e.getActionCommand()));
-                fireChangeEvent(new CreateTemplateExitEvent(this, currentEdge, mousePosition, exit));
+                fireChangeEvent(new CreateTemplateExitEvent(e.getSource(), currentEdge, mousePosition, exit));
             },
             String.valueOf(i++));
         }
@@ -84,35 +83,26 @@ public class EdgePopup extends JPopupMenu {
         removeAll();
 
         loc.setPrefix("gui.editor.JEditorPanel.");
-        Menu.addMenuItem(this, loc.getString("popupInsertNewPoint"), ActionEvent
-                -> fireChangeEvent(new InsertPointEvent(this, currentEdge, mousePosition)));
-        Menu.addMenuItem(this, loc.getString("popupCreatePassage"), ActionEvent
-                -> fireChangeEvent(new MakePassableEvent(this, currentEdge)));
-        Menu.addMenuItem(this, loc.getString("popupCreatePassageRoom"), ActionEvent
-                -> fireChangeEvent(new CreatePassageRoom(this, currentEdge)));
-        Menu.addMenuItem(this, loc.getString("popupCreateFloorPassage"), ActionEvent
-                -> fireChangeEvent(new MakeTeleportEvent(this, currentEdge)));
-        Menu.addMenuItem(this, loc.getString("popupCreateEvacuationPassage"), ActionEvent
-                -> fireChangeEvent(new MakeExitEvent(this, currentEdge)));
-        Menu.addMenuItem(this, loc.getString("popupShowPassageTarget"), ActionEvent
+        Menu.addMenuItem(this, loc.getString("popupInsertNewPoint"), e
+                -> fireChangeEvent(new InsertPointEvent(e.getSource(), currentEdge, mousePosition)));
+        Menu.addMenuItem(this, loc.getString("popupCreatePassage"), e
+                -> fireChangeEvent(new MakePassableEvent(e.getSource(), currentEdge)));
+        Menu.addMenuItem(this, loc.getString("popupCreatePassageRoom"), e
+                -> fireChangeEvent(new CreatePassageRoom(e.getSource(), currentEdge)));
+        Menu.addMenuItem(this, loc.getString("popupCreateFloorPassage"), e
+                -> fireChangeEvent(new MakeTeleportEvent(e.getSource(), currentEdge)));
+        Menu.addMenuItem(this, loc.getString("popupCreateEvacuationPassage"), e
+                -> fireChangeEvent(new MakeExitEvent(e.getSource(), currentEdge)));
+        Menu.addMenuItem(this, loc.getString("popupShowPassageTarget"), e
                 -> System.err.println("Showing targets of passages is not yet implemented!"));
-        Menu.addMenuItem(this, loc.getString("popupRevertPassage"), ActionEvent
-                -> fireChangeEvent(new RevertPassage(this, currentEdge)));
+        Menu.addMenuItem(this, loc.getString("popupRevertPassage"), e
+                -> fireChangeEvent(new RevertPassage(e.getSource(), currentEdge)));
         mCreateDoors = Menu.addMenu(this, "Tür erzeugen");
         mCreateExitDoors = Menu.addMenu(this, "Ausgang erzeugen");
         
         loc.setPrefix("");
     }
     
-    private final ActionListener popupClickListener = new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            fireChangeEvent(new InsertPointEvent(this, currentEdge, mousePosition));
-        }
-    };
-    
-
     public void addChangeListener(ChangeListener<EdgeChangeEvent> l) {
         listenerList.add(ChangeListener.class, l);
     }
@@ -123,7 +113,6 @@ public class EdgePopup extends JPopupMenu {
 
     protected void fireChangeEvent(EdgeChangeEvent c) {
         // Guaranteed to return a non-null array
-        System.out.println("We are in firechangeevent");
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == ChangeListener.class) {
@@ -134,7 +123,6 @@ public class EdgePopup extends JPopupMenu {
             }
         }
     }
-    
 
     /**
      * This method should be called every time before the JEdge popup menu is shown.

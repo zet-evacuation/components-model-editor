@@ -44,6 +44,7 @@ import zet.gui.main.tabs.editor.panel.FloorPanelControl;
 import zet.gui.main.tabs.editor.panel.InaccessibleAreaControl;
 import zet.gui.main.tabs.editor.panel.InformationPanelControl;
 import zet.gui.main.tabs.editor.panel.JInformationPanel;
+import zet.gui.main.tabs.editor.panel.PointListener;
 import zet.gui.main.tabs.editor.panel.RoomInformationPanelControl;
 import zet.gui.main.tabs.editor.panel.StairAreaControl;
 import zet.gui.main.tabs.editor.panel.TeleportAreaControl;
@@ -93,6 +94,8 @@ public class EditViewControl {
         // Set up listener for popup menus
         EdgeControl ec = (EdgeControl)controlMap.get(JEditView.Panels.Edge);
         editView.getFloor().getPopups().getEdgePopup().addChangeListener(ec);
+        PointListener pc = new PointListener(control);
+        editView.getFloor().getPopups().getPointPopup().addChangeListener(pc);
         
         return editView;
     }
