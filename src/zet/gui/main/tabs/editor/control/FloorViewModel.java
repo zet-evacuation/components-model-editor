@@ -17,17 +17,19 @@
 package zet.gui.main.tabs.editor.control;
 
 import de.zet_evakuierung.model.Floor;
+import de.zet_evakuierung.model.FloorInterface;
 import de.zet_evakuierung.model.Named;
 import de.zet_evakuierung.model.Room;
 import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
+import zet.gui.main.tabs.editor.panel.Displayable;
 
 /**
  * View model gaining access to necessary information to display a floor.
  * @author Jan-Philipp Kappmeier
  */
-public class FloorViewModel implements Iterable<Room>, Named {
+public class FloorViewModel implements Iterable<Room>, Named, Displayable<FloorInterface> {
 
     final Floor floor;
 
@@ -66,6 +68,11 @@ public class FloorViewModel implements Iterable<Room>, Named {
     @Override
     public Iterator<Room> iterator() {
         return getRooms().iterator();
+    }
+
+    @Override
+    public void setModel(FloorInterface model) {
+        throw new IllegalStateException("Actually view model is immutable and should be recreated for each access!");
     }
     
 }

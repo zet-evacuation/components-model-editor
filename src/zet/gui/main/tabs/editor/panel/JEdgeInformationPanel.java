@@ -15,12 +15,7 @@
  */
 package zet.gui.main.tabs.editor.panel;
 
-import de.zet_evakuierung.model.DefaultEvacuationFloor;
-import de.zet_evakuierung.model.PlanEdge;
 import de.zet_evakuierung.model.EvacuationArea;
-import de.zet_evakuierung.model.Room;
-import de.zet_evakuierung.model.RoomEdge;
-import de.zet_evakuierung.model.TeleportEdge;
 import info.clearthought.layout.TableLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -28,20 +23,20 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-//import zet.gui.main.JZetWindow;
+import zet.gui.main.tabs.editor.panel.viewmodels.EdgeViewModel;
 
 /**
  *
  * @author Jan-Philipp Kappmeier
  */
-public class JEdgeInformationPanel extends JInformationPanel<EdgeChangeEvent, PlanEdge> {
+public class JEdgeInformationPanel extends JInformationPanel<EdgeControl, EdgeViewModel> {
 
     private JLabel lblEdgeType;
     private JLabel lblEdgeLength;
     private JLabel lblEdgeExitName;
     private JTextField txtEdgeExitName;
 
-    public JEdgeInformationPanel() {
+    public JEdgeInformationPanel(EdgeViewModel model) {
         super(new double[]{TableLayout.FILL},
                 new double[]{
                     TableLayout.PREFERRED, 20,
@@ -82,15 +77,7 @@ public class JEdgeInformationPanel extends JInformationPanel<EdgeChangeEvent, Pl
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     // Find the attached exit and set the name
-//					if( getLeftPanel().getMainComponent().getSelectedEdge() instanceof TeleportEdge ) {
-//						TeleportEdge te = (TeleportEdge)getLeftPanel().getMainComponent().getSelectedEdge();
-//						if( ((Room)te.getLinkTarget().getAssociatedPolygon()).getAssociatedFloor() instanceof DefaultEvacuationFloor ) {
-//							// we have an evacuation exit
-//							Room r = (Room)te.getLinkTarget().getAssociatedPolygon();
-//							EvacuationArea ea = r.getEvacuationAreas().get( 0 );
-//							ea.setName( txtEdgeExitName.getText() );
-//						}
-//					}
+                    control.setExitName(txtEdgeExitName.getText());
                 }
                 //((EvacuationArea)getLeftPanel().getMainComponent().getSelectedPolygons().get( 0 ).getPlanPolygon()).setName( txtEdgeExitName.getText() );
             }
@@ -103,50 +90,52 @@ public class JEdgeInformationPanel extends JInformationPanel<EdgeChangeEvent, Pl
     public void update() {
         txtEdgeExitName.setEnabled(false);
         lblEdgeExitName.setText("");
-        if (current instanceof RoomEdge) {
-            if (current instanceof TeleportEdge) {
-                TeleportEdge te = (TeleportEdge) current;
-                if (((Room) te.getLinkTarget().getAssociatedPolygon()).getAssociatedFloor() instanceof DefaultEvacuationFloor) {
-                    lblEdgeType.setText("Ausgang");
-                    txtEdgeExitName.setEnabled(true);
-                    // we have an evacuation exit
-                    Room r = (Room) te.getLinkTarget().getAssociatedPolygon();
-                    EvacuationArea ea = r.getEvacuationAreas().get(0);
-                    lblEdgeExitName.setText("Ausgang");
-                    txtEdgeExitName.setText(ea.getName());
-                } else {
-                    lblEdgeType.setText("Stockwerkübergang");
-                }
-            } else {
-                if (((RoomEdge) current).isPassable()) {
-                    lblEdgeType.setText("Durchgang");
-                } else {
-                    lblEdgeType.setText("Wand");
-                }
-            }
-        } else {
-            // easy peasy, this is an area boundry
-            lblEdgeType.setText("Area-Begrenzung");
+        switch (getModel().getEdgeType()) {
+            case Exit:
+                lblEdgeType.setText("Ausgang");
+                txtEdgeExitName.setEnabled(true);
+                EvacuationArea ea = getModel().getAssociatedExit();
+                lblEdgeExitName.setText("Ausgang");
+                txtEdgeExitName.setText(ea.getName());
+                break;
+            case FloorPassage:
+                lblEdgeType.setText("Stockwerkübergang");
+                break;
+            case Passage:
+                lblEdgeType.setText("Durchgang");
+                break;
+            case Wall:
+                lblEdgeType.setText("Wand");
+                break;
+            case AreaBoundary:
+                // easy peasy, this is an area boundry
+                lblEdgeType.setText("Area-Begrenzung");
+                break;
+            default:
+                lblEdgeType.setText(getModel().getEdgeType().toString());
+                throw new AssertionError("Unsupported edge type: " + getModel().getEdgeType());
         }
-        String formattedLength = nfFloat.format((current.length()) * 0.001);
+        String formattedLength = nfFloat.format((getModel().getLength()) * 0.001);
         String orientationText = getOrientationText();
-        lblEdgeLength.setText( String.format("%s: %sm", orientationText, formattedLength));
+        lblEdgeLength.setText(String.format("%s: %sm", orientationText, formattedLength));
     }
 
     @Override
     public void localize() {
         loc.setPrefix("gui.EditPanel.");
-
         loc.clearPrefix();
     }
 
     private String getOrientationText() {
-        if( current.isHorizontal()) {
-            return "Breite";
-        } else if (current.isVertical()) {
-            return "Höhe";
-        } else {
-            return "Länge";
+        switch (getModel().getOrientation()) {
+            case Horizontal:
+                return "Breite";
+            case Vertical:
+                return "Höhe";
+            case Oblique:
+                return "Länge";
+            default:
+                return getModel().getOrientation().toString();
         }
     }
 

@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package zet.gui.main.tabs.editor.panel;
 
 import de.zet_evakuierung.model.PlanEdge;
@@ -10,16 +6,29 @@ import de.zet_evakuierung.model.RoomEdge;
 import de.zet_evakuierung.model.ZControl;
 import zet.gui.main.menu.popup.events.CreatePassageRoom;
 import zet.gui.main.menu.popup.events.MakeTeleportEvent;
+import zet.gui.main.tabs.editor.panel.viewmodels.EdgeViewModel;
+import zet.gui.main.tabs.editor.panel.viewmodels.EdgeViewModelImpl;
 
 /**
  * A control class for evacuation areas.
  * @author Jan-Philipp Kappmeier
  */
-public class EdgeControl extends AbstractInformationPanelControl<JEdgeInformationPanel, PlanEdge, EdgeChangeEvent> {
-    private final ZControl control;
+public class EdgeControl extends AbstractInformationPanelControl<JEdgeInformationPanel, EdgeViewModel> implements ChangeListener<EdgeChangeEvent> {
+    private PlanEdge model;
+
     public EdgeControl(ZControl control) {
-        super(new JEdgeInformationPanel());
-        this.control = control;
+        super(generateView(), control);
+        getView().setControl(this);
+    }
+
+    private static JEdgeInformationPanel generateView() {
+        return new JEdgeInformationPanel(new EdgeViewModel() {
+        });
+    }
+    
+    public void setModel(PlanEdge model) {
+        getView().setModel(new EdgeViewModelImpl(model, control.getProject()));
+        this.model = model;
     }
 
     @Override
@@ -81,6 +90,18 @@ public class EdgeControl extends AbstractInformationPanelControl<JEdgeInformatio
         //    EventServer.getInstance().dispatchEvent(new MessageEvent(this, MessageEvent.MessageType.Status, "Wählen Sie jetzt die Gegenseite aus (Rechtsklick+Menu)!"));
         //} else {
         //@//GUIOptionManager.setEditMode(GUIOptionManager.getPreviousEditMode());
+    }
+
+    void setExitName(String text) {
+//					if( getLeftPanel().getMainComponent().getSelectedEdge() instanceof TeleportEdge ) {
+//						TeleportEdge te = (TeleportEdge)getLeftPanel().getMainComponent().getSelectedEdge();
+//						if( ((Room)te.getLinkTarget().getAssociatedPolygon()).getAssociatedFloor() instanceof DefaultEvacuationFloor ) {
+//							// we have an evacuation exit
+//							Room r = (Room)te.getLinkTarget().getAssociatedPolygon();
+//							EvacuationArea ea = r.getEvacuationAreas().get( 0 );
+//							ea.setName( txtEdgeExitName.getText() );
+//						}
+//					}
     }
 
 }

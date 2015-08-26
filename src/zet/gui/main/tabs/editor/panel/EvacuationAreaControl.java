@@ -1,42 +1,39 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package zet.gui.main.tabs.editor.panel;
 
 import de.zet_evakuierung.model.EvacuationArea;
+import de.zet_evakuierung.model.ZControl;
+import zet.gui.main.tabs.editor.panel.viewmodels.EvacuationAreaViewModel;
+import zet.gui.main.tabs.editor.panel.viewmodels.EvacuationAreaViewModelImpl;
 
 /**
  * A control class for evacuation areas.
  *
  * @author Jan-Philipp Kappmeier
  */
-public class EvacuationAreaControl extends AbstractInformationPanelControl<JEvacuationAreaInformationPanel, EvacuationArea, EvacuationAreaChangeEvent> {
+public class EvacuationAreaControl extends AbstractInformationPanelControl<JEvacuationAreaInformationPanel, EvacuationAreaViewModel> {
+    private EvacuationArea model;
 
-    public EvacuationAreaControl() {
-        super(new JEvacuationAreaInformationPanel());
+    public EvacuationAreaControl(ZControl control) {
+        super(generateView(), control);
+        getView().setControl(this);
     }
 
-    @Override
-    public void changed(EvacuationAreaChangeEvent c) {
-        switch (c.getChangeType()) {
-            case Attractivity:
-                int attractivity = getView().getAttractivity();
-                System.err.println("TODO: change attractivity of evacuation area to " + attractivity);
-                EvacuationArea ea = model;
-                // control.setAttractivity(attractivity)
-                break;
-            case Name:
-                String name = getView().getEvacuationName();
-                System.err.println("Setting evacuation area name to '" + name + "'.");
-                model.setName(name);
-//                ((EvacuationArea) getLeftPanel().getMainComponent().getSelectedPolygons().get(0).getPlanPolygon()).setName(txtEvacuationAreaName.getText());
+    private static JEvacuationAreaInformationPanel generateView() {
+        return new JEvacuationAreaInformationPanel();
+    }
+    
+    public void setModel(EvacuationArea model) {
+        getView().setModel(new EvacuationAreaViewModelImpl(model, control.getProject()));
+        this.model = model;
+    }
 
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported evacuation area change event: " + c);
-        }
+    void setName(String name) {
+        model.setName(name);
+        //((EvacuationArea) getLeftPanel().getMainComponent().getSelectedPolygons().get(0).getPlanPolygon()).setName(txtEvacuationAreaName.getText());
+    }
 
+    void setAttractivity(int attractivity) {
+        EvacuationArea ea = model;
+        model.setAttractivity(attractivity);
     }
 }

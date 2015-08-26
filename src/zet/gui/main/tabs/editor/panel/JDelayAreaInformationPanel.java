@@ -36,20 +36,22 @@ import javax.swing.JList;
 import javax.swing.JTextField;
 import org.zetool.components.framework.Button;
 import zet.gui.components.model.ComboBoxRenderer;
+import zet.gui.main.tabs.editor.panel.viewmodels.DelayAreaViewModel;
 
 /**
  *
  * @author Jan-Philipp Kappmeier
  */
-public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaChangeEvent, DelayArea> {
+//public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaChangeEvent, DelayArea> {
+public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaControl, DelayAreaViewModel> {
 
     private JButton btnDelaySetDefault;
     private JLabel lblDelayFactor;
     private JLabel lblDelayType;
     private JComboBox<DelayArea.DelayType> cbxDelayType;
     private JTextField txtDelayFactor;
-    private double speedFactor;
-    private DelayArea.DelayType type;
+    //private double speedFactor;
+    //private DelayArea.DelayType type;
 
     public JDelayAreaInformationPanel() {
         super(new double[]{TableLayout.FILL},
@@ -71,8 +73,9 @@ public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaChang
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    type = (DelayArea.DelayType)e.getItem();
-                    fireChangeEvent(new DelayAreaChangeEvent(this, DelayAreaChangeEvent.DelayAreaChange.Type));
+                    DelayArea.DelayType type = (DelayArea.DelayType)e.getItem();
+                    control.setType(type);
+                    //fireChangeEvent(new DelayAreaChangeEvent(this, DelayAreaChangeEvent.DelayAreaChange.Type));
                 }
             }
         });
@@ -118,8 +121,9 @@ public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaChang
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     try {
-                        speedFactor = nfFloat.parse(txtDelayFactor.getText()).doubleValue();
-                        fireChangeEvent(new DelayAreaChangeEvent(this, DelayAreaChangeEvent.DelayAreaChange.Factor));
+                        double speedFactor = nfFloat.parse(txtDelayFactor.getText()).doubleValue();
+                        control.setSpeedFactor(speedFactor);
+                        //fireChangeEvent(new DelayAreaChangeEvent(this, DelayAreaChangeEvent.DelayAreaChange.Factor));
                     } catch (ParseException | IllegalArgumentException ex) {
                         //ZETLoader.sendError(loc.getString("gui.error.NonParsableFloatString"));
                     }
@@ -134,24 +138,25 @@ public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaChang
         btnDelaySetDefault.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fireChangeEvent(new DelayAreaChangeEvent(this, DelayAreaChangeEvent.DelayAreaChange.DefaultType));
+                control.setDefaultType();
+                //fireChangeEvent(new DelayAreaChangeEvent(this, DelayAreaChangeEvent.DelayAreaChange.DefaultType));
             }
         });
         this.add(btnDelaySetDefault, "0, " + row++);
     }
 
-    double getSpeedFactor() {
-        return speedFactor;
-    }
+//    double getSpeedFactor() {
+//        return speedFactor;
+//    }
 
-    DelayArea.DelayType getDelayType() {
-        return type;
-    }
+//    DelayArea.DelayType getDelayType() {
+//        return type;
+//    }
 
     @Override
     public void update() {
-        txtDelayFactor.setText(nfFloat.format(current.getSpeedFactor()));
-        cbxDelayType.setSelectedItem(current.getDelayType());
+        txtDelayFactor.setText(nfFloat.format(getModel().getSpeedFactor()));
+        cbxDelayType.setSelectedItem(getModel().getDelayType());
     }
 
     @Override

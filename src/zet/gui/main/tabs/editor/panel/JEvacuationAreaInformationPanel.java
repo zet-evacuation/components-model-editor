@@ -15,7 +15,6 @@
  */
 package zet.gui.main.tabs.editor.panel;
 
-import de.zet_evakuierung.model.EvacuationArea;
 import info.clearthought.layout.TableLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -27,14 +26,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-//@//import zet.gui.main.JZetWindow;
+import zet.gui.main.tabs.editor.panel.viewmodels.EvacuationAreaViewModel;
 
 /**
  *
  * @author Jan-Philipp Kappmeier
  */
 @SuppressWarnings("serial")
-public class JEvacuationAreaInformationPanel extends JInformationPanel<EvacuationAreaChangeEvent, EvacuationArea> {
+public class JEvacuationAreaInformationPanel extends JInformationPanel<EvacuationAreaControl, EvacuationAreaViewModel> {
 
     private JLabel lblEvacuationAreaName;
     private JTextField txtEvacuationAreaName;
@@ -72,7 +71,8 @@ public class JEvacuationAreaInformationPanel extends JInformationPanel<Evacuatio
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER)
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    fireChangeEvent(new EvacuationAreaChangeEvent(this, EvacuationAreaChangeEvent.EvacuationAreaChange.Name));
+                    //fireChangeEvent(new EvacuationAreaChangeEvent(this, EvacuationAreaChangeEvent.EvacuationAreaChange.Name));
+                    control.setName(txtEvacuationAreaName.getText().trim());
                 }
             }
         });
@@ -99,7 +99,14 @@ public class JEvacuationAreaInformationPanel extends JInformationPanel<Evacuatio
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    fireChangeEvent(new EvacuationAreaChangeEvent(this, EvacuationAreaChangeEvent.EvacuationAreaChange.Attractivity));
+                    //fireChangeEvent(new EvacuationAreaChangeEvent(this, EvacuationAreaChangeEvent.EvacuationAreaChange.Attractivity));
+        try {
+            int attractivity = nfInteger.parse(txtEvacuationAttractivity.getText() ).intValue();
+            control.setAttractivity(attractivity);
+        } catch (ParseException ex) {
+            //ZETLoader.sendError( loc.getString( "gui.error.NonParsableNumberString" ) );
+            Logger.getLogger(JEvacuationAreaInformationPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
                 }
             }
         });
@@ -110,8 +117,8 @@ public class JEvacuationAreaInformationPanel extends JInformationPanel<Evacuatio
 
     @Override
     public void update() {
-        txtEvacuationAreaName.setText(current.getName());
-        txtEvacuationAttractivity.setText(nfInteger.format(current.getAttractivity()));
+        txtEvacuationAreaName.setText(getModel().getName());
+        txtEvacuationAttractivity.setText(nfInteger.format(getModel().getAttractivity()));
     }
 
     @Override
@@ -127,19 +134,5 @@ public class JEvacuationAreaInformationPanel extends JInformationPanel<Evacuatio
      */
     private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
         throw new UnsupportedOperationException("Serialization not supported");
-    }
-
-    String getEvacuationName() {
-        return txtEvacuationAreaName.getText().trim();
-    }
-
-    int getAttractivity() {
-        try {
-            return nfInteger.parse(txtEvacuationAttractivity.getText() ).intValue();
-        } catch (ParseException ex) {
-            //ZETLoader.sendError( loc.getString( "gui.error.NonParsableNumberString" ) );
-            Logger.getLogger(JEvacuationAreaInformationPanel.class.getName()).log(Level.SEVERE, null, ex);
-            return 0;
-        }
     }
 }

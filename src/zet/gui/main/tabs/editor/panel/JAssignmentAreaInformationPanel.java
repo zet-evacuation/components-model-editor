@@ -15,7 +15,6 @@
  */
 package zet.gui.main.tabs.editor.panel;
 
-import de.zet_evakuierung.model.AssignmentArea;
 import de.zet_evakuierung.model.AssignmentType;
 import de.zet_evakuierung.model.EvacuationArea;
 import info.clearthought.layout.TableLayout;
@@ -36,19 +35,18 @@ import org.zetool.components.framework.Button;
 import zet.gui.components.model.NamedComboBoxRenderer;
 import static zet.gui.main.tabs.editor.panel.JInformationPanel.nfInteger;
 import static zet.gui.main.tabs.editor.panel.JTeleportAreaInformationPanel.resetComboBoxWithoutNotification;
+import zet.gui.main.tabs.editor.panel.viewmodels.AssignmentAreaViewModel;
 
 /**
- *
+ * Displays information about an assignment area and allows to edit it. The changes are submitted to the viewmodel
+ * which makes sure that the changes are applied to the model.
  * @author Jan-Philipp Kappmeier
  */
-public class JAssignmentAreaInformationPanel extends JInformationPanel<AssignmentAreaChangeEvent, AssignmentArea> {
+public class JAssignmentAreaInformationPanel extends JInformationPanel<AssignmentAreaControl, AssignmentAreaViewModel> {
 
     /**
      * Model for a assignmentType-selector combo box.
      */
-    //private zet.gui.components.model.AssignmentTypeComboBoxModel assignmentTypeSelector;
-    private final AssignmentAreaViewModelFactory viewModelFactory;
-    private AssignmentAreaViewModel viewModel;
     private JLabel lblAssignmentType;
     private JLabel lblAssignmentEvacueeNumber;
     private JButton btnAssignmentSetDefaultEvacuees;
@@ -61,9 +59,9 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
     private JComboBox<EvacuationArea> cbxPreferredExit;
     private JComboBox<AssignmentType> cbxAssignmentType;
     private JLabel lblAreaSize;
-    private int typedPersons;
+    //private int typedPersons;
 
-    public JAssignmentAreaInformationPanel(AssignmentAreaViewModelFactory viewModelFactory) {
+    public JAssignmentAreaInformationPanel(AssignmentAreaViewModel model) {
         super(new double[]{TableLayout.FILL},
                 new double[]{ //Rows
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20, // Assignment type
@@ -75,7 +73,6 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
                     TableLayout.PREFERRED, // Warning
                     TableLayout.FILL // Fill the rest of space
                 });
-        this.viewModelFactory = viewModelFactory;
         init();
     }
 
@@ -110,8 +107,9 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     try {
-                        typedPersons = nfInteger.parse(txtNumberOfPersons.getText()).intValue();
-                        fireChangeEvent(new AssignmentAreaChangeEvent(this, AssignmentAreaChangeEvent.AssignmentAreaChange.Evacuees));
+                        int typedPersons = nfInteger.parse(txtNumberOfPersons.getText()).intValue();
+                        //fireChangeEvent(new AssignmentAreaChangeEvent(this, AssignmentAreaChangeEvent.AssignmentAreaChange.Evacuees));
+                        control.setEvacuees(typedPersons);
                     } catch (ParseException | IllegalArgumentException ex) {
 //			ZETLoader.sendError( ex.getLocalizedMessage() );
                     }
@@ -125,8 +123,8 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
         btnAssignmentSetDefaultEvacuees.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fireChangeEvent(new AssignmentAreaChangeEvent(this, AssignmentAreaChangeEvent.AssignmentAreaChange.StandardEvacuees));
-                // TODO: add listener for changes
+                //fireChangeEvent(new AssignmentAreaChangeEvent(this, AssignmentAreaChangeEvent.AssignmentAreaChange.StandardEvacuees));
+                control.setStandardEvacuees();
                 //txtNumberOfPersons.setText(nfInteger.format(current.getEvacuees()));
             }
         });
@@ -158,18 +156,6 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
         row++;
     }
 
-    int getNumberOfPersons() {
-        return typedPersons;
-    }
-    
-    EvacuationArea getPreferredExit() {
-        return (EvacuationArea)cbxPreferredExit.getSelectedItem();
-    }
-
-    AssignmentType getAssignmentType() {
-        return (AssignmentType)cbxAssignmentType.getSelectedItem();
-    }
-
     /**
      * The listener firing change events if a new assignment type is selected.
      */
@@ -178,7 +164,8 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
         public void itemStateChanged(ItemEvent event) {
             if (event.getStateChange() == ItemEvent.SELECTED) {
                 System.out.println(cbxAssignmentType.getSelectedItem());
-                fireChangeEvent(new AssignmentAreaChangeEvent(this, AssignmentAreaChangeEvent.AssignmentAreaChange.AssignmentType));
+                //fireChangeEvent(new AssignmentAreaChangeEvent(this, AssignmentAreaChangeEvent.AssignmentAreaChange.AssignmentType));
+                control.setAssignmentType((AssignmentType)cbxAssignmentType.getSelectedItem());
             }
         }
     };
@@ -191,24 +178,23 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
         public void itemStateChanged(ItemEvent event) {
             if (event.getStateChange() == ItemEvent.SELECTED) {
                 System.out.println(cbxPreferredExit.getSelectedItem());
-                fireChangeEvent(new AssignmentAreaChangeEvent(this, AssignmentAreaChangeEvent.AssignmentAreaChange.PreferredExit));
+                control.setPreferredExit((EvacuationArea)cbxPreferredExit.getSelectedItem());
+                //fireChangeEvent(new AssignmentAreaChangeEvent(this, AssignmentAreaChangeEvent.AssignmentAreaChange.PreferredExit));
             }
         }
     };
     
     @Override
     public void update() {
-        viewModel = viewModelFactory.getViewModel(current);
-        
         // Update the assignment type listener,
         // do not send unnecessary update events
-        resetComboBoxWithoutNotification(cbxAssignmentType, assignmentTypeChangeListener, viewModel.getAssignmentTypes(), current.getAssignmentType());
+        resetComboBoxWithoutNotification(cbxAssignmentType, assignmentTypeChangeListener, getModel().getAssignmentTypes(), getModel().getAssignmentType());
 
-        txtNumberOfPersons.setText(nfInteger.format(current.getEvacuees()));
-        double area = Math.round(current.areaMeter() * 100) / 100.0;
+        txtNumberOfPersons.setText(nfInteger.format(getModel().getEvacuees()));
+        double area = Math.round(getModel().areaMeter() * 100) / 100.0;
         lblAreaSize.setText(nfFloat.format(area) + " m²");
-        if (viewModel.isRastered()) {
-            lblMaxPersons.setText(nfInteger.format(current.getMaxEvacuees()));
+        if (getModel().isRastered()) {
+            lblMaxPersons.setText(nfInteger.format(getModel().getMaxEvacuees()));
             lblMaxPersonsWarning.setText("");
 
         } else {
@@ -218,7 +204,7 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
         }
         
         // handle preferred exits
-        resetComboBoxWithoutNotification(cbxPreferredExit, preferredExitChangedListener, viewModel.getEvacuationAreas(), current.getExitArea());
+        resetComboBoxWithoutNotification(cbxPreferredExit, preferredExitChangedListener, getModel().getEvacuationAreas(), getModel().getExitArea());
     }
 
     @Override
@@ -234,4 +220,5 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
         lblAreaSizeDesc.setText(loc.getString("Assignment.Area"));
         loc.clearPrefix();
     }
+
 }

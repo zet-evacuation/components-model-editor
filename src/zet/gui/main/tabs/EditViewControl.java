@@ -16,14 +16,19 @@
 
 package zet.gui.main.tabs;
 
+import de.zet_evakuierung.model.AssignmentArea;
+import de.zet_evakuierung.model.DelayArea;
+import de.zet_evakuierung.model.EvacuationArea;
 import de.zet_evakuierung.model.Floor;
-import de.zet_evakuierung.model.PlanEdge;
 import de.zet_evakuierung.model.PlanPolygon;
+import de.zet_evakuierung.model.Room;
+import de.zet_evakuierung.model.StairArea;
+import de.zet_evakuierung.model.TeleportArea;
 import de.zet_evakuierung.model.ZControl;
-import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import zet.gui.main.tabs.JEditView.Panels;
 import zet.gui.main.tabs.base.JPolygon;
 import zet.gui.main.tabs.editor.EditMode;
 import zet.gui.main.tabs.editor.ZetObjectTypes;
@@ -33,7 +38,6 @@ import zet.gui.main.tabs.editor.floor.SelectionEvent;
 import zet.gui.main.tabs.editor.floor.SelectionListener;
 import zet.gui.main.tabs.editor.panel.AbstractInformationPanelControl;
 import zet.gui.main.tabs.editor.panel.AssignmentAreaControl;
-import zet.gui.main.tabs.editor.panel.ChangeEvent;
 import zet.gui.main.tabs.editor.panel.ChangeListener;
 import zet.gui.main.tabs.editor.panel.DefaultPanelControl;
 import zet.gui.main.tabs.editor.panel.DelayAreaControl;
@@ -42,10 +46,9 @@ import zet.gui.main.tabs.editor.panel.EdgeControl;
 import zet.gui.main.tabs.editor.panel.EvacuationAreaControl;
 import zet.gui.main.tabs.editor.panel.FloorPanelControl;
 import zet.gui.main.tabs.editor.panel.InaccessibleAreaControl;
-import zet.gui.main.tabs.editor.panel.InformationPanelControl;
 import zet.gui.main.tabs.editor.panel.JInformationPanel;
 import zet.gui.main.tabs.editor.panel.PointListener;
-import zet.gui.main.tabs.editor.panel.RoomInformationPanelControl;
+import zet.gui.main.tabs.editor.panel.RoomInformationControl;
 import zet.gui.main.tabs.editor.panel.StairAreaControl;
 import zet.gui.main.tabs.editor.panel.TeleportAreaControl;
 
@@ -59,8 +62,6 @@ public class EditViewControl {
     private final FloorControl floorControl;
     private final JEditView view;
     private List<FloorViewModel> floorViewModels;
-    private EnumMap<JEditView.Panels,InformationPanelControl> controlMap;
-    //private EnumMap<JEditView.Panels,Component> componentMap;
     private final ZControl control;
     
     public EditViewControl(ZControl control, List<Floor> floors) {
@@ -68,6 +69,7 @@ public class EditViewControl {
         this.control = control;
         currentFloor = floors.get(1);
         view = createView();
+        registerControls();
         floorControl = new FloorControl(control, view.getFloor());
         floorControl.setEditMode(EditMode.Selection);
     }
@@ -77,34 +79,42 @@ public class EditViewControl {
         
         // Add selection listener to the edit view
         editView.getLeftPanel().getMainComponent().addSelectionListener(floorSelectionListener);
-
-        // Add all the panels to the map
-        controlMap = new EnumMap<>(JEditView.Panels.class);
-        registerControlAndView(new FloorPanelControl(control), JEditView.Panels.Floor, editView);
-        registerControlAndView(new RoomInformationPanelControl(control), JEditView.Panels.Room, editView);
-        registerControlAndView(new AssignmentAreaControl(control), JEditView.Panels.AssignmentArea, editView);
-        registerControlAndView(new DelayAreaControl(control), JEditView.Panels.DelayArea, editView);
-        registerControlAndView(new EvacuationAreaControl(), JEditView.Panels.EvacuationArea, editView);
-        registerControlAndView(new InaccessibleAreaControl(), JEditView.Panels.InaccessibleArea, editView);
-        registerControlAndView(new StairAreaControl(control), JEditView.Panels.StairArea, editView);
-        registerControlAndView(new TeleportAreaControl(control), JEditView.Panels.TeleportArea, editView);
-        registerControlAndView(new EdgeControl(control), JEditView.Panels.Edge, editView);
-        registerControlAndView(new DefaultPanelControl(), JEditView.Panels.Default, editView);
-
-        // Set up listener for popup menus
-        EdgeControl ec = (EdgeControl)controlMap.get(JEditView.Panels.Edge);
-        editView.getFloor().getPopups().getEdgePopup().addChangeListener(ec);
-        PointListener pc = new PointListener(control);
-        editView.getFloor().getPopups().getPointPopup().addChangeListener(pc);
-        
         return editView;
     }
     
-    private <E extends JInformationPanel<K,M>, M, K extends ChangeEvent> void registerControlAndView(
-            AbstractInformationPanelControl<E, M, K> a, JEditView.Panels key, JEditView editView) {
-        controlMap.put(key, a);
-        a.getView().addChangeListener(a);
-        editView.registerPanel(a.getView(), key.toString());
+        FloorPanelControl fc;
+        RoomInformationControl rc;
+        AssignmentAreaControl aac;
+        DelayAreaControl dac;
+        EvacuationAreaControl eac;
+        InaccessibleAreaControl iac;
+        StairAreaControl sac;
+        TeleportAreaControl tac;
+        EdgeControl ec;
+    private void registerControls() {
+
+        // Add all the panels to the map
+        fc = registerControl(new FloorPanelControl(control), JEditView.Panels.Floor);
+        rc = registerControl(new RoomInformationControl(control), JEditView.Panels.Room);
+        aac = registerControl(new AssignmentAreaControl(control), JEditView.Panels.AssignmentArea);
+        dac = registerControl(new DelayAreaControl(control), JEditView.Panels.DelayArea);
+        eac = registerControl(new EvacuationAreaControl(control), JEditView.Panels.EvacuationArea);
+        iac = registerControl(new InaccessibleAreaControl(control), JEditView.Panels.InaccessibleArea);
+        sac = registerControl(new StairAreaControl(control), JEditView.Panels.StairArea);
+        tac = registerControl(new TeleportAreaControl(control), JEditView.Panels.TeleportArea);
+        ec = registerControl(new EdgeControl(control), JEditView.Panels.Edge);
+        registerControl(new DefaultPanelControl(control), JEditView.Panels.Default);
+
+        // Set up listener for popup menus
+        view.getFloor().getPopups().getEdgePopup().addChangeListener(ec);
+        PointListener pc = new PointListener(control);
+        view.getFloor().getPopups().getPointPopup().addChangeListener(pc);        
+    }
+    
+    private <E extends AbstractInformationPanelControl<V, ?>, V extends JInformationPanel<?,?>> E registerControl(
+            E control, JEditView.Panels identifier) {
+        view.registerPanel(control.getView(), identifier.toString());
+        return control;
     }
     
     private List<Floor> validatedFloorList(List<Floor> floors) {
@@ -156,48 +166,50 @@ public class EditViewControl {
         getView().setEditViewModel(generateViewModel());
         System.out.println("Stored new floor in model" );
     }
-    
-    // Panel handling
-	/**
-	 * Sets the panel visible in the east panel.
-	 * @param panel the panel
-	 */
-        private void showPolygonPanel(JEditView.Panels panel, PlanPolygon<?> p) {
-            controlMap.get(panel).setModel(p);
-            getView().showPanel(panel.toString());
-        }
         
-        private void showFloorPanel() {
-            //JEditView.Panels.Floor.getPanel().update( currentFloor);
-            FloorPanelControl floorPaneControl = (FloorPanelControl)controlMap.get(JEditView.Panels.Floor);
-            floorPaneControl.setModel(currentFloor);
-            getView().showPanel(JEditView.Panels.Floor.toString());
-        }
-        
-        private void showEdgePanel(PlanEdge edge) {
-            //JEditView.Panels.Edge.getPanel().update(edge);
-            EdgeControl edgePaneControl = (EdgeControl)controlMap.get(JEditView.Panels.Edge);
-            edgePaneControl.setModel(edge);
-            getView().showPanel(JEditView.Panels.Edge.toString());
-        }
-
-
     private final SelectionListener floorSelectionListener = new SelectionListener() {
 
         @Override
         public void selectionChanged(SelectionEvent event) {
-            JPolygon p = event.getSelectedPolygon();
-            showPolygonPanel(JEditView.Panels.panelForPolygon(p.getPlanPolygon()), p.getPlanPolygon());
+            JPolygon displayPolygon = event.getSelectedPolygon();
+            Panels panel = updateModel(displayPolygon.getPlanPolygon());
+            getView().showPanel(panel.toString());
         }
 
+        private Panels updateModel(PlanPolygon<?> p) {
+            if (p instanceof Room) {
+                rc.setModel((Room) p);
+                return Panels.Room;
+            } else if (p instanceof DelayArea) {
+                dac.setModel((DelayArea) p);
+                return Panels.DelayArea;
+            } else if (p instanceof EvacuationArea) {
+                eac.setModel((EvacuationArea) p);
+                return Panels.EvacuationArea;
+            } else if (p instanceof AssignmentArea) {
+                aac.setModel((AssignmentArea) p);
+                return Panels.AssignmentArea;
+            } else if (p instanceof StairArea) {
+                sac.setModel((StairArea) p);
+                return Panels.StairArea;
+            } else if (p instanceof TeleportArea) {
+                tac.setModel((TeleportArea) p);
+                return Panels.TeleportArea;
+            } else {
+                return Panels.Default;
+            }
+        }
+        
         @Override
         public void selectionCleared(SelectionEvent event) {
-            showFloorPanel();
+            fc.setModel(currentFloor);
+            getView().showPanel(JEditView.Panels.Floor.toString());
         }
 
         @Override
         public void selectionEdge(SelectionEvent event) {
-            showEdgePanel(event.getEdge());
+            ec.setModel(event.getEdge());
+            getView().showPanel(JEditView.Panels.Edge.toString());
         }
 
     };

@@ -19,7 +19,6 @@ import zet.gui.components.editor.EditorLocalization;
 import org.zetool.common.localization.Localization;
 import org.zetool.common.localization.LocalizationManager;
 import org.zetool.common.localization.Localized;
-import de.zet_evakuierung.model.ZControl;
 import info.clearthought.layout.TableLayout;
 import java.text.NumberFormat;
 import java.util.Objects;
@@ -27,24 +26,20 @@ import javax.swing.JPanel;
 
 /**
  *
- * @param <E>
- * @param <U> The displayed object
+ * @param <M> The model displayed.
+ * @param <C> The control class receiving commands.
  * @author Jan-Philipp Kappmeier
  */
 @SuppressWarnings("serial")
-public abstract class JInformationPanel<E extends ChangeEvent, U> extends JPanel implements Localized {
+public abstract class JInformationPanel<C, M> extends JPanel implements Localized, Displayable<M> {
 
-    /**
-     * The localization class.
-     */
+    /** The localization class. */
     protected Localization loc;
     protected static NumberFormat nfFloat = LocalizationManager.getManager().getFloatConverter();
     protected static NumberFormat nfInteger = LocalizationManager.getManager().getIntegerConverter();
-    /**
-     * The control object for the loaded project.
-     */
-    protected ZControl projectControl;
-    protected U current;
+    /** The control object for the object displayed. */
+    private M model;
+    protected C control;
 
     public JInformationPanel() {
         this(new double[]{TableLayout.FILL});
@@ -52,11 +47,13 @@ public abstract class JInformationPanel<E extends ChangeEvent, U> extends JPanel
 
     protected JInformationPanel(double[] rows) {
         this(columns(), rows);
+        
     }
 
     protected JInformationPanel(double[] columns, double[] rows) {
         super(new TableLayout(columns, rows));
         loc = EditorLocalization.LOC;
+        //this.control = Objects.requireNonNull(control);
     }
 
     private static double[] columns() {
@@ -67,9 +64,17 @@ public abstract class JInformationPanel<E extends ChangeEvent, U> extends JPanel
     //@//	//this.guiControl = guiControl;
     //@//}
 
-    public void update(U current) {
-        this.current = Objects.requireNonNull(current);
+    void setControl(C control) {
+        this.control = control;
+    }
+    @Override
+    public void setModel(M model) {
+        this.model = Objects.requireNonNull(model);
         update();
+    }
+    
+    protected M getModel() {
+        return model;
     }
 
     public abstract void update();
@@ -79,24 +84,24 @@ public abstract class JInformationPanel<E extends ChangeEvent, U> extends JPanel
 
     }
 
-    public void addChangeListener(ChangeListener<E> l) {
-        listenerList.add(ChangeListener.class, l);
-    }
-
-    public void removeChangeListener(ChangeListener<E> l) {
-        listenerList.remove(ChangeListener.class, l);
-    }
-
-    protected void fireChangeEvent(E c) {
-        // Guaranteed to return a non-null array
-        Object[] listeners = listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == ChangeListener.class) {
-                if (c == null) {
-                    throw new IllegalArgumentException("ChangeEvent null!");
-                }
-                ((ChangeListener<E>) listeners[i + 1]).changed(c);
-            }
-        }
-    }
+//    public void addChangeListener(ChangeListener<E> l) {
+//        listenerList.add(ChangeListener.class, l);
+//    }
+//
+//    public void removeChangeListener(ChangeListener<E> l) {
+//        listenerList.remove(ChangeListener.class, l);
+//    }
+//
+//    protected void fireChangeEvent(E c) {
+//        // Guaranteed to return a non-null array
+//        Object[] listeners = listenerList.getListenerList();
+//        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+//            if (listeners[i] == ChangeListener.class) {
+//                if (c == null) {
+//                    throw new IllegalArgumentException("ChangeEvent null!");
+//                }
+//                ((ChangeListener<E>) listeners[i + 1]).changed(c);
+//            }
+//        }
+//    }
 }

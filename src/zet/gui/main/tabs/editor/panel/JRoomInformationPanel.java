@@ -16,7 +16,6 @@
 
 package zet.gui.main.tabs.editor.panel;
 
-import de.zet_evakuierung.model.Room;
 import info.clearthought.layout.TableLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,12 +26,13 @@ import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import zet.gui.main.tabs.editor.panel.viewmodels.RoomViewModel;
 
 /**
  * A panel displaying information about a room.
  * @author Jan-Philipp Kappmeier
  */
-public class JRoomInformationPanel extends JInformationPanel<RoomChangeEvent, Room> {
+public class JRoomInformationPanel extends JInformationPanel<RoomInformationControl, RoomViewModel> {
 
     private JLabel lblRoomName;
     private JTextField txtRoomName;
@@ -41,7 +41,7 @@ public class JRoomInformationPanel extends JInformationPanel<RoomChangeEvent, Ro
     private JButton deleteRoom;
     private JButton moveRoom;
 
-    public JRoomInformationPanel() {
+    public JRoomInformationPanel(RoomViewModel model) {
         super(new double[]{TableLayout.FILL},
                 new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, TableLayout.PREFERRED,
@@ -74,7 +74,8 @@ public class JRoomInformationPanel extends JInformationPanel<RoomChangeEvent, Ro
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    fireChangeEvent(new RoomChangeEvent(this, RoomChangeEvent.RoomChange.Name));
+                    control.setName(txtRoomName.getText());
+                    //fireChangeEvent(new RoomChangeEvent(this, RoomChangeEvent.RoomChange.Name));
                     //boolean success = projectControl.renameRoom(current, txtRoomName.getText());
                     //if (!success) {
                     //    System.out.println("Floor with that name already exists");
@@ -96,7 +97,8 @@ public class JRoomInformationPanel extends JInformationPanel<RoomChangeEvent, Ro
             @Override
             public void actionPerformed(ActionEvent e) {
                 //projectControl.deletePolygon(current);
-                fireChangeEvent(new RoomChangeEvent(this, RoomChangeEvent.RoomChange.Delete));
+                control.delete();
+                //fireChangeEvent(new RoomChangeEvent(this, RoomChangeEvent.RoomChange.Delete));
             }
         });
         this.add(deleteRoom, "0, " + ++row);
@@ -107,7 +109,8 @@ public class JRoomInformationPanel extends JInformationPanel<RoomChangeEvent, Ro
             @Override
             public void actionPerformed(ActionEvent e) {
                 //projectControl.refineRoomCoordinates(current.getPolygon(), gs.getRasterSizeSnap());
-                fireChangeEvent(new RoomChangeEvent(this, RoomChangeEvent.RoomChange.RefineCoordinates));
+                //fireChangeEvent(new RoomChangeEvent(this, RoomChangeEvent.RoomChange.RefineCoordinates));
+                control.refineCoordinates();
             }
         });
         this.add(moveRoom, "0, " + ++row);
@@ -116,11 +119,8 @@ public class JRoomInformationPanel extends JInformationPanel<RoomChangeEvent, Ro
 
     @Override
     public void update() {
-        System.out.println(current);
-        //if( 1 == 1 )
-        //    throw new IllegalStateException("This is not yet implemented!");
-        txtRoomName.setText(current.getName());
-        double areaRoom = Math.round(current.getPolygon().areaMeter() * 100) / 100.0;
+        txtRoomName.setText(getModel().getName());
+        double areaRoom = Math.round(getModel().areaMeter() * 100) / 100.0;
         lblRoomSize.setText(nfFloat.format(areaRoom) + " m²");
     }
 

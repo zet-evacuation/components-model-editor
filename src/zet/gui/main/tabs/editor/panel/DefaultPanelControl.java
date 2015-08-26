@@ -1,20 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package zet.gui.main.tabs.editor.panel;
+
+import de.zet_evakuierung.model.ZControl;
 
 /**
  * A control class for evacuation areas.
+ *
  * @author Jan-Philipp Kappmeier
  */
-public class DefaultPanelControl extends AbstractInformationPanelControl<JDefaultInformationPanel, Void, ChangeEvent> {
-    public DefaultPanelControl() {
-        super(new JDefaultInformationPanel());
-    }
+public class DefaultPanelControl extends AbstractInformationPanelControl<JDefaultInformationPanel, Void> {
 
-    @Override
-    public void changed(ChangeEvent c) {
+    public DefaultPanelControl(ZControl control) {
+        super(new JDefaultInformationPanel(), control);
     }
 }

@@ -1,44 +1,48 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package zet.gui.main.tabs.editor.panel;
 
 import de.zet_evakuierung.model.EvacuationArea;
 import de.zet_evakuierung.model.TeleportArea;
 import de.zet_evakuierung.model.ZControl;
+import zet.gui.main.tabs.editor.panel.viewmodels.TeleportAreaViewModel;
+import zet.gui.main.tabs.editor.panel.viewmodels.TeleportAreaViewModelImpl;
 
 /**
  * A control class for evacuation areas.
+ *
  * @author Jan-Philipp Kappmeier
  */
-public class TeleportAreaControl extends AbstractInformationPanelControl<JTeleportAreaInformationPanel, TeleportArea, TeleportAreaChangeEvent> {
+public class TeleportAreaControl extends AbstractInformationPanelControl<JTeleportAreaInformationPanel, TeleportAreaViewModel> {
 
-    public TeleportAreaControl(ZControl zcontrol) {
-        super(new JTeleportAreaInformationPanel(new TeleportAreaViewModelFactory(zcontrol)));
+    private TeleportArea model;
+
+    public TeleportAreaControl(ZControl control) {
+        super(generateView(), control);
+        getView().setControl(this);
     }
 
-    @Override
-    public void changed(TeleportAreaChangeEvent c) {
-        switch(c.getChangeType()) {
-            case Rename:
-                String name = getView().getTeleportAreaName();
-                model.setName(name);
-                System.out.println("Renaming to " );
-                break;
-            case TargetArea:
-                System.out.println("Setting target area to " );
-                TeleportArea targetArea = getView().getTargetArea();
-                model.setTargetArea(targetArea);
-                break;
-            case TargetExit:
-                System.out.println("Setting target exit to " );
-                EvacuationArea targetExit = getView().getTargetExit();
-                model.setExitArea(targetExit);
-                break;
-            default:
-                throw new AssertionError("Teleport event " + c.getChangeType() + " not supported." );
-        }
+    private static JTeleportAreaInformationPanel generateView() {
+        return new JTeleportAreaInformationPanel(new TeleportAreaViewModel() {
+        });
+    }
+
+    public void setModel(TeleportArea model) {
+        getView().setModel(new TeleportAreaViewModelImpl(model, control.getProject()));
+        this.model = model;
+    }
+
+    void rename(String name) {
+        model.setName(name);
+        System.out.println("Renaming to " + name);
+    }
+
+    void setTargetExit(EvacuationArea targetExit) {
+        System.out.println("Setting target exit to " + targetExit);
+        model.setExitArea(targetExit);
+    }
+
+    void setTargetArea(TeleportArea targetArea) {
+        System.out.println("Setting target area to " + targetArea);
+        model.setTargetArea(targetArea);
     }
 }

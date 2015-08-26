@@ -16,7 +16,6 @@
 package zet.gui.main.tabs.editor.panel;
 
 import org.zetool.common.localization.LocalizationManager;
-import de.zet_evakuierung.model.StairArea;
 import de.zet_evakuierung.model.StairPreset;
 import de.zet_evakuierung.model.ZLocalization;
 import info.clearthought.layout.TableLayout;
@@ -36,12 +35,13 @@ import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import static zet.gui.main.tabs.editor.panel.JInformationPanel.nfFloat;
+import zet.gui.main.tabs.editor.panel.viewmodels.StairAreaViewModel;
 
 /**
  *
  * @author Jan-Philipp Kappmeier
  */
-public class JStairAreaInformationPanel extends JInformationPanel<StairAreaChangeEvent, StairArea> {
+public class JStairAreaInformationPanel extends JInformationPanel<StairAreaControl, StairAreaViewModel> {
 
     private JTextField txtStairFactorUp;
     private JTextField txtStairFactorDown;
@@ -54,11 +54,8 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaChang
     private JComboBox<StairPreset> cbxStairPresets;
     /** A label describing the current preset. */
     private JLabel lblStairPresetDescription;
-            private StairPreset preset;
-    private double factorUp;
-    private double factorDown;
 
-    public JStairAreaInformationPanel() {
+    public JStairAreaInformationPanel(StairAreaViewModel model) {
         super(new double[]{TableLayout.FILL},
                 new double[]{
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
@@ -93,8 +90,9 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaChang
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     try {
-                        factorUp = nfFloat.parse(txtStairFactorUp.getText()).doubleValue();
-                        fireChangeEvent(new StairAreaChangeEvent(this, StairAreaChangeEvent.StairAreaChange.UpFactor));
+                        double factorUp = nfFloat.parse(txtStairFactorUp.getText()).doubleValue();
+                        control.setFactorUp(factorUp);
+                        //fireChangeEvent(new StairAreaChangeEvent(this, StairAreaChangeEvent.StairAreaChange.UpFactor));
                     } catch (ParseException ex) {
                         //@//ZETLoader.sendError( loc.getString( "gui.error.NonParsableFloatString" ) );
                     } catch (IllegalArgumentException ex) {
@@ -126,8 +124,9 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaChang
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     try {
-                        factorDown = nfFloat.parse(txtStairFactorDown.getText()).doubleValue();
-                        fireChangeEvent(new StairAreaChangeEvent(this, StairAreaChangeEvent.StairAreaChange.DownFactor));
+                        double factorDown = nfFloat.parse(txtStairFactorDown.getText()).doubleValue();
+                        control.setFactorDown(factorDown);
+                        //fireChangeEvent(new StairAreaChangeEvent(this, StairAreaChangeEvent.StairAreaChange.DownFactor));
                     } catch (ParseException ex) {
                         //@//ZETLoader.sendError( loc.getString( "gui.error.NonParsableFloatString" ) );
                     } catch (IllegalArgumentException ex) {
@@ -162,11 +161,12 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaChang
         cbxStairPresets.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                preset = (StairPreset) cbxStairPresets.getSelectedItem();
+                StairPreset preset = (StairPreset) cbxStairPresets.getSelectedItem();
                 NumberFormat nf = LocalizationManager.getManager().getFloatConverter();
                 txtStairFactorUp.setText(nf.format(preset.getSpeedFactorUp()));
                 txtStairFactorDown.setText(nf.format(preset.getSpeedFactorDown()));
-                fireChangeEvent(new StairAreaChangeEvent(this, StairAreaChangeEvent.StairAreaChange.Preset));
+                //fireChangeEvent(new StairAreaChangeEvent(this, StairAreaChangeEvent.StairAreaChange.Preset));
+                control.setPreset(preset);
             }
         });
         lblStairPresetDescription = new JLabel(ZLocalization.loc.getString(((StairPreset) cbxStairPresets.getSelectedItem()).getText()));
@@ -175,22 +175,10 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaChang
 
     }
 
-    StairPreset getPreset() {
-        return preset;
-    }
-
-    double getFactorUp() {
-        return factorUp;
-    }
-
-    double getFactorDown() {
-        return factorDown;
-    }
-
     @Override
     public void update() {
-        txtStairFactorUp.setText(nfFloat.format(current.getSpeedFactorUp()));
-        txtStairFactorDown.setText(nfFloat.format(current.getSpeedFactorDown()));
+        txtStairFactorUp.setText(nfFloat.format(getModel().getSpeedFactorUp()));
+        txtStairFactorDown.setText(nfFloat.format(getModel().getSpeedFactorDown()));
     }
 
     @Override

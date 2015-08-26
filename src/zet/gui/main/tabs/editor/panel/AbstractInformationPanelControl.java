@@ -5,31 +5,32 @@
  */
 package zet.gui.main.tabs.editor.panel;
 
+import de.zet_evakuierung.model.ZControl;
+import java.util.Objects;
+
 /**
  *
  * @author Jan-Philipp Kappmeier
- * @param <E>
- * @param <M>
- * @param <K>
+ * @param <V> the view
+ * @param <M> the viewmodel
  */
-public abstract class AbstractInformationPanelControl<E extends JInformationPanel<K,M>, M, K extends ChangeEvent> implements InformationPanelControl<E, M>, ChangeListener<K> {
-    private final E view;
-    protected M model;
+public abstract class AbstractInformationPanelControl<V extends Displayable<M>,M> {
 
-    public AbstractInformationPanelControl(E view) {
+    private final V view;
+    protected M viewModel;
+    protected final ZControl control;
+
+    public AbstractInformationPanelControl(V view, ZControl control) {
         this.view = view;
+        this.control = Objects.requireNonNull(control);
     }
     
-    @Override
-    public E getView() {
+    public V getView() {
         return view;
     }
 
-    @Override
-    public void setModel(M m) {
-        getView().update(m);
-        this.model = m;
+    protected void setModel(M m) {
+        getView().setModel(m);
+        this.viewModel = m;
     }
-    
-    
 }

@@ -8,14 +8,8 @@ package zet.gui.main.tabs.editor.panel;
 /**
  *
  * @author Jan-Philipp Kappmeier
- * @param <E>
  * @param <M>
  */
-public interface InformationPanelControl<E extends JInformationPanel<?,M>, M> {
-    E getView();
-    public default void setUpListener() {};
-    
-    default void setModel(M m) {
-        getView().update(m);
-    }
+public interface Displayable<M> {
+    void setModel(M model);
 }

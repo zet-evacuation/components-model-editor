@@ -13,17 +13,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package zet.gui.main.tabs.editor.panel;
 
 /**
  *
  * @author Jan-Philipp Kappmeier
  */
-public class JDefaultInformationPanel extends JInformationPanel<ChangeEvent, Void> {
+public class JDefaultInformationPanel extends JInformationPanel<DefaultPanelControl, Void> {
 
-	@Override
-	public void update() {
-	}
-	
+    @Override
+    public void update() {
+    }
+
 }

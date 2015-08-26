@@ -29,13 +29,14 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import zet.gui.components.model.NamedComboBoxRenderer;
+import zet.gui.main.tabs.editor.panel.viewmodels.TeleportAreaViewModel;
 
 /**
  *
  * @author Jan-Philipp Kappmeier
  */
 @SuppressWarnings("serial")
-public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAreaChangeEvent, TeleportArea> {
+public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAreaControl, TeleportAreaViewModel> {
 
     /** Describes the teleportation area name field. */
     private JLabel lblTeleportAreaName;
@@ -51,20 +52,14 @@ public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAre
     private JComboBox<EvacuationArea> cbxTargetExit;
     /** Describes the target exit combo box. */
     private JLabel lblTargetExit;
-    private final TeleportAreaViewModelFactory viewModelFactory;
-    private TeleportAreaViewModel viewModel;
-    private String areaName;
-    private EvacuationArea targetExit;
-    private TeleportArea targetArea;
 
-    public JTeleportAreaInformationPanel(TeleportAreaViewModelFactory viewModelFactory) {
+    public JTeleportAreaInformationPanel(TeleportAreaViewModel viewModel) {
         super(new double[]{TableLayout.FILL},
                 new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, 20, TableLayout.FILL
                 });
-        this.viewModelFactory = viewModelFactory;
         init();
     }
 
@@ -90,8 +85,9 @@ public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAre
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    areaName = txtTeleportAreaName.getText();
-                    fireChangeEvent(new TeleportAreaChangeEvent(this, TeleportAreaChangeEvent.TeleportAreaChange.Rename));
+                    //areaName = txtTeleportAreaName.getText();
+                    control.rename(txtTeleportAreaName.getText());
+                    //fireChangeEvent(new TeleportAreaChangeEvent(this, TeleportAreaChangeEvent.TeleportAreaChange.Rename));
                 }
             }
         });
@@ -115,42 +111,30 @@ public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAre
         row++;
     }
 
-    String getTeleportAreaName() {
-        return areaName;
-    }
-
-    TeleportArea getTargetArea() {
-        return targetArea;
-    }
-
-    EvacuationArea getTargetExit() {
-        return targetExit;
-    }
-
     ItemListener targetExitChangedListener = new ItemListener() {
         @Override
         public void itemStateChanged(ItemEvent e) {
-            targetExit = (EvacuationArea)cbxTargetExit.getSelectedItem();
-            fireChangeEvent(new TeleportAreaChangeEvent(this, TeleportAreaChangeEvent.TeleportAreaChange.TargetExit));
+            EvacuationArea targetExit = (EvacuationArea)cbxTargetExit.getSelectedItem();
+            control.setTargetExit(targetExit);
+            //fireChangeEvent(new TeleportAreaChangeEvent(this, TeleportAreaChangeEvent.TeleportAreaChange.TargetExit));
         }
     };
     ItemListener targetAreaChangedListener = new ItemListener() {
         @Override
         public void itemStateChanged(ItemEvent e) {
-            targetArea = (TeleportArea)cbxTargetArea.getSelectedItem();
-            fireChangeEvent(new TeleportAreaChangeEvent(this, TeleportAreaChangeEvent.TeleportAreaChange.TargetArea));
+            TeleportArea targetArea = (TeleportArea)cbxTargetArea.getSelectedItem();
+            //fireChangeEvent(new TeleportAreaChangeEvent(this, TeleportAreaChangeEvent.TeleportAreaChange.TargetArea));
+            control.setTargetArea(targetArea);
         }
     };
     
     @Override
     public void update() {
-        viewModel = viewModelFactory.getViewModel(current);
-
-        txtTeleportAreaName.setText(current.getName());
+        txtTeleportAreaName.setText(getModel().getName());
 
         // handle preferred exits
-        resetComboBoxWithoutNotification(cbxTargetExit, targetExitChangedListener, viewModel.getEvacuationAreas(), current.getExitArea());
-        resetComboBoxWithoutNotification(cbxTargetArea, targetAreaChangedListener, viewModel.getTeleportAreas(), current.getTargetArea());
+        resetComboBoxWithoutNotification(cbxTargetExit, targetExitChangedListener, getModel().getEvacuationAreas(), getModel().getExitArea());
+        resetComboBoxWithoutNotification(cbxTargetArea, targetAreaChangedListener, getModel().getTeleportAreas(), getModel().getTargetArea());
     }
     
     /**

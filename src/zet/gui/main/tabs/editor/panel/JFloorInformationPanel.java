@@ -15,7 +15,6 @@
  */
 package zet.gui.main.tabs.editor.panel;
 
-import de.zet_evakuierung.model.FloorInterface;
 import de.zet_evakuierung.model.Room;
 import info.clearthought.layout.TableLayout;
 import java.awt.Rectangle;
@@ -30,12 +29,13 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import org.zetool.components.framework.Button;
+import zet.gui.main.tabs.editor.control.FloorViewModel;
 
 /**
  *
  * @author Jan-Philipp Kappmeier
  */
-public class JFloorInformationPanel extends JInformationPanel<FloorChangeEvent, FloorInterface> {
+public class JFloorInformationPanel extends JInformationPanel<FloorPanelControl, FloorViewModel> {
     private JLabel lblFloorName;
     private JButton btnFloorUp;
     private JButton btnFloorDown;
@@ -50,8 +50,6 @@ public class JFloorInformationPanel extends JInformationPanel<FloorChangeEvent, 
     private JTextField txtFloorHeight;
     private JLabel lblFloorSize;
     private JLabel lblFloorSizeDesc;
-            private String floorName;
-    private Rectangle floorSize;
 
     public JFloorInformationPanel() {
         super(new double[]{
@@ -96,8 +94,9 @@ public class JFloorInformationPanel extends JInformationPanel<FloorChangeEvent, 
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    floorName = txtFloorName.getText();
-                    fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.Rename));
+                    String floorName = txtFloorName.getText();
+                    //fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.Rename));
+                    control.rename(floorName);
                 }
             }
         });
@@ -152,13 +151,16 @@ public class JFloorInformationPanel extends JInformationPanel<FloorChangeEvent, 
         public void actionPerformed(ActionEvent e) {
             switch (e.getActionCommand()) {
                 case "down":
-                    fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.MoveDown));
+                    //fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.MoveDown));
+                    control.moveDown();
                     break;
                 case "up":
-                    fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.MoveUp));
+                    //fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.MoveUp));
+                    control.moveUp();
                     break;
                 case "rasterize":
-                    fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.Rasterize));
+                    //fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.Rasterize));
+                    control.rasterize();
                     break;
                 default:
                     //@//ZETLoader.sendError( loc.getString( "gui.UnknownCommand" ) + " '" + e.getActionCommand() + "'. " + loc.getString( "gui.ContactDeveloper" ) );
@@ -175,8 +177,9 @@ public class JFloorInformationPanel extends JInformationPanel<FloorChangeEvent, 
                 final int yOffset = nfInteger.parse(txtFlooryOffset.getText()).intValue();
                 final int width = nfInteger.parse(txtFloorWidth.getText()).intValue();
                 final int height = nfInteger.parse(txtFloorHeight.getText()).intValue();
-                floorSize = new Rectangle(xOffset, yOffset, width, height);
-                fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.Dimension));
+                Rectangle floorSize = new Rectangle(xOffset, yOffset, width, height);
+                control.setDimension(floorSize);
+                //fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.Dimension));
             } catch (ParseException ex) {
                 //@//ZETLoader.sendError( "Parsing nicht möglich." ); // TODO loc
                 return;
@@ -185,24 +188,16 @@ public class JFloorInformationPanel extends JInformationPanel<FloorChangeEvent, 
         }
     };
     
-    String getFloorName() {
-        return floorName;
-    }
-
-    Rectangle getFloorSize() {
-        return floorSize;
-    }
-
     @Override
     public void update() {
-        System.out.println("Current: " + current);
-        txtFloorName.setText(this.current.getName());
-        txtFloorxOffset.setText(Integer.toString(current.getLocation().x));
-        txtFlooryOffset.setText(Integer.toString(current.getLocation().y));
-        txtFloorWidth.setText(Integer.toString(current.getLocation().width));
-        txtFloorHeight.setText(Integer.toString(current.getLocation().height));
+        System.out.println("Current: " + getModel());
+        txtFloorName.setText(getModel().getName());
+        txtFloorxOffset.setText(Integer.toString(getModel().getLocation().x));
+        txtFlooryOffset.setText(Integer.toString(getModel().getLocation().y));
+        txtFloorWidth.setText(Integer.toString(getModel().getLocation().width));
+        txtFloorHeight.setText(Integer.toString(getModel().getLocation().height));
         double areaFloor = 0;
-        for (Room r : current) {
+        for (Room r : getModel()) {
             areaFloor += r.getPolygon().areaMeter();
         }
 
