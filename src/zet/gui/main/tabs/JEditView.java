@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.zetool.common.localization.Localized;
@@ -43,7 +44,6 @@ import zet.gui.components.editor.EditorLocalization;
 import zet.gui.components.model.FloorComboBoxModel;
 import zet.gui.components.model.NamedComboBox;
 import zet.gui.components.model.NamedComboBoxRenderer;
-import zet.gui.components.model.RoomComboBoxModel;
 import zet.gui.main.tabs.base.AbstractSplitPropertyWindow;
 import zet.gui.main.tabs.base.JFloorScrollPane;
 import zet.gui.main.tabs.editor.control.FloorViewModel;
@@ -457,10 +457,21 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
         leftRuler.repaint();
     }
 
-    /**
-     * Prohibits serialization.
-     */
+    /** Prohibits serialization. */
     private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
         throw new UnsupportedOperationException("Serialization not supported");
+    }
+    
+    /** Prohibits serialization. */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
+    
+    private static class RoomComboBoxModel extends DefaultComboBoxModel<Room> {
+
+        public RoomComboBoxModel(FloorViewModel model) {
+            super(model.getRooms().toArray(new Room[model.getRoomCount()]));
+        }
+        
     }
 }

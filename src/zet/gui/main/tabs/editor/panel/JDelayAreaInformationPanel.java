@@ -69,14 +69,9 @@ public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaContr
         lblDelayType = new JLabel(loc.getString("Delay.Type") + ":");
         this.add(lblDelayType, "0, " + row++);
         cbxDelayType = new JComboBox<>(new DefaultComboBoxModel<>(DelayArea.DelayType.values()));
-        cbxDelayType.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    DelayArea.DelayType type = (DelayArea.DelayType)e.getItem();
-                    control.setType(type);
-                    //fireChangeEvent(new DelayAreaChangeEvent(this, DelayAreaChangeEvent.DelayAreaChange.Type));
-                }
+        cbxDelayType.addItemListener((ItemEvent e) -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                control.setType((DelayArea.DelayType)e.getItem());
             }
         });
         cbxDelayType.setRenderer(new ComboBoxRenderer<DelayArea.DelayType>() {
@@ -124,8 +119,9 @@ public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaContr
                         double speedFactor = nfFloat.parse(txtDelayFactor.getText()).doubleValue();
                         control.setSpeedFactor(speedFactor);
                         //fireChangeEvent(new DelayAreaChangeEvent(this, DelayAreaChangeEvent.DelayAreaChange.Factor));
-                    } catch (ParseException | IllegalArgumentException ex) {
+                    } catch (ParseException ex) {
                         //ZETLoader.sendError(loc.getString("gui.error.NonParsableFloatString"));
+                        System.err.println("String not valid: " + txtDelayFactor.getText());
                     }
                 }
             }

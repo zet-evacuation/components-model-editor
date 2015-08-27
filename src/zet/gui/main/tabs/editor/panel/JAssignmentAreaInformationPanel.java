@@ -18,8 +18,6 @@ package zet.gui.main.tabs.editor.panel;
 import de.zet_evakuierung.model.AssignmentType;
 import de.zet_evakuierung.model.EvacuationArea;
 import info.clearthought.layout.TableLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
@@ -108,10 +106,10 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     try {
                         int typedPersons = nfInteger.parse(txtNumberOfPersons.getText()).intValue();
-                        //fireChangeEvent(new AssignmentAreaChangeEvent(this, AssignmentAreaChangeEvent.AssignmentAreaChange.Evacuees));
                         control.setEvacuees(typedPersons);
-                    } catch (ParseException | IllegalArgumentException ex) {
-//			ZETLoader.sendError( ex.getLocalizedMessage() );
+                    } catch (ParseException ex) {
+                        //ZETLoader.sendError( ex.getLocalizedMessage() );
+                        System.err.println("Number of persons not valid: " + txtNumberOfPersons.getText());
                     }
                 }
             }
@@ -120,14 +118,7 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
         row++;
         btnAssignmentSetDefaultEvacuees = Button.newButton(loc.getString("Assignment.SetDefaultEvacuees"), loc.getString("Assignment.SetDefaultEvacuees.ToolTip"));
         btnAssignmentSetDefaultEvacuees.setToolTipText(loc.getString("Assignment.SetDefaultEvacuees.ToolTip"));
-        btnAssignmentSetDefaultEvacuees.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //fireChangeEvent(new AssignmentAreaChangeEvent(this, AssignmentAreaChangeEvent.AssignmentAreaChange.StandardEvacuees));
-                control.setStandardEvacuees();
-                //txtNumberOfPersons.setText(nfInteger.format(current.getEvacuees()));
-            }
-        });
+        btnAssignmentSetDefaultEvacuees.addActionListener( e -> control.setStandardEvacuees() );
         this.add(btnAssignmentSetDefaultEvacuees, "0, " + row++);
         row++;
 
@@ -159,28 +150,18 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
     /**
      * The listener firing change events if a new assignment type is selected.
      */
-    private final ItemListener assignmentTypeChangeListener = new ItemListener() {
-        @Override
-        public void itemStateChanged(ItemEvent event) {
-            if (event.getStateChange() == ItemEvent.SELECTED) {
-                System.out.println(cbxAssignmentType.getSelectedItem());
-                //fireChangeEvent(new AssignmentAreaChangeEvent(this, AssignmentAreaChangeEvent.AssignmentAreaChange.AssignmentType));
-                control.setAssignmentType((AssignmentType)cbxAssignmentType.getSelectedItem());
-            }
+    private final ItemListener assignmentTypeChangeListener = (ItemEvent event) -> {
+        if (event.getStateChange() == ItemEvent.SELECTED) {
+            control.setAssignmentType((AssignmentType)cbxAssignmentType.getSelectedItem());
         }
     };
 
     /**
      * The listener firing change events if a new preferred exit is selected.
      */
-    private final ItemListener preferredExitChangedListener = new ItemListener() {
-        @Override
-        public void itemStateChanged(ItemEvent event) {
-            if (event.getStateChange() == ItemEvent.SELECTED) {
-                System.out.println(cbxPreferredExit.getSelectedItem());
-                control.setPreferredExit((EvacuationArea)cbxPreferredExit.getSelectedItem());
-                //fireChangeEvent(new AssignmentAreaChangeEvent(this, AssignmentAreaChangeEvent.AssignmentAreaChange.PreferredExit));
-            }
+    private final ItemListener preferredExitChangedListener = (ItemEvent event) -> {
+        if (event.getStateChange() == ItemEvent.SELECTED) {
+            control.setPreferredExit((EvacuationArea)cbxPreferredExit.getSelectedItem());
         }
     };
     

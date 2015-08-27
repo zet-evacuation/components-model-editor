@@ -80,13 +80,11 @@ public class PostActionStairHandler extends PostActionHandler {
                     stairState = StairStates.Upper;
                     System.out.println("Lower level set.");
                 } else if (stairState == StairStates.Upper) {
-                    try {
+                    if (sa.canBeUsed(e.getSource(), e.getTarget())) {
                         sa.setUpperLevel(e.getSource(), e.getTarget());
                         System.out.println("Upper level set.");
                         stairState = StairStates.Done;
-                    } catch (StairAreaBoundaryException ex) {
-                        // ignore exception and mouse click. do nothing and wait for correct one.
-                        // TODO send an info to the user interface
+                    } else {
                         System.err.println("Adjacent segments cannot be lower and upper!");
                     }
                 } else {

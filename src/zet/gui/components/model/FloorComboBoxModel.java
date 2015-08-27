@@ -16,6 +16,7 @@
 
 package zet.gui.components.model;
 
+import javax.swing.DefaultComboBoxModel;
 import zet.gui.main.tabs.EditViewModel;
 import zet.gui.main.tabs.editor.control.FloorViewModel;
 
@@ -23,8 +24,9 @@ import zet.gui.main.tabs.editor.control.FloorViewModel;
  * An immutable combo mox model displaying floors.
  * @author Jan-Philipp Kappmeier
  */
-public class FloorComboBoxModel extends ListModel<FloorViewModel> {
+public class FloorComboBoxModel extends DefaultComboBoxModel<FloorViewModel> {
     public FloorComboBoxModel(EditViewModel model) {
-        super(model.getFloors(), model.getCurrentFloor());
+        super(model.getFloors().toArray(new FloorViewModel[model.getFloorCount()]));
+        setSelectedItem(model.getCurrentFloor());
     }
 }

@@ -38,10 +38,8 @@ import zet.gui.main.tabs.editor.floor.SelectionEvent;
 import zet.gui.main.tabs.editor.floor.SelectionListener;
 import zet.gui.main.tabs.editor.panel.AbstractInformationPanelControl;
 import zet.gui.main.tabs.editor.panel.AssignmentAreaControl;
-import zet.gui.main.tabs.editor.panel.ChangeListener;
 import zet.gui.main.tabs.editor.panel.DefaultPanelControl;
 import zet.gui.main.tabs.editor.panel.DelayAreaControl;
-import zet.gui.main.tabs.editor.panel.EdgeChangeEvent;
 import zet.gui.main.tabs.editor.panel.EdgeControl;
 import zet.gui.main.tabs.editor.panel.EvacuationAreaControl;
 import zet.gui.main.tabs.editor.panel.FloorPanelControl;
@@ -63,6 +61,17 @@ public class EditViewControl {
     private final JEditView view;
     private List<FloorViewModel> floorViewModels;
     private final ZControl control;
+    private final SelectionListener floorSelectionListener = new FloorSelectionListener();
+
+    private FloorPanelControl fc;
+    private RoomInformationControl rc;
+    private AssignmentAreaControl aac;
+    private DelayAreaControl dac;
+    private EvacuationAreaControl eac;
+    private InaccessibleAreaControl iac;
+    private StairAreaControl sac;
+    private TeleportAreaControl tac;
+    private EdgeControl ec;
     
     public EditViewControl(ZControl control, List<Floor> floors) {
         this.floors = validatedFloorList(floors);
@@ -70,6 +79,7 @@ public class EditViewControl {
         currentFloor = floors.get(1);
         view = createView();
         registerControls();
+        registerPopups();
         floorControl = new FloorControl(control, view.getFloor());
         floorControl.setEditMode(EditMode.Selection);
     }
@@ -81,18 +91,7 @@ public class EditViewControl {
         editView.getLeftPanel().getMainComponent().addSelectionListener(floorSelectionListener);
         return editView;
     }
-    
-        FloorPanelControl fc;
-        RoomInformationControl rc;
-        AssignmentAreaControl aac;
-        DelayAreaControl dac;
-        EvacuationAreaControl eac;
-        InaccessibleAreaControl iac;
-        StairAreaControl sac;
-        TeleportAreaControl tac;
-        EdgeControl ec;
     private void registerControls() {
-
         // Add all the panels to the map
         fc = registerControl(new FloorPanelControl(control), JEditView.Panels.Floor);
         rc = registerControl(new RoomInformationControl(control), JEditView.Panels.Room);
@@ -104,7 +103,9 @@ public class EditViewControl {
         tac = registerControl(new TeleportAreaControl(control), JEditView.Panels.TeleportArea);
         ec = registerControl(new EdgeControl(control), JEditView.Panels.Edge);
         registerControl(new DefaultPanelControl(control), JEditView.Panels.Default);
-
+    }
+    
+    private void registerPopups() {
         // Set up listener for popup menus and initialize popups
         view.getFloor().getPopups().getEdgePopup().addChangeListener(ec);
         PointListener pc = new PointListener(control);
@@ -169,7 +170,7 @@ public class EditViewControl {
         System.out.println("Stored new floor in model" );
     }
         
-    private final SelectionListener floorSelectionListener = new SelectionListener() {
+    private class FloorSelectionListener implements SelectionListener {
 
         @Override
         public void selectionChanged(SelectionEvent event) {
@@ -215,6 +216,4 @@ public class EditViewControl {
         }
 
     };
-
-
 }

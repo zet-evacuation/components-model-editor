@@ -42,8 +42,12 @@ public class AssignmentAreaControl extends AbstractInformationPanelControl<JAssi
         model.setEvacuees(standardEvacuees);
     }
     
+    /**
+     * Sets the amount of evacuues if possible. To large amounts are set to maximum value and negative to 0.
+     * @param evacuees 
+     */
     void setEvacuees(int evacuees) {
-        final int actualEvacuees = Math.min(viewModel.getMaxEvacuees(), evacuees);
+        final int actualEvacuees = Math.max( 0, Math.min(viewModel.getMaxEvacuees(), evacuees));
         System.out.println("Changing evacuees to " + actualEvacuees);
         model.setEvacuees(actualEvacuees);
     }

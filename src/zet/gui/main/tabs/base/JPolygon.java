@@ -51,7 +51,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Objects;
 import javax.swing.SwingUtilities;
-import zet.gui.main.menu.popup.Popups;
 import zet.gui.main.tabs.editor.floor.JFloor;
 
 /**
@@ -78,7 +77,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
         return dragged;
     }
 
-	//PropertyContainer p = PropertyContainer.getInstance();
+    //PropertyContainer p = PropertyContainer.getInstance();
     protected static Point lastPosition = new Point();
     protected static boolean selectedUsed = false;
     /**
@@ -388,7 +387,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
                     ed.selectionPolygon.addPoint(pLeft.x - EDGE_WIDTH_ADDITION, pLeft.y + EDGE_WIDTH_ADDITION);
                 }
 
-				// Always start at the leftmost or, if that is not applicable, at
+                // Always start at the leftmost or, if that is not applicable, at
                 // the topmost node. Either the topmost or the leftmost node must
                 // exist, because both nodes may not have the same coodinates.
                 if (ed.node1.x != ed.node2.x) {
@@ -402,7 +401,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
             }
         }
 
-	// Don't repaint here - Always repaint the whole Floor. This is
+    // Don't repaint here - Always repaint the whole Floor. This is
         // necessary because otherwise the background will not be cleaned
         //repaint ();
     }
@@ -415,15 +414,12 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
         // (when the number of edgeDatas is not equal to the edge count due
         // to some unknown reason. This exception is hard to reproduce)
         if (myPolygon == null || myPolygon.getNumberOfEdges() != edgeData.size()) {
-            SwingUtilities.invokeLater(new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        sleep(300);
-                    } catch (InterruptedException ex) {
-                    }
-                    repaint();
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException ex) {
                 }
+                repaint();
             });
             return;
         }
@@ -665,14 +661,14 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
      */
     @Override
     protected void processMouseEvent(MouseEvent e) {
-		// Check the events in the following order (small objects before big objects):
+        // Check the events in the following order (small objects before big objects):
         // 1. Check whether a Point Popup is triggered
         // 2. Check whether an Edge Popup is triggered
         // 3. Check whether a Polygon Popup is triggered
         // 4. Else forward the event to parent object
 
         // Do not use e.isPopupTrigger() here - Won't work under linux
-        if (e.getID() == MouseEvent.MOUSE_RELEASED && e.getButton() == MouseEvent.BUTTON3 && myFloor.getPopups().isPopupEnabled()) {
+        if (e.getID() == MouseEvent.MOUSE_RELEASED && e.getButton() == MouseEvent.BUTTON3) {
             if (!lastPosition.equals(e.getLocationOnScreen())) {
                 lastPosition = e.getLocationOnScreen();
                 selectedUsed = false;
@@ -725,7 +721,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
         }
 
         if (!e.equals(lastMouseEventToPassToFloor) && getParent() != null) {
-			// Keep the polygon as the source and translate the coordinates
+            // Keep the polygon as the source and translate the coordinates
             // Do not use SwingUtilities.convertMouseEvent here! - Timon
             Point translated = SwingUtilities.convertPoint(this, e.getPoint(), getParent());
             getParent().dispatchEvent(new MouseEvent((Component) e.getSource(), e.getID(),
@@ -736,20 +732,20 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
         }
     }
 
-	/**
-	 * This is a helper method for other GUI objects who need to transform
-	 * points that are given in their own coordinate space into the coordinate
-	 * space of the Floor.
-	 * @param source The Component in whose coordinate space the Point "toConvert"
-	 * is specified. It must be an object which is located directly or indirectly
-	 * upon the JEditorPanel's JFloor object.
-	 * @param toConvert The point to convert
-	 * @return The same point as "toConvert", but relative to the surrounding
-	 * JFloor object.
-	 */
-	public Point convertPointToFloorCoordinates( Component source, Point toConvert ) {
-		return SwingUtilities.convertPoint( source, toConvert, myFloor );
-	}
+    /**
+     * This is a helper method for other GUI objects who need to transform
+     * points that are given in their own coordinate space into the coordinate
+     * space of the Floor.
+     * @param source The Component in whose coordinate space the Point "toConvert"
+     * is specified. It must be an object which is located directly or indirectly
+     * upon the JEditorPanel's JFloor object.
+     * @param toConvert The point to convert
+     * @return The same point as "toConvert", but relative to the surrounding
+     * JFloor object.
+     */
+    public Point convertPointToFloorCoordinates( Component source, Point toConvert ) {
+        return SwingUtilities.convertPoint( source, toConvert, myFloor );
+    }
 
     /**
      * MouseEvents occurring on this component are also forwarded to the parent
@@ -758,7 +754,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
     @Override
     protected void processMouseMotionEvent(MouseEvent e) {
         if (getParent() != null) {
-			// Keep the polygon as the source and translate the coordinates
+            // Keep the polygon as the source and translate the coordinates
             // Do not use SwingUtilities.convertMouseEvent here! - Timon
             Point translated = SwingUtilities.convertPoint(this, e.getPoint(), getParent());
             getParent().dispatchEvent(new MouseEvent((Component) e.getSource(), e.getID(),

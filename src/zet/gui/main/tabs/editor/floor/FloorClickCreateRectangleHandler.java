@@ -19,7 +19,6 @@ package zet.gui.main.tabs.editor.floor;
 import de.zet_evakuierung.model.PlanPoint;
 import de.zet_evakuierung.model.PlanPolygon;
 import de.zet_evakuierung.model.Room;
-//@//import gui.ZETLoader;
 import gui.editor.CoordinateTools;
 import java.awt.Component;
 import java.awt.Point;
@@ -65,7 +64,7 @@ public class FloorClickCreateRectangleHandler extends FloorClickCreationHandler 
         
         PlanPoint p1 = new PlanPoint(CoordinateTools.translateToModel(isRasterizedPaintMode() ? getNextRasterPoint(getLastClick()) : getLastClick()));
         PlanPoint p2 = new PlanPoint(CoordinateTools.translateToModel(isRasterizedPaintMode() ? getNextRasterPoint(p) : p));
-        if (p1.getX() == p2.getX() || p1.getY() == p2.getY()) {
+        if (p1.getXInt()== p2.getXInt()|| p1.getYInt()== p2.getYInt()) {
             //ZETLoader.sendError( ZETLocalization2.loc.getString( "gui.error.RectangleCreationZeroArea" ) );
             System.out.println("Returning with no creation, zero sized area!");
             return;

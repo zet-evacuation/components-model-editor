@@ -40,4 +40,8 @@ public class EditViewModel {
     public FloorViewModel getCurrentFloor() {
         return floorViewModel;
     }
+
+    public int getFloorCount() {
+        return floors.size();
+    }
 }

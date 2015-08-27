@@ -13,7 +13,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package zet.gui.components.editor;
 
 import org.zetool.common.localization.Localization;
@@ -26,11 +25,11 @@ import org.zetool.common.localization.LocalizationManager;
  * @author Jan-Philipp Kappmeier
  */
 public final class EditorLocalization {
-  /** Localization access for editor component classes. */
-  public static final Localization LOC = LocalizationManager.getManager().getLocalization(
-//@//          "org.zetool.components.editor.EditorLocalization" );
-          "zet.gui.components.editor.EditorLocalization");
+    /** Localization access for editor component classes. */
+    public static final Localization LOC = LocalizationManager.getManager().getLocalization(
+            "zet.gui.components.editor.EditorLocalization");
 
-  /** Utility class constructor. */
-  private EditorLocalization() {}
+    /** Utility class constructor. */
+    private EditorLocalization() {
+    }
 }

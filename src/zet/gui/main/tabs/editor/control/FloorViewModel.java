@@ -57,7 +57,7 @@ public class FloorViewModel implements Iterable<Room>, Named, Displayable<FloorI
      * The number of rooms that lie on the floor.
      * @return 
      */
-    public int roomCount() {
+    public int getRoomCount() {
         return floor.roomCount();
     }
     

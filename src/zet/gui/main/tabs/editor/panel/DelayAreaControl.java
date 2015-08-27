@@ -29,7 +29,7 @@ public class DelayAreaControl extends AbstractInformationPanelControl<JDelayArea
     }
 
     void setSpeedFactor(double speedFactor) {
-        control.setDelaySpeedFactor(model, speedFactor);
+        control.setDelaySpeedFactor(model, Math.max( 0, Math.min( 1, speedFactor)) );
     }
 
     void setDefaultType() {

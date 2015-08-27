@@ -3,6 +3,7 @@ package zet.gui.main.menu.popup;
 import org.zetool.common.localization.Localization;
 import de.zet_evakuierung.model.PlanEdge;
 import de.zet_evakuierung.model.PlanPoint;
+import java.io.IOException;
 import java.util.Objects;
 import javax.swing.JPopupMenu;
 import org.zetool.components.framework.Menu;
@@ -64,5 +65,12 @@ public class PointPopup extends JPopupMenu {
     public void setPopupPoint(PlanEdge currentEdge, PlanPoint currentPoint) {
         this.currentEdge = Objects.requireNonNull(currentEdge);
         this.currentPoint = Objects.requireNonNull(currentPoint);
+    }
+
+    /**
+     * Prohibits serialization.
+     */
+    private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        throw new UnsupportedOperationException("Serialization not supported");
     }
 }

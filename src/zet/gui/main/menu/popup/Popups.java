@@ -1,6 +1,5 @@
 package zet.gui.main.menu.popup;
 
-import de.zet_evakuierung.model.ZControl;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -15,10 +14,6 @@ public class Popups {
     }
     
     private final Map popupMap = new EnumMap(Types.class);
-    
-    public boolean isPopupEnabled() {
-        return true;
-    }
 
     public Popups() {
         popupMap.put(Types.Edge, new EdgePopup());

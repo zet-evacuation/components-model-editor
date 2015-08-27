@@ -10,6 +10,7 @@ import de.zet_evakuierung.template.Door;
 import de.zet_evakuierung.template.ExitDoor;
 import de.zet_evakuierung.template.Templates;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -156,4 +157,10 @@ public class EdgePopup extends JPopupMenu {
         this.mousePosition = mousePosition;
     }
 
+    /**
+     * Prohibits serialization.
+     */
+    private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
 }

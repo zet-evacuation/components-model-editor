@@ -16,11 +16,8 @@
 
 package zet.gui.main.tabs.base;
 
-//import ds.PropertyContainer;
 import de.zet_evakuierung.components.model.editor.GraphicsStyle;
 import de.zet_evakuierung.model.Floor;
-//import gui.GUIOptionManager;
-//import gui.ZETProperties;
 import gui.editor.CoordinateTools;
 import java.awt.AWTEvent;
 import java.awt.Dimension;
@@ -212,10 +209,14 @@ public class AbstractFloor extends JPanel {
         this.floorModel = floorModel;
     }
 
-    /**
-     * Prohibits serialization.
-     */
+    /** Prohibits serialization. */
     private synchronized void writeObject(java.io.ObjectOutputStream s) {
         throw new UnsupportedOperationException("Serialization not supported");
     }
+    
+    /** Prohibits serialization. */
+    private void readObject(java.io.ObjectInputStream in) {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
+    
 }
