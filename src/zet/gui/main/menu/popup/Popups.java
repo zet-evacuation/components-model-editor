@@ -20,10 +20,10 @@ public class Popups {
         return true;
     }
 
-    public Popups(ZControl control) {
+    public Popups() {
         popupMap.put(Types.Edge, new EdgePopup());
         popupMap.put(Types.Point, new PointPopup());
-        popupMap.put(Types.Polygon, new PolygonPopup(control));
+        popupMap.put(Types.Polygon, new PolygonPopup());
     }
 
     public EdgePopup getEdgePopup() {

@@ -1,17 +1,19 @@
 package zet.gui.main.menu.popup;
 
+import de.zet_evakuierung.model.Area;
 import org.zetool.common.localization.Localization;
 import de.zet_evakuierung.model.Assignment;
 import de.zet_evakuierung.model.AssignmentType;
 import de.zet_evakuierung.model.PlanPolygon;
+import de.zet_evakuierung.model.Room;
 import de.zet_evakuierung.model.ZControl;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import org.zetool.components.framework.Menu;
 import zet.gui.components.editor.EditorLocalization;
+import zet.gui.main.tabs.editor.panel.RoomInformationControl;
 
 /**
  *
@@ -22,31 +24,49 @@ public class PolygonPopup extends JPopupMenu {
 
     /** The localization class. */
     private Localization loc = EditorLocalization.LOC;
-    /** All JPolygons share the same pop-up menu listeners, which are stored here. */
-    private List<PolygonPopupListener> polygonPopupListeners = new LinkedList<>();
-    private ZControl control;
+    private RoomInformationControl polygonControl;
+    private PlanPolygon<?> currentPolygon;
+    private Assignment assignment;
 
-    public PolygonPopup(ZControl control) {
+    public PolygonPopup() {
         super();
-        this.control = control;
-        recreate( new Assignment("Test"));
+    }
+    
+    public void setAssignment(Assignment assignment) {
+        this.assignment = assignment;
     }
 
-    public void recreate(Assignment assignment) {
-        polygonPopupListeners.clear();
+    public void recreate() {
         removeAll();
 
-        JMenu jmnCreateAssArea = Menu.addMenu(this, loc.getString("gui.editor.JEditorPanel.popupDefaultAssignmentArea"));
-        jmnCreateAssArea.setEnabled(assignment != null);
+        Room r = getClickRoom();
+        JMenu createAssignmentAreaMenu = Menu.addMenu(this,
+                loc.getString("gui.editor.JEditorPanel.popupDefaultAssignmentArea") + " in room " + r.getName());
         if (assignment != null) {
             System.out.println(assignment.toString());
-            PolygonPopupListener listener;
-            for (AssignmentType t : assignment.getAssignmentTypes()) {
-                listener = new PolygonPopupListener(t, control, null);
-                polygonPopupListeners.add(listener);
-                Menu.addMenuItem(jmnCreateAssArea, t.getName(), listener);
-            }
+            assignment.getAssignmentTypes().stream().forEach((t) -> {
+                Menu.addMenuItem(createAssignmentAreaMenu, t.getName(), e -> {
+                    polygonControl.setModel(r);
+                    polygonControl.fillWithAssignmentArea(t);
+                });
+            });
+            createAssignmentAreaMenu.setEnabled(true);
+        } else {
+            createAssignmentAreaMenu.setEnabled(false);
         }
+    }
+
+    private Room getClickRoom() {
+        if( currentPolygon instanceof Room ) {
+            return (Room)currentPolygon;
+        } else {
+            Area a = (Area)currentPolygon;
+            return a.getAssociatedRoom();
+        }
+    }
+    
+    public void setPolygonControl(RoomInformationControl pc) {
+        this.polygonControl = pc;
     }
 
     /**
@@ -56,9 +76,8 @@ public class PolygonPopup extends JPopupMenu {
      */
     public void setPopupPolygon(PlanPolygon<?> currentPolygon) {
         System.out.println("Popup now belongs to " + currentPolygon.toString());
-        for (PolygonPopupListener p : polygonPopupListeners) {
-            p.setPolygon(currentPolygon);
-        }
+        this.currentPolygon = currentPolygon;
+        recreate();
     }
 
     /**
@@ -67,4 +86,5 @@ public class PolygonPopup extends JPopupMenu {
     private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
         throw new UnsupportedOperationException("Serialization not supported");
     }
+
 }

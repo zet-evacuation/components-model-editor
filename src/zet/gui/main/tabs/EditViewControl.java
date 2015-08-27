@@ -105,10 +105,12 @@ public class EditViewControl {
         ec = registerControl(new EdgeControl(control), JEditView.Panels.Edge);
         registerControl(new DefaultPanelControl(control), JEditView.Panels.Default);
 
-        // Set up listener for popup menus
+        // Set up listener for popup menus and initialize popups
         view.getFloor().getPopups().getEdgePopup().addChangeListener(ec);
         PointListener pc = new PointListener(control);
-        view.getFloor().getPopups().getPointPopup().addChangeListener(pc);        
+        view.getFloor().getPopups().getPointPopup().addChangeListener(pc);
+        view.getFloor().getPopups().getPolygonPopup().setPolygonControl(rc);
+        view.getFloor().getPopups().getPolygonPopup().setAssignment(control.getProject().getCurrentAssignment());
     }
     
     private <E extends AbstractInformationPanelControl<V, ?>, V extends JInformationPanel<?,?>> E registerControl(

@@ -18,8 +18,6 @@ package zet.gui.main.tabs.editor.panel;
 
 import de.zet_evakuierung.model.ZControl;
 import java.awt.event.ActionEvent;
-import zet.gui.main.tabs.editor.panel.ChangeListener;
-import zet.gui.main.tabs.editor.panel.PointChangeEvent;
 
 /**
  * This pop-up listener is responsible for handling menu events

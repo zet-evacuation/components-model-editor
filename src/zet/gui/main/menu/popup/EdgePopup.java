@@ -10,7 +10,6 @@ import de.zet_evakuierung.template.Door;
 import de.zet_evakuierung.template.ExitDoor;
 import de.zet_evakuierung.template.Templates;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;

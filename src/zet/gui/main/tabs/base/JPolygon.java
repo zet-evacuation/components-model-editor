@@ -715,10 +715,11 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
                 }
             } else if (Room.class.isInstance(myPolygon) && drawingPolygon.contains(e.getPoint())) {
                 if (selectedUsed == false) {
-                        System.err.println("Showing a polygon popup");
+                    System.err.println("Showing a polygon popup");
                     myFloor.getPopups().getPolygonPopup().setPopupPolygon(myPolygon);
                     myFloor.getPopups().getPolygonPopup().show(this, e.getX(), e.getY());
                 }
+
                 selectedUsed = isSelected();
             }
         }

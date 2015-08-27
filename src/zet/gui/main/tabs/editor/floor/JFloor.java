@@ -62,7 +62,7 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
 
     /** The background image. */
     private PlanImage planImage;
-    private Popups popups = new Popups(null);
+    private Popups popups = new Popups();
 
     public final GraphicsStyle graphicsStyle = new DefaultGraphicsStyle();
     
