@@ -8,8 +8,7 @@ import java.util.Objects;
 import javax.swing.JPopupMenu;
 import org.zetool.components.framework.Menu;
 import zet.gui.components.editor.EditorLocalization;
-import zet.gui.main.tabs.editor.panel.ChangeListener;
-import zet.gui.main.tabs.editor.panel.PointChangeEvent;
+import zet.gui.main.tabs.editor.panel.PointControl;
 
 /**
  *
@@ -18,13 +17,13 @@ import zet.gui.main.tabs.editor.panel.PointChangeEvent;
 public class PointPopup extends JPopupMenu {
 
     /** The localization class. */
-    private Localization loc = EditorLocalization.LOC;
+    private final Localization loc = EditorLocalization.LOC;
     private PlanEdge currentEdge;
     private PlanPoint currentPoint;
+    private PointControl pointControl;
 
     public PointPopup() {
         super();
-        recreate();
     }
 
     /**
@@ -34,26 +33,12 @@ public class PointPopup extends JPopupMenu {
     public void recreate() {
         removeAll();
         Menu.addMenuItem(this, loc.getString("gui.editor.JEditorPanel.popupDeletePoint"), e
-                -> fireChangeEvent(new PointChangeEvent(e.getSource(), currentEdge, currentPoint)));
-    }
-    
-    public void addChangeListener(ChangeListener<PointChangeEvent> l) {
-        listenerList.add(ChangeListener.class, Objects.requireNonNull(l));
+                -> pointControl.delete(currentEdge, currentPoint));
     }
 
-    public void removeChangeListener(ChangeListener<PointChangeEvent> l) {
-        listenerList.remove(ChangeListener.class, Objects.requireNonNull(l));
-    }
 
-    protected void fireChangeEvent(PointChangeEvent c) {
-        // Guaranteed to return a non-null array
-        Objects.requireNonNull(c, "ChangeEvent null!");
-        Object[] listeners = listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == ChangeListener.class) {
-                ((ChangeListener<PointChangeEvent>) listeners[i + 1]).changed(c);
-            }
-        }
+    public void setPointControl(PointControl pc) {
+        this.pointControl = pc;
     }
 
     /**
@@ -63,14 +48,18 @@ public class PointPopup extends JPopupMenu {
      * @param currentPoint The PlanPoint on which the PointPopupMenu shall be shown.
      */
     public void setPopupPoint(PlanEdge currentEdge, PlanPoint currentPoint) {
+        recreate();
         this.currentEdge = Objects.requireNonNull(currentEdge);
         this.currentPoint = Objects.requireNonNull(currentPoint);
     }
 
-    /**
-     * Prohibits serialization.
-     */
+    /** Prohibits serialization. */
     private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
+    
+    /** Prohibits serialization. */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         throw new UnsupportedOperationException("Serialization not supported");
     }
 }

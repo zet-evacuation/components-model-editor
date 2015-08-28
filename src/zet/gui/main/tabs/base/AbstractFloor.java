@@ -27,6 +27,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.Objects;
 import javax.swing.JPanel;
 import zet.gui.main.tabs.editor.control.FloorViewModel;
@@ -210,12 +211,12 @@ public class AbstractFloor extends JPanel {
     }
 
     /** Prohibits serialization. */
-    private synchronized void writeObject(java.io.ObjectOutputStream s) {
+    private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
         throw new UnsupportedOperationException("Serialization not supported");
     }
     
     /** Prohibits serialization. */
-    private void readObject(java.io.ObjectInputStream in) {
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         throw new UnsupportedOperationException("Serialization not supported");
     }
     

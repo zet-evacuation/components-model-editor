@@ -11,21 +11,13 @@ import de.zet_evakuierung.template.ExitDoor;
 import de.zet_evakuierung.template.Templates;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.function.Consumer;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.zetool.components.framework.Menu;
 import zet.gui.components.editor.EditorLocalization;
-import zet.gui.main.menu.popup.events.CreatePassageRoom;
-import zet.gui.main.menu.popup.events.CreateTemplateExitEvent;
-import zet.gui.main.menu.popup.events.CreateTemplatePassageEvent;
-import zet.gui.main.menu.popup.events.InsertPointEvent;
-import zet.gui.main.menu.popup.events.MakeExitEvent;
-import zet.gui.main.menu.popup.events.MakePassableEvent;
-import zet.gui.main.menu.popup.events.MakeTeleportEvent;
-import zet.gui.main.menu.popup.events.RevertPassage;
-import zet.gui.main.tabs.editor.panel.ChangeListener;
-import zet.gui.main.tabs.editor.panel.EdgeChangeEvent;
+import zet.gui.main.tabs.editor.panel.EdgeControl;
 
 /**
  *
@@ -41,35 +33,36 @@ public class EdgePopup extends JPopupMenu {
     JMenu mCreateExitDoors;
     private PlanPoint mousePosition;
     private PlanEdge currentEdge;
-    private Templates<Door> doors;
-    private Templates<ExitDoor> exits;
-
+    private EdgeControl edgeControl;
+    private TwoEdgeAction passageRoomCreator = new TwoEdgeAction((RoomEdge) -> {});
+    private TwoEdgeAction floorPassageCreator = new TwoEdgeAction((RoomEdge) -> {});
+    
     public EdgePopup() {
         super();
         recreate();
     }
     
     public void loadDoorTemplates(Templates<Door> doors) {
-        this.doors = doors;
         System.err.println("Door templates disabled!");
         int i = 0;
         for (Door d : doors) {
             Menu.addMenuItem(mCreateDoors, d.getName() + " (" + d.getSize() + ")", (ActionEvent e) -> {
                 Door door = doors.getDoor(Integer.parseInt(e.getActionCommand()));
-                fireChangeEvent(new CreateTemplatePassageEvent(e.getSource(), currentEdge, mousePosition, door));
+                edgeControl.setModel(currentEdge);
+                edgeControl.createTemplatePassage(mousePosition, door);
             },
             String.valueOf(i++));
         }
     }
-    
-    public void loadExitTemplates(Templates<ExitDoor> exitDoors ) {
-        this.exits = exitDoors;
+
+    public void loadExitTemplates(Templates<ExitDoor> exitDoors) {
         System.err.println("Exit templates disabled!");
         int i = 0;
         for (ExitDoor d : exitDoors) {
             Menu.addMenuItem(mCreateExitDoors, d.getName() + " (" + d.getSize() + ")", (ActionEvent e) -> {
-                ExitDoor exit = exits.getDoor(Integer.parseInt(e.getActionCommand()));
-                fireChangeEvent(new CreateTemplateExitEvent(e.getSource(), currentEdge, mousePosition, exit));
+                ExitDoor exit = exitDoors.getDoor(Integer.parseInt(e.getActionCommand()));
+                edgeControl.setModel(currentEdge);
+                edgeControl.createTemplateExit(mousePosition, exit);
             },
             String.valueOf(i++));
         }
@@ -83,47 +76,45 @@ public class EdgePopup extends JPopupMenu {
         removeAll();
 
         loc.setPrefix("gui.editor.JEditorPanel.");
-        Menu.addMenuItem(this, loc.getString("popupInsertNewPoint"), e
-                -> fireChangeEvent(new InsertPointEvent(e.getSource(), currentEdge, mousePosition)));
-        Menu.addMenuItem(this, loc.getString("popupCreatePassage"), e
-                -> fireChangeEvent(new MakePassableEvent(e.getSource(), currentEdge)));
-        Menu.addMenuItem(this, loc.getString("popupCreatePassageRoom"), e
-                -> fireChangeEvent(new CreatePassageRoom(e.getSource(), currentEdge)));
-        Menu.addMenuItem(this, loc.getString("popupCreateFloorPassage"), e
-                -> fireChangeEvent(new MakeTeleportEvent(e.getSource(), currentEdge)));
-        Menu.addMenuItem(this, loc.getString("popupCreateEvacuationPassage"), e
-                -> fireChangeEvent(new MakeExitEvent(e.getSource(), currentEdge)));
-        Menu.addMenuItem(this, loc.getString("popupShowPassageTarget"), e
-                -> System.err.println("Showing targets of passages is not yet implemented!"));
-        Menu.addMenuItem(this, loc.getString("popupRevertPassage"), e
-                -> fireChangeEvent(new RevertPassage(e.getSource(), currentEdge)));
+        Menu.addMenuItem(this, loc.getString("popupInsertNewPoint"), e -> {
+            edgeControl.setModel(currentEdge);
+            edgeControl.insertPoint(mousePosition);
+        });
+        Menu.addMenuItem(this, loc.getString("popupCreatePassage"), e -> {
+            edgeControl.setModel(currentEdge);
+            edgeControl.makePassable();
+        });
+        Menu.addMenuItem(this, loc.getString("popupCreatePassageRoom"), e -> {
+            edgeControl.setModel(currentEdge);
+            passageRoomCreator.addEdge(currentEdge);
+        });
+        Menu.addMenuItem(this, loc.getString("popupCreateFloorPassage"), e -> {
+            edgeControl.setModel(currentEdge);
+            floorPassageCreator.addEdge(currentEdge);
+        });
+        Menu.addMenuItem(this, loc.getString("popupCreateEvacuationPassage"), e -> {
+            edgeControl.setModel(currentEdge);
+            edgeControl.makeExit();
+        });
+        Menu.addMenuItem(this, loc.getString("popupShowPassageTarget"), e -> {
+            System.err.println("Showing targets of passages is not yet implemented!");
+        });
+        Menu.addMenuItem(this, loc.getString("popupRevertPassage"), e -> {
+            edgeControl.setModel(currentEdge);
+            edgeControl.revertPassage();
+        });
         mCreateDoors = Menu.addMenu(this, "Tür erzeugen");
         mCreateExitDoors = Menu.addMenu(this, "Ausgang erzeugen");
         
         loc.setPrefix("");
     }
+   
+    public void setEdgeControl(EdgeControl edgeControl) {
+        this.edgeControl = edgeControl;
+        passageRoomCreator = new TwoEdgeAction(edgeControl::createEvacuationRoom);
+        floorPassageCreator = new TwoEdgeAction(edgeControl::createFloorPassage);
+    }
     
-    public void addChangeListener(ChangeListener<EdgeChangeEvent> l) {
-        listenerList.add(ChangeListener.class, l);
-    }
-
-    public void removeChangeListener(ChangeListener<EdgeChangeEvent> l) {
-        listenerList.remove(ChangeListener.class, l);
-    }
-
-    protected void fireChangeEvent(EdgeChangeEvent c) {
-        // Guaranteed to return a non-null array
-        Object[] listeners = listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == ChangeListener.class) {
-                if (c == null) {
-                    throw new IllegalArgumentException("ChangeEvent null!");
-                }
-                ((ChangeListener<EdgeChangeEvent>) listeners[i + 1]).changed(c);
-            }
-        }
-    }
-
     /**
      * This method should be called every time before the JEdge popup menu is shown.
      *
@@ -149,18 +140,41 @@ public class EdgePopup extends JPopupMenu {
         // create door 
         ((JMenuItem) this.getComponent(7)).setVisible(!passable && mCreateDoors.getItemCount() > 0);
         // create exit door 
-        ((JMenuItem) this.getComponent(7)).setVisible(!passable && mCreateExitDoors.getItemCount() > 0);
+        ((JMenuItem) this.getComponent(8)).setVisible(!passable && mCreateExitDoors.getItemCount() > 0);
 
-        
         this.currentEdge = currentEdge;
         System.out.println("New point will be at " + mousePosition);
         this.mousePosition = mousePosition;
     }
 
-    /**
-     * Prohibits serialization.
-     */
+    /** Prohibits serialization. */
     private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
         throw new UnsupportedOperationException("Serialization not supported");
+    }
+    
+    /** Prohibits serialization. */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
+    
+    private static class TwoEdgeAction {
+        private final Consumer<RoomEdge> twoEdgeAction;
+        private RoomEdge firstEdge = null;
+
+        public TwoEdgeAction(Consumer<RoomEdge> twoEdgeAction) {
+            this.twoEdgeAction = twoEdgeAction;
+        }
+        
+        public void addEdge(PlanEdge e) {
+            if (!(e instanceof RoomEdge) ) {
+                return;
+            }
+            if (firstEdge == null) {
+                firstEdge = (RoomEdge)e;
+            } else {
+                twoEdgeAction.accept(firstEdge);
+                firstEdge = null;
+            }
+        }
     }
 }

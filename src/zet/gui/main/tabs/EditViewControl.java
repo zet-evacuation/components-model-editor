@@ -45,7 +45,7 @@ import zet.gui.main.tabs.editor.panel.EvacuationAreaControl;
 import zet.gui.main.tabs.editor.panel.FloorPanelControl;
 import zet.gui.main.tabs.editor.panel.InaccessibleAreaControl;
 import zet.gui.main.tabs.editor.panel.JInformationPanel;
-import zet.gui.main.tabs.editor.panel.PointListener;
+import zet.gui.main.tabs.editor.panel.PointControl;
 import zet.gui.main.tabs.editor.panel.RoomInformationControl;
 import zet.gui.main.tabs.editor.panel.StairAreaControl;
 import zet.gui.main.tabs.editor.panel.TeleportAreaControl;
@@ -107,9 +107,9 @@ public class EditViewControl {
     
     private void registerPopups() {
         // Set up listener for popup menus and initialize popups
-        view.getFloor().getPopups().getEdgePopup().addChangeListener(ec);
-        PointListener pc = new PointListener(control);
-        view.getFloor().getPopups().getPointPopup().addChangeListener(pc);
+        view.getFloor().getPopups().getEdgePopup().setEdgeControl(ec);
+        PointControl pc = new PointControl(control);
+        view.getFloor().getPopups().getPointPopup().setPointControl(pc);
         view.getFloor().getPopups().getPolygonPopup().setPolygonControl(rc);
         view.getFloor().getPopups().getPolygonPopup().setAssignment(control.getProject().getCurrentAssignment());
     }

@@ -3,11 +3,8 @@ package zet.gui.main.menu.popup;
 import de.zet_evakuierung.model.Area;
 import org.zetool.common.localization.Localization;
 import de.zet_evakuierung.model.Assignment;
-import de.zet_evakuierung.model.AssignmentType;
 import de.zet_evakuierung.model.PlanPolygon;
 import de.zet_evakuierung.model.Room;
-import de.zet_evakuierung.model.ZControl;
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
@@ -23,7 +20,7 @@ import zet.gui.main.tabs.editor.panel.RoomInformationControl;
 public class PolygonPopup extends JPopupMenu {
 
     /** The localization class. */
-    private Localization loc = EditorLocalization.LOC;
+    private final Localization loc = EditorLocalization.LOC;
     private RoomInformationControl polygonControl;
     private PlanPolygon<?> currentPolygon;
     private Assignment assignment;
@@ -80,11 +77,13 @@ public class PolygonPopup extends JPopupMenu {
         recreate();
     }
 
-    /**
-     * Prohibits serialization.
-     */
+    /** Prohibits serialization. */
     private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
         throw new UnsupportedOperationException("Serialization not supported");
     }
-
+    
+    /** Prohibits serialization. */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
 }

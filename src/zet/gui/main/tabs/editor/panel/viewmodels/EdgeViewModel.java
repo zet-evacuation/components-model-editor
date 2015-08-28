@@ -8,7 +8,16 @@ import de.zet_evakuierung.model.EvacuationArea;
 public interface EdgeViewModel {
 
     public enum EdgeType {
-        Exit, FloorPassage, Passage, Wall, AreaBoundary;
+        Exit(true), FloorPassage(true), Passage(true), Wall(false), AreaBoundary(false);
+        private final boolean passable;
+
+        private EdgeType(boolean passable) {
+            this.passable = passable;
+        }
+        
+        public boolean isPassable() {
+            return passable;
+        }
     }
     
     public enum EdgeOrientation {
