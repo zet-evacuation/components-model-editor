@@ -39,12 +39,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.function.Supplier;
 import javax.swing.SwingUtilities;
 import zet.gui.main.menu.popup.Popups;
 import zet.gui.main.tabs.base.AbstractFloor;
@@ -564,5 +564,15 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
                 ((SelectionListener) listeners[i + 1]).selectionCleared(selectionEvent);
             }
         }
+    }
+
+    /** Prohibits serialization. */
+    private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
+    
+    /** Prohibits serialization. */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        throw new UnsupportedOperationException("Serialization not supported");
     }
 }

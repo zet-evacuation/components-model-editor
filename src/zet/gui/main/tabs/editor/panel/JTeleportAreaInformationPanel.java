@@ -20,7 +20,6 @@ import de.zet_evakuierung.model.TeleportArea;
 import info.clearthought.layout.TableLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -85,9 +84,7 @@ public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAre
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    //areaName = txtTeleportAreaName.getText();
                     control.rename(txtTeleportAreaName.getText());
-                    //fireChangeEvent(new TeleportAreaChangeEvent(this, TeleportAreaChangeEvent.TeleportAreaChange.Rename));
                 }
             }
         });
@@ -111,23 +108,15 @@ public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAre
         row++;
     }
 
-    ItemListener targetExitChangedListener = new ItemListener() {
-        @Override
-        public void itemStateChanged(ItemEvent e) {
-            EvacuationArea targetExit = (EvacuationArea)cbxTargetExit.getSelectedItem();
-            control.setTargetExit(targetExit);
-            //fireChangeEvent(new TeleportAreaChangeEvent(this, TeleportAreaChangeEvent.TeleportAreaChange.TargetExit));
-        }
+    ItemListener targetExitChangedListener = (event) -> {
+        EvacuationArea targetExit = (EvacuationArea) cbxTargetExit.getSelectedItem();
+        control.setTargetExit(targetExit);
     };
-    ItemListener targetAreaChangedListener = new ItemListener() {
-        @Override
-        public void itemStateChanged(ItemEvent e) {
-            TeleportArea targetArea = (TeleportArea)cbxTargetArea.getSelectedItem();
-            //fireChangeEvent(new TeleportAreaChangeEvent(this, TeleportAreaChangeEvent.TeleportAreaChange.TargetArea));
-            control.setTargetArea(targetArea);
-        }
+    ItemListener targetAreaChangedListener = (event) -> {
+        TeleportArea targetArea = (TeleportArea) cbxTargetArea.getSelectedItem();
+        control.setTargetArea(targetArea);
     };
-    
+
     @Override
     public void update() {
         txtTeleportAreaName.setText(getModel().getName());
@@ -136,10 +125,11 @@ public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAre
         resetComboBoxWithoutNotification(cbxTargetExit, targetExitChangedListener, getModel().getEvacuationAreas(), getModel().getExitArea());
         resetComboBoxWithoutNotification(cbxTargetArea, targetAreaChangedListener, getModel().getTeleportAreas(), getModel().getTargetArea());
     }
-    
+
     /**
      * Removes all items from a combo box and sets new ones. Selects a given item and removes a specific item listener
      * during the replacement.
+     *
      * @param <E> the combo box element type
      * @param comboBox the combo box
      * @param itemListener the listener to be removed
@@ -147,10 +137,12 @@ public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAre
      * @param selectedItem the element to select, can be {@code null}
      */
     public static <E> void resetComboBoxWithoutNotification(JComboBox<E> comboBox, ItemListener itemListener,
-            Iterable<E> boxItems, E selectedItem ) {
+            Iterable<E> boxItems, E selectedItem) {
         comboBox.removeItemListener(itemListener);
         comboBox.removeAllItems();
-        boxItems.forEach((item) -> { comboBox.addItem(item); });
+        boxItems.forEach((item) -> {
+            comboBox.addItem(item);
+        });
         if (selectedItem == null) {
             comboBox.setSelectedIndex(-1);
         } else {
@@ -172,6 +164,13 @@ public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAre
      * Prohibits serialization.
      */
     private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
+
+    /**
+     * Prohibits serialization.
+     */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         throw new UnsupportedOperationException("Serialization not supported");
     }
 }

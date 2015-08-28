@@ -1,4 +1,3 @@
-
 package zet.gui.main.tabs.editor.panel;
 
 import de.zet_evakuierung.model.StairArea;
@@ -9,9 +8,11 @@ import zet.gui.main.tabs.editor.panel.viewmodels.StairAreaViewModelImpl;
 
 /**
  * A control class for evacuation areas.
+ *
  * @author Jan-Philipp Kappmeier
  */
 public class StairAreaControl extends AbstractInformationPanelControl<JStairAreaInformationPanel, StairAreaViewModel> {
+
     private StairArea model;
 
     public StairAreaControl(ZControl control) {
@@ -23,25 +24,22 @@ public class StairAreaControl extends AbstractInformationPanelControl<JStairArea
         return new JStairAreaInformationPanel(new StairAreaViewModel() {
         });
     }
-    
+
     public void setModel(StairArea model) {
         getView().setModel(new StairAreaViewModelImpl(model, control.getProject()));
         this.model = model;
     }
 
     void setFactorUp(double factorUp) {
-                System.out.println("Setting up factor to " + factorUp);
-                model.setSpeedFactorUp(factorUp);
+        model.setSpeedFactorUp(Math.max(0, Math.min(1, factorUp)));
     }
 
     void setFactorDown(double factorDown) {
-                System.out.println("Setting down factor to " + factorDown);
-                model.setSpeedFactorDown(factorDown);
+        model.setSpeedFactorDown(Math.max(0, Math.min(1, factorDown)));
     }
 
     void setPreset(StairPreset preset) {
-                System.out.println("Loading stair preset " + preset);
-                model.setSpeedFactorDown(preset.getSpeedFactorDown());
-                model.setSpeedFactorUp(preset.getSpeedFactorUp());
+        model.setSpeedFactorDown(preset.getSpeedFactorDown());
+        model.setSpeedFactorUp(preset.getSpeedFactorUp());
     }
 }

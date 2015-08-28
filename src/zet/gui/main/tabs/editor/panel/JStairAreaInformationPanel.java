@@ -26,6 +26,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import javax.swing.DefaultListCellRenderer;
@@ -92,11 +93,8 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaContr
                     try {
                         double factorUp = nfFloat.parse(txtStairFactorUp.getText()).doubleValue();
                         control.setFactorUp(factorUp);
-                        //fireChangeEvent(new StairAreaChangeEvent(this, StairAreaChangeEvent.StairAreaChange.UpFactor));
                     } catch (ParseException ex) {
                         //@//ZETLoader.sendError( loc.getString( "gui.error.NonParsableFloatString" ) );
-                    } catch (IllegalArgumentException ex) {
-                        //@//ZETLoader.sendError( ex.getLocalizedMessage() );
                     }
                 }
             }
@@ -126,11 +124,8 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaContr
                     try {
                         double factorDown = nfFloat.parse(txtStairFactorDown.getText()).doubleValue();
                         control.setFactorDown(factorDown);
-                        //fireChangeEvent(new StairAreaChangeEvent(this, StairAreaChangeEvent.StairAreaChange.DownFactor));
                     } catch (ParseException ex) {
                         //@//ZETLoader.sendError( loc.getString( "gui.error.NonParsableFloatString" ) );
-                    } catch (IllegalArgumentException ex) {
-                        //@//ZETLoader.sendError( ex.getLocalizedMessage() );
                     }
                 }
             }
@@ -165,7 +160,6 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaContr
                 NumberFormat nf = LocalizationManager.getManager().getFloatConverter();
                 txtStairFactorUp.setText(nf.format(preset.getSpeedFactorUp()));
                 txtStairFactorDown.setText(nf.format(preset.getSpeedFactorDown()));
-                //fireChangeEvent(new StairAreaChangeEvent(this, StairAreaChangeEvent.StairAreaChange.Preset));
                 control.setPreset(preset);
             }
         });
@@ -189,5 +183,15 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaContr
         lblStairPreset.setText(loc.getString("Stair.Preset") + ":");
         lblStairPresetDescription.setText(ZLocalization.loc.getString(((StairPreset) cbxStairPresets.getSelectedItem()).getText()));
         loc.clearPrefix();
+    }
+
+    /** Prohibits serialization. */
+    private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
+    
+    /** Prohibits serialization. */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        throw new UnsupportedOperationException("Serialization not supported");
     }
 }

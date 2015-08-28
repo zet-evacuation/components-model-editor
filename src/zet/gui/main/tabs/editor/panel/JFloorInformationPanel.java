@@ -24,6 +24,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.text.ParseException;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -219,5 +220,15 @@ public class JFloorInformationPanel extends JInformationPanel<FloorPanelControl,
         lblFloorHeight.setText(loc.getString("Floor.Height"));
         lblFloorSizeDesc.setText(loc.getString("Floor.Area"));
         loc.clearPrefix();
+    }
+
+    /** Prohibits serialization. */
+    private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
+    
+    /** Prohibits serialization. */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        throw new UnsupportedOperationException("Serialization not supported");
     }
 }

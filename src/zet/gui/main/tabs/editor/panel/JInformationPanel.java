@@ -20,6 +20,7 @@ import org.zetool.common.localization.Localization;
 import org.zetool.common.localization.LocalizationManager;
 import org.zetool.common.localization.Localized;
 import info.clearthought.layout.TableLayout;
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Objects;
 import javax.swing.JPanel;
@@ -59,10 +60,6 @@ public abstract class JInformationPanel<C, M> extends JPanel implements Localize
     private static double[] columns() {
         return new double[]{10, TableLayout.FILL, 10};
     }
-	//@//public void setControl( ZControl control ) { //@//, GUIControl guiControl ) {
-    //@//	this.projectControl = control;
-    //@//	//this.guiControl = guiControl;
-    //@//}
 
     void setControl(C control) {
         this.control = control;
@@ -81,27 +78,15 @@ public abstract class JInformationPanel<C, M> extends JPanel implements Localize
 
     @Override
     public void localize() {
-
     }
 
-//    public void addChangeListener(ChangeListener<E> l) {
-//        listenerList.add(ChangeListener.class, l);
-//    }
-//
-//    public void removeChangeListener(ChangeListener<E> l) {
-//        listenerList.remove(ChangeListener.class, l);
-//    }
-//
-//    protected void fireChangeEvent(E c) {
-//        // Guaranteed to return a non-null array
-//        Object[] listeners = listenerList.getListenerList();
-//        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-//            if (listeners[i] == ChangeListener.class) {
-//                if (c == null) {
-//                    throw new IllegalArgumentException("ChangeEvent null!");
-//                }
-//                ((ChangeListener<E>) listeners[i + 1]).changed(c);
-//            }
-//        }
-//    }
+    /** Prohibits serialization. */
+    private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
+    
+    /** Prohibits serialization. */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
 }
