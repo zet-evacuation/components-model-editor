@@ -46,10 +46,13 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 import javax.swing.SwingUtilities;
 import zet.gui.main.tabs.editor.floor.JFloor;
 
@@ -66,25 +69,14 @@ import zet.gui.main.tabs.editor.floor.JFloor;
 @SuppressWarnings("serial")
 public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
 
-    private boolean dragged = false;
-    private GraphicsStyle graphicsStyle = new DefaultGraphicsStyle();
-
-    public final void setDragged(boolean b) {
-        dragged = b;
-    }
-
-    public final boolean isDragged() {
-        return dragged;
-    }
-
-    //PropertyContainer p = PropertyContainer.getInstance();
     protected static Point lastPosition = new Point();
     protected static boolean selectedUsed = false;
+    private final GraphicsStyle graphicsStyle = new DefaultGraphicsStyle();
     /**
      * The radius of the nodes on screen. This should be less than or equal to
      * EDGE_WIDTH_ADDITION + 1
      */
-    private int NODE_PAINT_RADIUS = graphicsStyle.getPointSize();
+    private final int NODE_PAINT_RADIUS = graphicsStyle.getPointSize();
     /**
      * The radius around the nodes of the edge in which a click on the edge is
      * also counted as a click on the node. This should be less than or equal to
@@ -93,81 +85,36 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
     private final int NODE_SELECTION_RADIUS = (int) (NODE_PAINT_RADIUS * 1.5);
     private final static float dash1[] = {10.0f};
 
-    // TODO property change listener
     private final int lineWidth = graphicsStyle.getLineWidth();
-    /**
-     * The amount of space (in pixels) that is added on each side of all edges'
-     * bounding boxes, to enable them to paint themselves thicker when they are
-     * marked as selected.
-     */
     /**
      * The width of the edge when selected, in pixels. The inequality 1 + 2 *
      * EDGE_WIDTH_ADDITION >= EDGE_PAINT_WIDTH must hold.
      */
     private final float EDGE_PAINT_WIDTH = 1.5f * lineWidth;
+    /**
+     * The amount of space (in pixels) that is added on each side of all edges'
+     * bounding boxes, to enable them to paint themselves thicker when they are
+     * marked as selected.
+     */
     private final int EDGE_WIDTH_ADDITION = (int) Math.floor(Math.max(EDGE_PAINT_WIDTH, 2 * NODE_PAINT_RADIUS) / 2) + 1;
     private final BasicStroke stroke_standard = new BasicStroke(lineWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     private final BasicStroke stroke_dashed_slim = new BasicStroke(lineWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f);
     private final BasicStroke stroke_dashed_thick = new BasicStroke(EDGE_PAINT_WIDTH, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f);
     public final BasicStroke stroke_thick = new BasicStroke(EDGE_PAINT_WIDTH);
-    //@//private final GUIControl guiControl;
+    static final Point noOffset = new Point(0, 0);
+    private Color transparentForeground;
 
+    private boolean dragged = false;
     private PlanEdge selectedEdge;
     private Point selectedPoint;
     private Point dragOffset;
 
-    public void setSelectedEdge(PlanEdge edge) {
-        this.selectedEdge = edge;
-    }
-
-    public void setSelectedPoint(PlanPoint point) {
-        this.selectedPoint = point;
-    }
-
-    public void setDragOffset(Point dragOffset) {
-        this.dragOffset = dragOffset;
-    }
-
-    public Point getDragOffset() {
-        return dragOffset;
-    }
-
-    //############## EDGE RELATED FIELDS ###################
-    private class EdgeData {
-
-        /**
-         * The ds.z.Edges that eauch graphical edge representation is connected
-         * to.
-         */
-        public PlanEdge myEdge;
-        /**
-         * The location of PlanPoint1 of any edge in the <u>coordinate space of
-         * the JPolygon.</u>
-         */
-        public Point node1;
-        /**
-         * The location of PlanPoint2 of any edge in the <u>coordinate space of
-         * the JPolygon.</u>
-         */
-        public Point node2;
-        /**
-         * Indicates the direction in which each edge is drawn. See the internal
-         * comments in the {@link #paintComponent(Graphics)} method for further
-         * details.
-         */
-        public boolean startDrawingAtNode1;
-        /**
-         * The selectionPolygons of the edges.
-         */
-        private Polygon selectionPolygon;
-    }
     /**
      * A list of Edge Data that stores the Edge information in the order that
      * the edges are iterated through by the PlanPolygon iterator.
      */
     private LinkedList<EdgeData> edgeData = new LinkedList<>();
-    //############## POLYGON RELATED FIELDS ###################
-    private Color transparentForeground;
+    
     /**
      * A helper variable that is used to prevent an event from being handled a
      * second time. This is made possible through the event pass-back code from
@@ -175,7 +122,31 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
      */
     private MouseEvent lastMouseEventToPassToFloor = null;
     private boolean selected = false;
-    private Color selectedColor = Color.red;
+    private final Color selectedColor = Color.red;
+
+    //############## EDGE RELATED FIELDS ###################
+    private static class EdgeData {
+
+        /** The ds.z.Edges that eauch graphical edge representation is connected to. */
+        private final PlanEdge edge;
+        /** The location of PlanPoint1 of any edge in the <u>coordinate space of the JPolygon.</u> */
+        private final Point node1;
+        /** The location of PlanPoint2 of any edge in the <u>coordinate space of the JPolygon.</u> */
+        private final Point node2;
+        /** Indicates the direction in which each edge is drawn. See the internal comments in the
+         * {@link #paintComponent(Graphics)} method for further details. */
+        private final boolean startDrawingAtNode1;
+        /** The selectionPolygons of the edges. */
+        private final Polygon selectionPolygon;
+
+        public EdgeData(PlanEdge edge, Point node1, Point node2, boolean startDrawingAtNode1, Polygon selectionPolygon) {
+            this.edge = edge;
+            this.node1 = node1;
+            this.node2 = node2;
+            this.startDrawingAtNode1 = startDrawingAtNode1;
+            this.selectionPolygon = selectionPolygon;
+        }
+    }
 
     /**
      * Creates a new instance of {@code JPolygon}.
@@ -185,7 +156,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
      */
     public JPolygon(JFloor myFloor, Color foreground) {
         super(foreground);
-        this.myFloor = Objects.requireNonNull(myFloor);
+        this.parentFloor = Objects.requireNonNull(myFloor);
 
         setOpaque(false);
 
@@ -195,6 +166,31 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
 
         enableEvents(AWTEvent.MOUSE_EVENT_MASK);
         enableEvents(AWTEvent.MOUSE_MOTION_EVENT_MASK);
+    }
+
+    
+    public void setSelectedEdge(PlanEdge edge) {
+        this.selectedEdge = edge;
+    }
+
+    public void setSelectedPoint(PlanPoint point) {
+        this.selectedPoint = point;
+    }
+
+    public final void setDragged(boolean b) {
+        dragged = b;
+    }
+
+    public final boolean isDragged() {
+        return dragged;
+    }
+
+    public void setDragOffset(Point dragOffset) {
+        this.dragOffset = dragOffset;
+    }
+
+    public Point getDragOffset() {
+        return dragOffset;
     }
 
     /**
@@ -227,8 +223,8 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
         // Check edges
         for (EdgeData ed : edgeData) {
             if (ed.selectionPolygon.contains(p)) {
-                PlanPoint point_hit = clickHitsPlanPoint(ed, p);
-                return point_hit != null ? point_hit : ed.myEdge;
+                PlanPoint pointHit = clickHitsPlanPoint(ed, p);
+                return pointHit != null ? pointHit : ed.edge;
             }
         }
         // Check if click is in own drawing area (most general option)
@@ -247,190 +243,154 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
             removeAll();
             edgeData.clear();
         }
-
         myPolygon = p;
+        if( p == null ) {
+            return;
+        }
 
-        if (p != null) {
-            // Display myself
+        // Contains absolute bounds
+        Rectangle areabounds = CoordinateTools.translateToScreen(p.bounds());
+        // Translate start point only for non-area JPolygons - see below
+        areabounds.width += 2 * EDGE_WIDTH_ADDITION;
+        areabounds.height += 2 * EDGE_WIDTH_ADDITION;
 
-            // Contains absolute bounds
-            Rectangle areabounds = CoordinateTools.translateToScreen(p.bounds());
-            // Translate start point only for non-area JPolygons - see below
-            areabounds.width += 2 * EDGE_WIDTH_ADDITION;
-            areabounds.height += 2 * EDGE_WIDTH_ADDITION;
+        // Contains room-relative bounds
+        Rectangle bounds = new Rectangle(areabounds);
+        if (myPolygon instanceof Area) {
+            Rectangle translatedBounds = CoordinateTools.translateToScreen(((Area) myPolygon).getAssociatedRoom().getPolygon().bounds());
+            bounds.x -= translatedBounds.x;
+            bounds.y -= translatedBounds.y;
+        } else {
+            bounds.x -= EDGE_WIDTH_ADDITION;
+            bounds.y -= EDGE_WIDTH_ADDITION;
+        }
+        setBounds(bounds);
 
-            // Contains room-relative bounds
-            Rectangle bounds = new Rectangle(areabounds);
-            if (myPolygon instanceof Area) {
-                Rectangle translatedBounds = CoordinateTools.translateToScreen(((Area) myPolygon).getAssociatedRoom().getPolygon().bounds());
-                bounds.x -= translatedBounds.x;
-                bounds.y -= translatedBounds.y;
-            } else {
-                bounds.x -= EDGE_WIDTH_ADDITION;
-                bounds.y -= EDGE_WIDTH_ADDITION;
-            }
-            setBounds(bounds);
+        // This already copies the polygon
+        drawingPolygon = CoordinateTools.translateToScreen(getAWTPolygon());
+        // We only want to paint the space within the area polygon. The
+        // drawingpolygon already contains the appropriate size to do that,
+        // because it comes from the model and has no idea of EDGE_WIDTH_ADDITION
+        // But we have to shift the polygon (1) into the coordinate space of the
+        // area and (2) by EDGE_WIDTH_ADDITION because we want to paint inside
+        // the painted edges, not only inside the JEdge Objects.
+        drawingPolygon.translate(-areabounds.x + EDGE_WIDTH_ADDITION, -areabounds.y + EDGE_WIDTH_ADDITION);
 
-            // This already copies the polygon
-            drawingPolygon = CoordinateTools.translateToScreen(getAWTPolygon(myPolygon));
-            // We only want to paint the space within the area polygon. The
-            // drawingpolygon already contains the appropriate size to do that,
-            // because it comes from the model and has no idea of EDGE_WIDTH_ADDITION
-            // But we have to shift the polygon (1) into the coordinate space of the
-            // area and (2) by EDGE_WIDTH_ADDITION because we want to paint inside
-            // the painted edges, not only inside the JEdge Objects.
-            drawingPolygon.translate(-areabounds.x + EDGE_WIDTH_ADDITION, -areabounds.y + EDGE_WIDTH_ADDITION);
+        // Display subobjects
+        // TODO: Provide better implementation - Do not recreate everything each time
+        if (Room.class.isInstance(myPolygon)) {
+            Room room = Room.class.cast(myPolygon);
 
-            // Display subobjects
-            // TODO: Provide better implementation - Do not recreate everything each time
-            if (Room.class.isInstance(myPolygon)) {
-                Room room = Room.class.cast(myPolygon);
+            EnumSet<Areas> areaVisibility = EnumSet.allOf( Areas.class ); //@//GUIOptionManager.getAreaVisibility();
 
-                // Display areas
-                EnumSet<Areas> areaVisibility = EnumSet.allOf( Areas.class ); //@//GUIOptionManager.getAreaVisibility();
-                if (areaVisibility.contains(Areas.Assignment)) {
-                    for (Area a : room.getAssignmentAreas()) {
-                        JPolygon allignmentAreaPoly = new JPolygon(myFloor, graphicsStyle.getColorForArea(Areas.Assignment));
-                        add(allignmentAreaPoly);
-                        allignmentAreaPoly.displayPolygon(a.getPolygon());
-                    }
+            EnumMap<Areas, Supplier<List<? extends Area>>> areaAccessors = new EnumMap<>(Areas.class);
+            areaAccessors.put(Areas.Assignment, room::getAssignmentAreas);
+            areaAccessors.put(Areas.Delay, room::getDelayAreas);
+            areaAccessors.put(Areas.Evacuation, room::getEvacuationAreas);
+            areaAccessors.put(Areas.Save, room::getSaveAreas);
+            areaAccessors.put(Areas.Stair, room::getStairAreas);
+            areaAccessors.put(Areas.Inaccessible, room::getInaccessibleAreas);
+            areaAccessors.put(Areas.Teleportation, room::getTeleportAreas);
+
+            areaVisibility.stream().forEach((areaType) -> {
+                for (Area a : areaAccessors.get(areaType).get()) {
+                    JPolygon areaPolygon = new JPolygon(parentFloor, graphicsStyle.getColorForArea(areaType));
+                    add(areaPolygon);
+                    areaPolygon.displayPolygon(a.getPolygon());
                 }
-                if (areaVisibility.contains(Areas.Delay)) {
-                    for (Area a : room.getDelayAreas()) {
-                        JPolygon delayAreaPoly = new JPolygon(myFloor, graphicsStyle.getColorForArea(Areas.Delay));
-                        add(delayAreaPoly);
-                        delayAreaPoly.displayPolygon(a.getPolygon());
-                    }
-                }
-                if (areaVisibility.contains(Areas.Evacuation)) {
-                    for (Area a : room.getEvacuationAreas()) {
-                        JPolygon evacuationAreaPoly = new JPolygon(myFloor, graphicsStyle.getColorForArea(Areas.Evacuation));
-                        add(evacuationAreaPoly);
-                        evacuationAreaPoly.displayPolygon(a.getPolygon());
-                    }
-                }
-                if (areaVisibility.contains(Areas.Save)) {
-                    for (Area a : room.getSaveAreas()) {
-                        JPolygon saveAreaPoly = new JPolygon(myFloor, graphicsStyle.getColorForArea(Areas.Save));
-                        add(saveAreaPoly);
-                        saveAreaPoly.displayPolygon(a.getPolygon());
-                    }
-                }
-                if (areaVisibility.contains(Areas.Stair)) {
-                    for (Area a : room.getStairAreas()) {
-                        JPolygon stairAreaPoly = new JPolygon(myFloor, graphicsStyle.getColorForArea(Areas.Stair));
-                        add(stairAreaPoly);
-                        stairAreaPoly.displayPolygon(a.getPolygon());
-                    }
-                }
-                if (areaVisibility.contains(Areas.Inaccessible)) {
-                    for (Area a : room.getInaccessibleAreas()) {
-                        JPolygon inaccessiblePoly = new JPolygon(myFloor, graphicsStyle.getColorForArea(Areas.Inaccessible));
-                        add(inaccessiblePoly);
-                        inaccessiblePoly.displayPolygon(a.getPolygon());
-                    }
-                    for (Area a : room.getBarriers()) {
-                        JPolygon barrierPoly = new JPolygon(myFloor, graphicsStyle.getWallColor());
-                        add(barrierPoly);
-                        barrierPoly.displayPolygon(a.getPolygon());
-                    }
-                }
-                // TODO area visiblity for teleport areas
-                if (areaVisibility.contains(Areas.Teleportation)) {
-                    for (Area a : room.getTeleportAreas()) {
-                        JPolygon teleportPoly = new JPolygon(myFloor, graphicsStyle.getColorForArea(Areas.Teleportation));
-                        add(teleportPoly);
-                        teleportPoly.displayPolygon(a.getPolygon());
-                    }
-                }
-            }
+            });
 
-            // Display own edges - This must come after the areas have been created,
-            // otherwise the room edges will dominate the area edges.
-            for (PlanEdge e : myPolygon.getEdges()) {
-                EdgeData ed = new EdgeData();
-                ed.myEdge = e;
-
-                Point p1 = CoordinateTools.translateToScreen(e.getSource());
-                Point p2 = CoordinateTools.translateToScreen(e.getTarget());
-
-                // Compute coordinates of the PlanPoints within! the JEdge's coordinate space
-                ed.node1 = new Point(
-                        (int) p1.getX() - areabounds.x + EDGE_WIDTH_ADDITION,
-                        (int) p1.getY() - areabounds.y + EDGE_WIDTH_ADDITION);
-                ed.node2 = new Point(
-                        (int) p2.getX() - areabounds.x + EDGE_WIDTH_ADDITION,
-                        (int) p2.getY() - areabounds.y + EDGE_WIDTH_ADDITION);
-
-                // Create the selection shape
-                Point pLeft = (ed.node1.x <= ed.node2.x) ? ed.node1 : ed.node2;
-                Point pRight = (ed.node1.x <= ed.node2.x) ? ed.node2 : ed.node1;
-                Point pTop = (ed.node1.y <= ed.node2.y) ? ed.node1 : ed.node2;
-                Point pBottom = (ed.node1.y <= ed.node2.y) ? ed.node2 : ed.node1;
-
-                ed.selectionPolygon = new Polygon();
-                if (pLeft == pTop) {
-                    // Edge from left top to right bottom
-                    ed.selectionPolygon.addPoint(pLeft.x - EDGE_WIDTH_ADDITION, pLeft.y - EDGE_WIDTH_ADDITION);
-                    ed.selectionPolygon.addPoint(pLeft.x + EDGE_WIDTH_ADDITION, pLeft.y - EDGE_WIDTH_ADDITION);
-                    ed.selectionPolygon.addPoint(pRight.x + EDGE_WIDTH_ADDITION, pRight.y - EDGE_WIDTH_ADDITION);
-                    ed.selectionPolygon.addPoint(pRight.x + EDGE_WIDTH_ADDITION, pRight.y + EDGE_WIDTH_ADDITION);
-                    ed.selectionPolygon.addPoint(pRight.x - EDGE_WIDTH_ADDITION, pRight.y + EDGE_WIDTH_ADDITION);
-                    ed.selectionPolygon.addPoint(pLeft.x - EDGE_WIDTH_ADDITION, pLeft.y + EDGE_WIDTH_ADDITION);
-                } else {
-                    // Edge from left bottom to right top
-                    ed.selectionPolygon.addPoint(pLeft.x - EDGE_WIDTH_ADDITION, pLeft.y - EDGE_WIDTH_ADDITION);
-                    ed.selectionPolygon.addPoint(pRight.x - EDGE_WIDTH_ADDITION, pRight.y - EDGE_WIDTH_ADDITION);
-                    ed.selectionPolygon.addPoint(pRight.x + EDGE_WIDTH_ADDITION, pRight.y - EDGE_WIDTH_ADDITION);
-                    ed.selectionPolygon.addPoint(pRight.x + EDGE_WIDTH_ADDITION, pRight.y + EDGE_WIDTH_ADDITION);
-                    ed.selectionPolygon.addPoint(pLeft.x + EDGE_WIDTH_ADDITION, pLeft.y + EDGE_WIDTH_ADDITION);
-                    ed.selectionPolygon.addPoint(pLeft.x - EDGE_WIDTH_ADDITION, pLeft.y + EDGE_WIDTH_ADDITION);
+            if (areaVisibility.contains(Areas.Inaccessible)) {
+                for (Area a : room.getBarriers()) {
+                    JPolygon barrierPoly = new JPolygon(parentFloor, graphicsStyle.getWallColor());
+                    add(barrierPoly);
+                    barrierPoly.displayPolygon(a.getPolygon());
                 }
-
-                // Always start at the leftmost or, if that is not applicable, at
-                // the topmost node. Either the topmost or the leftmost node must
-                // exist, because both nodes may not have the same coodinates.
-                if (ed.node1.x != ed.node2.x) {
-                    ed.startDrawingAtNode1 = ed.node1.x < ed.node2.x;
-                } else {
-                    ed.startDrawingAtNode1 = ed.node1.y < ed.node2.y;
-                }
-
-                // Add the new EdgeData to our list of EdgeData
-                edgeData.add(ed);
             }
         }
 
-    // Don't repaint here - Always repaint the whole Floor. This is
+        // Display own edges - This must come after the areas have been created,
+        // otherwise the room edges will dominate the area edges.
+        for (PlanEdge e : myPolygon.getEdges()) {
+            // Add the new EdgeData to our list of EdgeData
+            edgeData.add(getEdgeData(e, areabounds));
+        }
+
+        // Don't repaint here - Always repaint the whole Floor. This is
         // necessary because otherwise the background will not be cleaned
-        //repaint ();
+    }
+    
+    private EdgeData getEdgeData(PlanEdge e, Rectangle areabounds) {
+        Point p1 = CoordinateTools.translateToScreen(e.getSource());
+        Point p2 = CoordinateTools.translateToScreen(e.getTarget());
+
+        // Compute coordinates of the PlanPoints within! the JEdge's coordinate space
+        Point node1 = new Point(
+                (int) p1.getX() - areabounds.x + EDGE_WIDTH_ADDITION,
+                (int) p1.getY() - areabounds.y + EDGE_WIDTH_ADDITION);
+        Point node2 = new Point(
+                (int) p2.getX() - areabounds.x + EDGE_WIDTH_ADDITION,
+                (int) p2.getY() - areabounds.y + EDGE_WIDTH_ADDITION);
+
+        // Create the selection shape
+        Point pLeft = (node1.x <= node2.x) ? node1 : node2;
+        Point pRight = (node1.x <= node2.x) ? node2 : node1;
+        Point pTop = (node1.y <= node2.y) ? node1 : node2;
+
+        Polygon selectionPolygon = new Polygon();
+        if (pLeft == pTop) {
+            // Edge from left top to right bottom
+            selectionPolygon.addPoint(pLeft.x - EDGE_WIDTH_ADDITION, pLeft.y - EDGE_WIDTH_ADDITION);
+            selectionPolygon.addPoint(pLeft.x + EDGE_WIDTH_ADDITION, pLeft.y - EDGE_WIDTH_ADDITION);
+            selectionPolygon.addPoint(pRight.x + EDGE_WIDTH_ADDITION, pRight.y - EDGE_WIDTH_ADDITION);
+            selectionPolygon.addPoint(pRight.x + EDGE_WIDTH_ADDITION, pRight.y + EDGE_WIDTH_ADDITION);
+            selectionPolygon.addPoint(pRight.x - EDGE_WIDTH_ADDITION, pRight.y + EDGE_WIDTH_ADDITION);
+            selectionPolygon.addPoint(pLeft.x - EDGE_WIDTH_ADDITION, pLeft.y + EDGE_WIDTH_ADDITION);
+        } else {
+            // Edge from left bottom to right top
+            selectionPolygon.addPoint(pLeft.x - EDGE_WIDTH_ADDITION, pLeft.y - EDGE_WIDTH_ADDITION);
+            selectionPolygon.addPoint(pRight.x - EDGE_WIDTH_ADDITION, pRight.y - EDGE_WIDTH_ADDITION);
+            selectionPolygon.addPoint(pRight.x + EDGE_WIDTH_ADDITION, pRight.y - EDGE_WIDTH_ADDITION);
+            selectionPolygon.addPoint(pRight.x + EDGE_WIDTH_ADDITION, pRight.y + EDGE_WIDTH_ADDITION);
+            selectionPolygon.addPoint(pLeft.x + EDGE_WIDTH_ADDITION, pLeft.y + EDGE_WIDTH_ADDITION);
+            selectionPolygon.addPoint(pLeft.x - EDGE_WIDTH_ADDITION, pLeft.y + EDGE_WIDTH_ADDITION);
+        }
+
+        // Always start at the leftmost or, if that is not applicable, at
+        // the topmost node. Either the topmost or the leftmost node must
+        // exist, because both nodes may not have the same coodinates.
+        boolean startDrawingAtNode1;
+        if (node1.x != node2.x) {
+            startDrawingAtNode1 = node1.x < node2.x;
+        } else {
+            startDrawingAtNode1 = node1.y < node2.y;
+        }
+        return new EdgeData(e, node1, node2, startDrawingAtNode1, selectionPolygon);
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Guard - May be able to prevent some bizarre exception to occur
-        // (when the number of edgeDatas is not equal to the edge count due
-        // to some unknown reason. This exception is hard to reproduce)
-        if (myPolygon == null || myPolygon.getNumberOfEdges() != edgeData.size()) {
-            SwingUtilities.invokeLater(() -> {
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException ex) {
-                }
-                repaint();
-            });
-            return;
-        }
+//        // Guard - May be able to prevent some bizarre exception to occur
+//        // (when the number of edgeDatas is not equal to the edge count due
+//        // to some unknown reason. This exception is hard to reproduce)
+//        if (myPolygon == null || myPolygon.getNumberOfEdges() != edgeData.size()) {
+//            SwingUtilities.invokeLater(() -> {
+//                try {
+//                    Thread.sleep(300);
+//                } catch (InterruptedException ex) {
+//                }
+//                repaint();
+//            });
+//            return;
+//        }
 
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         paint(g2, false);
     }
-
-    final static Point noOffset = new Point(0, 0);
 
     public void paint(Graphics2D g2, boolean drag) {
         paint(g2, noOffset, drag);
@@ -466,16 +426,16 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
         // ### Paint the Edges ###
         Iterator<EdgeData> itEdgeData = edgeData.iterator();
         for (PlanEdge myEdge : in(myPolygon.edgeIterator())) {
-            assert (itEdgeData.hasNext());
+            assert itEdgeData.hasNext();
             EdgeData ed = itEdgeData.next();
 
             // Set various paint options
-            Color edgeColor = ((myEdge instanceof TeleportEdge) ? graphicsStyle.getColorForArea(Areas.Teleportation) : getForeground());
+            Color edgeColor = (myEdge instanceof TeleportEdge) ? graphicsStyle.getColorForArea(Areas.Teleportation) : getForeground();
             if (!isDragged() || draggedCopy) {
                 g2.setPaint(edgeColor);
             } else {
-                g2.setPaint(new Color(edgeColor.getRed(), edgeColor.getGreen(), edgeColor.getBlue(), (int) (0.3 * edgeColor.getAlpha())));
-                //g2.setPaint( (myEdge instanceof TeleportEdge) ? GUIOptionManager.getTeleportEdgeColor() : getForeground() );
+                Color baseColor = myEdge instanceof TeleportEdge ? graphicsStyle.getTeleportEdgeColor() : graphicsStyle.getHighlightColor();
+                g2.setPaint(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), (int) (0.3 * baseColor.getAlpha())));
             }
             if (myEdge instanceof RoomEdge && ((RoomEdge) myEdge).isPassable()) {
                 // Paint dashed line to indicate passability
@@ -536,11 +496,10 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
                 if (toDraw != null) {
                     FontMetrics metrics = g2.getFontMetrics();
                     Rectangle nameBounds = metrics.getStringBounds(toDraw, g2).getBounds();
-                    int edge_center_x = (ed.node1.x + ed.node2.x) / 2;
-                    int edge_center_y = (ed.node1.y + ed.node2.y) / 2;
+                    Point edgeCenter = new Point((ed.node1.x + ed.node2.x) / 2, (ed.node1.y + ed.node2.y) / 2);
                     Paint oldPaint = g2.getPaint();
                     g2.setPaint(graphicsStyle.getWallColor());
-                    g2.drawString(toDraw, edge_center_x - nameBounds.width / 2, edge_center_y + nameBounds.height / 2);
+                    g2.drawString(toDraw, edgeCenter.x - nameBounds.width / 2, edgeCenter.y + nameBounds.height / 2);
                     g2.setPaint(oldPaint);
                 }
             }
@@ -567,11 +526,10 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
 
         // Redraw the polygon if it is selected. This will give better
         // if many polygons are visible at the same time.
-        if (isSelected() && !(myPolygon instanceof Barrier)) {
-            if (!isDragged() || !draggedCopy) {
-                g2.setPaint(transparentForeground);
-                g2.fillPolygon(drawingPolygon);
-            }
+        if (isSelected() && !(myPolygon instanceof Barrier)
+                && (!isDragged() || !draggedCopy)) {
+            g2.setPaint(transparentForeground);
+            g2.fillPolygon(drawingPolygon);
         }
     }
 
@@ -580,53 +538,50 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
         if (!isDragged()) {
             return;
         }
+
         final Point totalOffset = new Point(offset.x + dragOffset.x, offset.y + dragOffset.y);
-        System.out.println("Try drawing moving edge " + selectedEdge);
-
-        // ### Paint the Edges ###
         Iterator<EdgeData> itEdgeData = edgeData.iterator();
-        {
-            PlanEdge myEdge = selectedEdge;
-            assert (itEdgeData.hasNext());
+        assert itEdgeData.hasNext();
+        EdgeData ed = itEdgeData.next();
+        while (ed.edge != selectedEdge) {
+            ed = itEdgeData.next();
+        }
+        paintEdge(g2, ed, totalOffset);
+    }
+    
+    private void paintEdge(Graphics2D g2, EdgeData ed, Point totalOffset) {
+        PlanEdge myEdge = ed.edge;
 
-            EdgeData ed = itEdgeData.next();
-            while (ed.myEdge != myEdge) {
-                ed = itEdgeData.next();
-            }
+        // Set various paint options
+        if (!isDragged()) {
+            Color edgeColor = myEdge instanceof TeleportEdge ? graphicsStyle.getColorForArea(Areas.Teleportation) : getForeground();
+            g2.setPaint(edgeColor);
+        } else {
+            Color baseColor = myEdge instanceof TeleportEdge ? graphicsStyle.getTeleportEdgeColor() : graphicsStyle.getHighlightColor();
+            g2.setPaint(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), (int) (0.3 * baseColor.getAlpha())));
+        }
+        if (myEdge instanceof RoomEdge && ((RoomEdge) myEdge).isPassable()) {
+            // Paint dashed line to indicate passability
+            g2.setStroke(stroke_dashed_thick);
+        } else {
+            g2.setPaint(selectedColor);
+            g2.setStroke(stroke_thick);
+        }
+        // Drawing coordinates for nodes are node1 / node 2
+        g2.fillRect(ed.node1.x + totalOffset.x - NODE_PAINT_RADIUS, ed.node1.y + totalOffset.y - NODE_PAINT_RADIUS, 2 * NODE_PAINT_RADIUS, 2 * NODE_PAINT_RADIUS);
+        g2.fillRect(ed.node2.x + totalOffset.x - NODE_PAINT_RADIUS, ed.node2.y + totalOffset.y - NODE_PAINT_RADIUS, 2 * NODE_PAINT_RADIUS, 2 * NODE_PAINT_RADIUS);
 
-            // Set various paint options
-            Color edgeColor = ((myEdge instanceof TeleportEdge) ? graphicsStyle.getColorForArea(Areas.Teleportation) : getForeground());
-            if (!isDragged() || true) {
-                g2.setPaint(edgeColor);
-            } else {
-                g2.setPaint(new Color(edgeColor.getRed(), edgeColor.getGreen(), edgeColor.getBlue(), (int) (0.3 * edgeColor.getAlpha())));
-                //g2.setPaint( (myEdge instanceof TeleportEdge) ? GUIOptionManager.getTeleportEdgeColor() : getForeground() );
-            }
-            if (myEdge instanceof RoomEdge && ((RoomEdge) myEdge).isPassable()) {
-                // Paint dashed line to indicate passability
-                g2.setStroke(stroke_dashed_thick);
-            } else {
-                g2.setPaint(selectedColor);
-                g2.setStroke(stroke_thick);
-            }
-            // Drawing coordinates for nodes are node1 / node 2
-            if (true) {
-                g2.fillRect(ed.node1.x + totalOffset.x - NODE_PAINT_RADIUS, ed.node1.y + totalOffset.y - NODE_PAINT_RADIUS, 2 * NODE_PAINT_RADIUS, 2 * NODE_PAINT_RADIUS);
-                g2.fillRect(ed.node2.x + totalOffset.x - NODE_PAINT_RADIUS, ed.node2.y + totalOffset.y - NODE_PAINT_RADIUS, 2 * NODE_PAINT_RADIUS, 2 * NODE_PAINT_RADIUS);
-            }
-
-            // Consider the case, that there is a passable edge whose target
-            // has node1 and node2 in the reversed order (this is absolutely
-            // legal since we are using undirected edges). In this case we have
-            // to make sure that the edge is always drawn in the same direction
-            // because otherwise the line segments of the dashed lines will
-            // overlap and form a solid line. Therefore we introduced the
-            // field startAtNode1
-            if (ed.startDrawingAtNode1) {
-                g2.drawLine(ed.node1.x + totalOffset.x, ed.node1.y + totalOffset.y, ed.node2.x + totalOffset.x, ed.node2.y + totalOffset.y);
-            } else {
-                g2.drawLine(ed.node2.x + totalOffset.x, ed.node2.y + totalOffset.y, ed.node1.x + totalOffset.x, ed.node1.y + totalOffset.y);
-            }
+        // Consider the case, that there is a passable edge whose target
+        // has node1 and node2 in the reversed order (this is absolutely
+        // legal since we are using undirected edges). In this case we have
+        // to make sure that the edge is always drawn in the same direction
+        // because otherwise the line segments of the dashed lines will
+        // overlap and form a solid line. Therefore we introduced the
+        // field startAtNode1
+        if (ed.startDrawingAtNode1) {
+            g2.drawLine(ed.node1.x + totalOffset.x, ed.node1.y + totalOffset.y, ed.node2.x + totalOffset.x, ed.node2.y + totalOffset.y);
+        } else {
+            g2.drawLine(ed.node2.x + totalOffset.x, ed.node2.y + totalOffset.y, ed.node1.x + totalOffset.x, ed.node1.y + totalOffset.y);
         }
     }
 
@@ -687,35 +642,25 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
                 PlanPoint hitPoint = clickHitsPlanPoint(hitEdge, e.getPoint());
                 if (hitPoint == null) {
                     // Show edge popup
-                    if (selectedUsed == false) {
-                        System.err.println("Showing an edge popup");
-                        
+                    if (!selectedUsed) {
                         PlanPoint newPoint = new PlanPoint(CoordinateTools.translateToModel(convertPointToFloorCoordinates((Component) e.getSource(), e.getPoint())));
-                        
-                        myFloor.getPopups().getEdgePopup().setPopupEdge(hitEdge.myEdge, newPoint);
-                        myFloor.getPopups().getEdgePopup().show(this, e.getX(), e.getY());
-                        //@//guiControl.getEdgePopup().setPopupEdge(hitEdge.myEdge, guiControl.getEditView().convertPointToFloorCoordinates((Component) e.getSource(), e.getPoint()));
-                        //@//guiControl.getEdgePopup().show(this, e.getX(), e.getY());
+                        parentFloor.getPopups().getEdgePopup().setPopupEdge(hitEdge.edge, newPoint);
+                        parentFloor.getPopups().getEdgePopup().show(this, e.getX(), e.getY());
                     }
                     selectedUsed = isSelected();
                 } else {
                     // Show point popup
-                    if (selectedUsed == false) {
-                        System.err.println("Showing a point popup");
-                        myFloor.getPopups().getPointPopup().setPopupPoint(hitEdge.myEdge, hitPoint);
-                        myFloor.getPopups().getPointPopup().show(this, e.getX(), e.getY());
-                        //@//guiControl.getPointPopup().setPopupPoint(hitEdge.myEdge, hitPoint);
-                        //@//guiControl.getPointPopup().show(this, e.getX(), e.getY());
+                    if (!selectedUsed) {
+                        parentFloor.getPopups().getPointPopup().setPopupPoint(hitEdge.edge, hitPoint);
+                        parentFloor.getPopups().getPointPopup().show(this, e.getX(), e.getY());
                     }
                     selectedUsed = isSelected();
                 }
             } else if (Room.class.isInstance(myPolygon) && drawingPolygon.contains(e.getPoint())) {
-                if (selectedUsed == false) {
-                    System.err.println("Showing a polygon popup");
-                    myFloor.getPopups().getPolygonPopup().setPopupPolygon(myPolygon);
-                    myFloor.getPopups().getPolygonPopup().show(this, e.getX(), e.getY());
+                if (!selectedUsed) {
+                    parentFloor.getPopups().getPolygonPopup().setPopupPolygon(myPolygon);
+                    parentFloor.getPopups().getPolygonPopup().show(this, e.getX(), e.getY());
                 }
-
                 selectedUsed = isSelected();
             }
         }
@@ -744,7 +689,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
      * JFloor object.
      */
     public Point convertPointToFloorCoordinates( Component source, Point toConvert ) {
-        return SwingUtilities.convertPoint( source, toConvert, myFloor );
+        return SwingUtilities.convertPoint(source, toConvert, parentFloor );
     }
 
     /**
@@ -800,18 +745,21 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
      */
     private PlanPoint clickHitsPlanPoint(EdgeData ed, Point click) {
         if (ed.node1.distance(click) <= NODE_SELECTION_RADIUS) {
-            return ed.myEdge.getSource();
+            return ed.edge.getSource();
         } else if (ed.node2.distance(click) <= NODE_SELECTION_RADIUS) {
-            return ed.myEdge.getTarget();
+            return ed.edge.getTarget();
         } else {
             return null;
         }
     }
 
-    /**
-     * Prohibits serialization.
-     */
+    /** Prohibits serialization. */
     private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        throw new UnsupportedOperationException("Serialization not supported");
+    }
+    
+    /** Prohibits serialization. */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         throw new UnsupportedOperationException("Serialization not supported");
     }
 }

@@ -26,32 +26,18 @@ package gui.editor;
 @Deprecated
 public enum Areas {
 
-    /**
-     * Delay areas.
-     */
+    /** Delay areas. */
     Delay,
-    /**
-     * Stair areas.
-     */
+    /** Stair areas. */
     Stair,
-    /**
-     * Inaccessible areas.
-     */
+    /** Inaccessible areas. */
     Inaccessible,
-    /**
-     * Save areas.
-     */
+    /** Save areas. */
     Save,
-    /**
-     * Evacuation areas.
-     */
+    /** Evacuation areas. */
     Evacuation,
-    /**
-     * Assignment areas.
-     */
+    /** Assignment areas. */
     Assignment,
-    /**
-     * Teleportation areas.
-     */
+    /** Teleportation areas. */
     Teleportation;
 }

@@ -10,6 +10,7 @@ import de.zet_evakuierung.model.PlanEdge;
 import de.zet_evakuierung.model.PlanPoint;
 import de.zet_evakuierung.model.Project;
 import de.zet_evakuierung.model.Room;
+import de.zet_evakuierung.model.RoomEdge;
 import de.zet_evakuierung.model.SaveArea;
 import de.zet_evakuierung.model.StairArea;
 import de.zet_evakuierung.model.TeleportArea;
@@ -193,6 +194,11 @@ public class ComponentTestWindow extends JFrame {
                 control.addPoint(new PlanPoint(1000 + 0000,3000));
                 assert floor1.getRooms().size() == 4;
                 Room room4 = (Room)control.latestPolygon();
+                
+                RoomEdge e = room4.getPolygon().getEdge(new PlanPoint(1000, 4000), new PlanPoint(1000, 3000));
+                control.makePassable(e);
+                assert e.isPassable();
+                assert e.getLinkTarget().getRoom() == room3;
                 
                 
 //                FloorControl floorControl = new FloorControl(control, (Floor)floor1);

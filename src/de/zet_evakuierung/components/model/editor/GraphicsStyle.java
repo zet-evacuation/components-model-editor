@@ -115,4 +115,12 @@ public interface GraphicsStyle {
     default Color getDragNodeColor() {
         return Color.GRAY;
     }
+
+    default Color getTeleportEdgeColor() {
+        return Color.blue;
+    }
+
+    default public Color getHighlightColor() {
+        return Color.black;
+    }
 }
