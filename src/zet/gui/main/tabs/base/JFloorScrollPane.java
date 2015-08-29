@@ -29,7 +29,7 @@ import java.util.EnumMap;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import zet.gui.components.JZoomableRuler;
+import org.zetool.components.JZoomableRuler;
 import zet.gui.components.editor.EditorLocalization;
 
 /**
@@ -48,26 +48,26 @@ public class JFloorScrollPane<T extends AbstractFloor> extends JScrollPane imple
     private JButton unitButton;
     /** The localization string for the unit button. */
     private String locString = "gui.EditPanel.Unit.Meter";
-    private static final EnumMap<JRuler.RulerDisplayUnits, RulerStyle> styles = new EnumMap<>(JRuler.RulerDisplayUnits.class);
+    private static final EnumMap<JRuler.RulerDisplayUnit, RulerStyle> styles = new EnumMap<>(JRuler.RulerDisplayUnit.class);
 
     static {
-        styles.put(JRuler.RulerDisplayUnits.Centimeter, new RulerStyle(JRuler.RulerDisplayUnits.Decimeter, 4, 1, "gui.EditPanel.Unit.Decimeter"));
-        styles.put(JRuler.RulerDisplayUnits.Decimeter, new RulerStyle(JRuler.RulerDisplayUnits.Meter, 2, 1, "gui.EditPanel.Unit.Meter"));
-        styles.put(JRuler.RulerDisplayUnits.Meter, new RulerStyle(JRuler.RulerDisplayUnits.Inch, 10, 5, "gui.EditPanel.Unit.Inch"));
-        styles.put(JRuler.RulerDisplayUnits.Inch, new RulerStyle(JRuler.RulerDisplayUnits.Foot, 5, 1, "gui.EditPanel.Unit.Foot"));
-        styles.put(JRuler.RulerDisplayUnits.Foot, new RulerStyle(JRuler.RulerDisplayUnits.Yard, 2, 1, "gui.EditPanel.Unit.Yard"));
-        styles.put(JRuler.RulerDisplayUnits.Yard, new RulerStyle(JRuler.RulerDisplayUnits.Centimeter, 40, 10, "gui.EditPanel.Unit.Centimeter"));
+        styles.put(JRuler.RulerDisplayUnit.CENTIMETER, new RulerStyle(JRuler.RulerDisplayUnit.DECIMETER, 4, 1, "gui.EditPanel.Unit.Decimeter"));
+        styles.put(JRuler.RulerDisplayUnit.DECIMETER, new RulerStyle(JRuler.RulerDisplayUnit.METER, 2, 1, "gui.EditPanel.Unit.Meter"));
+        styles.put(JRuler.RulerDisplayUnit.METER, new RulerStyle(JRuler.RulerDisplayUnit.INCH, 10, 5, "gui.EditPanel.Unit.Inch"));
+        styles.put(JRuler.RulerDisplayUnit.INCH, new RulerStyle(JRuler.RulerDisplayUnit.FOOT, 5, 1, "gui.EditPanel.Unit.Foot"));
+        styles.put(JRuler.RulerDisplayUnit.FOOT, new RulerStyle(JRuler.RulerDisplayUnit.YARD, 2, 1, "gui.EditPanel.Unit.Yard"));
+        styles.put(JRuler.RulerDisplayUnit.YARD, new RulerStyle(JRuler.RulerDisplayUnit.CENTIMETER, 40, 10, "gui.EditPanel.Unit.Centimeter"));
     }
     
     public JFloorScrollPane( T floorPanel ) {
         super( floorPanel );
         this.floorPanel = floorPanel;
-        topRuler = new JZoomableRuler( JRuler.RulerOrientation.Horizontal, JRuler.RulerDisplayUnits.Meter );
+        topRuler = new JZoomableRuler( JRuler.RulerOrientation.HORIZONTAL, JRuler.RulerDisplayUnit.METER );
         topRuler.setBigScaleStep( 2 );
         topRuler.setSmallScaleStep( 1 );
         topRuler.setZoomFactor( 0.1 );
         topRuler.setPreferredWidth( 2400 );
-        leftRuler = new JZoomableRuler( JRuler.RulerOrientation.Vertical, JRuler.RulerDisplayUnits.Meter );
+        leftRuler = new JZoomableRuler( JRuler.RulerOrientation.VERTICAL, JRuler.RulerDisplayUnit.METER );
         leftRuler.setBigScaleStep( 2 );
         leftRuler.setSmallScaleStep( 1 );
         leftRuler.setZoomFactor( 0.1 );
@@ -156,9 +156,9 @@ public class JFloorScrollPane<T extends AbstractFloor> extends JScrollPane imple
         private final int smallStep;
         private final int bigStep;
         private final String locString;
-        private final JRuler.RulerDisplayUnits selectedUnit;
+        private final JRuler.RulerDisplayUnit selectedUnit;
 
-        public RulerStyle(JRuler.RulerDisplayUnits selectedUnit, int smallStep, int bigStep, String locString) {
+        public RulerStyle(JRuler.RulerDisplayUnit selectedUnit, int smallStep, int bigStep, String locString) {
             this.smallStep = smallStep;
             this.bigStep = bigStep;
             this.locString = locString;
