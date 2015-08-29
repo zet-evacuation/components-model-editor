@@ -93,6 +93,7 @@ public interface GraphicsStyle {
         colorForArea.put(AreaType.Save, Color.YELLOW);
         colorForArea.put(AreaType.Stair, Color.ORANGE);
         colorForArea.put(AreaType.Teleport, Color.BLUE);
+        colorForArea.put(AreaType.Barrier, getWallColor());
         return colorForArea.get(areaType);
     }
 

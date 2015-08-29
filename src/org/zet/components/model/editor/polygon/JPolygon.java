@@ -47,6 +47,7 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.swing.SwingUtilities;
 import org.zet.components.model.editor.style.DefaultGraphicsStyle;
@@ -289,8 +290,9 @@ public class JPolygon extends AbstractPolygon implements Selectable {
             areaAccessors.put(AreaType.Stair, room::getStairAreas);
             areaAccessors.put(AreaType.Inaccessible, room::getInaccessibleAreas);
             areaAccessors.put(AreaType.Teleport, room::getTeleportAreas);
+            areaAccessors.put(AreaType.Barrier, room::getBarriers);
 
-            areaVisibility.stream().forEach((areaType) -> {
+            areaVisibility.stream().forEach((AreaType areaType) -> {
                 for (Area a : areaAccessors.get(areaType).get()) {
                     JPolygon areaPolygon = new JPolygon(graphicsStyle.getColorForArea(areaType));
                     areaPolygon.setPopups(getPopups());
@@ -298,15 +300,6 @@ public class JPolygon extends AbstractPolygon implements Selectable {
                     areaPolygon.displayPolygon(a.getPolygon());
                 }
             });
-
-            if (areaVisibility.contains(AreaType.Inaccessible)) {
-                for (Area a : room.getBarriers()) {
-                    JPolygon barrierPoly = new JPolygon(graphicsStyle.getWallColor());
-                    barrierPoly.setPopups(getPopups());
-                    add(barrierPoly);
-                    barrierPoly.displayPolygon(a.getPolygon());
-                }
-            }
         }
 
         // Display own edges - This must come after the areas have been created,
