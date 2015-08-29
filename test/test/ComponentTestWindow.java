@@ -22,9 +22,9 @@ import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import zet.gui.main.tabs.EditViewControl;
-import zet.gui.main.tabs.JEditView;
-import zet.gui.main.tabs.editor.EditMode;
+import org.zet.components.model.editor.EditViewControl;
+import org.zet.components.model.editor.JEditView;
+import org.zet.components.model.editor.EditMode;
 
 /**
  *
@@ -233,7 +233,7 @@ public class ComponentTestWindow extends JFrame {
                 //JEditView editView = new JEditView();
                 EditViewControl evc = new EditViewControl(control, p.getBuildingPlan().getFloors());
                 EventServer.getInstance().registerListener(evc.getView(), ZModelRoomEvent.class);
-                evc.setEditMode(EditMode.Selection);
+                evc.setEditMode(EditMode.SELECTION);
                 JEditView editView = evc.getView();
                 
                 testWindow.add(editView);
