@@ -20,7 +20,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.Objects;
-import org.zet.components.model.editor.floor.base.JPolygon;
+import org.zet.components.model.editor.polygon.JPolygon;
 
 /**
  *
@@ -41,7 +41,7 @@ public class CustomFloorCreatePointwiseDrawer implements CustomFloorDrawer {
     @Override
     public void drawCustom(Graphics2D g2) {
         if (jPolygon == null) {
-            jPolygon = new JPolygon(floor, Color.red) {
+            jPolygon = new JPolygon(Color.red) {
             };
         }
         drawHelpLine(g2);

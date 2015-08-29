@@ -1,5 +1,5 @@
 
-package org.zet.components.model.editor.floor.base;
+package org.zet.components.model.editor.floor;
 
 /**
  * An enumeration describing all possible styles for painting a raster on the

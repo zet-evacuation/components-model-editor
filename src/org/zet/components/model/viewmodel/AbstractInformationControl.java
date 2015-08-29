@@ -3,7 +3,7 @@ package org.zet.components.model.viewmodel;
 
 import de.zet_evakuierung.model.ZControl;
 import java.util.Objects;
-import org.zet.components.model.editor.panel.Displayable;
+import org.zetool.components.framework.Displayable;
 
 /**
  *
@@ -12,7 +12,6 @@ import org.zet.components.model.editor.panel.Displayable;
  * @param <M> the viewmodel
  */
 public abstract class AbstractInformationControl<V extends Displayable<M>,M> {
-
     private final V view;
     protected M viewModel;
     protected final ZControl control;

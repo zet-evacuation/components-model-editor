@@ -22,7 +22,7 @@ import java.awt.Component;
 import java.awt.Point;
 import java.util.List;
 import javax.swing.SwingUtilities;
-import org.zet.components.model.editor.floor.base.JPolygon;
+import org.zet.components.model.editor.polygon.JPolygon;
 
 /**
  *

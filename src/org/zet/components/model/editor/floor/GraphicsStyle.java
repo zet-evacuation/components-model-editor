@@ -1,5 +1,6 @@
-package org.zet.components.model.editor.floor.base;
+package org.zet.components.model.editor.floor;
 
+import org.zet.components.model.editor.floor.RasterPaintStyle;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Paint;

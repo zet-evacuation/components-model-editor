@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import javax.swing.SwingUtilities;
-import org.zet.components.model.editor.floor.base.JPolygon;
+import org.zet.components.model.editor.polygon.JPolygon;
 
 /**
  * Handles actions that occur if mouse interaction with a {@link JFloor} occurs in selection mode.

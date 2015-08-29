@@ -15,6 +15,7 @@
  */
 package org.zet.components.model.editor.panel;
 
+import org.zetool.components.framework.Displayable;
 import info.clearthought.layout.TableLayout;
 import java.io.IOException;
 import java.text.NumberFormat;

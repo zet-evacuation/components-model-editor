@@ -16,8 +16,6 @@
 
 package org.zet.components.model.editor.floor;
 
-import org.zet.components.model.editor.floor.base.GraphicsStyle;
-import org.zet.components.model.editor.floor.base.DefaultGraphicsStyle;
 import de.zet_evakuierung.model.Area;
 import de.zet_evakuierung.model.Barrier;
 import de.zet_evakuierung.model.PlanEdge;
@@ -45,8 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import javax.swing.SwingUtilities;
-import org.zet.components.model.editor.floor.base.AbstractFloor;
-import org.zet.components.model.editor.floor.base.JPolygon;
+import org.zet.components.model.editor.polygon.JPolygon;
 import org.zet.components.model.editor.floor.popup.Popups;
 
 /**
@@ -102,7 +99,8 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
         updateOffsets(floorModel);
 
         for (Room r : floorModel.getRooms()) {
-            JPolygon roomPolygon = new JPolygon(this, graphicsStyle.getWallColor());
+            JPolygon roomPolygon = new JPolygon(graphicsStyle.getWallColor());
+            roomPolygon.setPopups(popups);
             add(roomPolygon);
             roomPolygon.displayPolygon(r.getPolygon());
             roomToPolygonMapping.put(r, roomPolygon);
@@ -139,7 +137,8 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
                 if (poly != null) {
                     poly.displayPolygon(room.getPolygon());
                 } else { // we have a new room
-                    JPolygon roomPolygon = new JPolygon(this, graphicsStyle.getWallColor());
+                    JPolygon roomPolygon = new JPolygon(graphicsStyle.getWallColor());
+                    roomPolygon.setPopups(popups);
                     add(roomPolygon);
                     roomPolygon.displayPolygon(room.getPolygon());
                     roomToPolygonMapping.put(room, roomPolygon);
@@ -373,7 +372,7 @@ public class JFloor extends AbstractFloor implements EventListener<ZModelRoomEve
     public void showPolygon(Room p) {
         //if( p instanceof Area )
         //    p = ((Area)p).getAssociatedRoom();
-        JPolygon jp = roomToPolygonMapping.get(p);//getJPolygon( p );
+        JPolygon jp = roomToPolygonMapping.get(p);
 
         if (jp != null) {
             scrollRectToVisible(jp.getBounds());

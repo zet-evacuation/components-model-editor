@@ -16,7 +16,7 @@
 
 package org.zet.components.model.editor.floor;
 
-import org.zet.components.model.editor.floor.base.JPolygon;
+import org.zet.components.model.editor.polygon.JPolygon;
 
 /**
  *

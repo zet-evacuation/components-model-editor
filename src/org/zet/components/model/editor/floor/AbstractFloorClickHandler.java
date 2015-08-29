@@ -18,14 +18,14 @@ package org.zet.components.model.editor.floor;
 
 import de.zet_evakuierung.model.PlanPoint;
 import de.zet_evakuierung.model.Room;
-import org.zet.components.model.editor.CoordinateTools;
 import java.awt.Component;
 import java.awt.Point;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import org.zet.components.model.editor.floor.base.JPolygon;
+import org.zet.components.model.editor.CoordinateTools;
+import org.zet.components.model.editor.polygon.JPolygon;
 import org.zet.components.model.editor.ZetObjectTypes;
 
 

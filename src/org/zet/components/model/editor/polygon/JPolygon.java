@@ -14,8 +14,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.zet.components.model.editor.floor.base;
+package org.zet.components.model.editor.polygon;
 
+import org.zet.components.model.editor.floor.DefaultGraphicsStyle;
+import org.zet.components.model.editor.floor.GraphicsStyle;
 import de.zet_evakuierung.model.Area;
 import de.zet_evakuierung.model.Barrier;
 import de.zet_evakuierung.model.PlanEdge;
@@ -47,7 +49,6 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 import javax.swing.SwingUtilities;
 import org.zet.components.model.editor.floor.JFloor;
@@ -152,9 +153,9 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
      * @param myFloor The {@link JFloor} on which this polygon is displayed
      * @param foreground the border color of the polygon
      */
-    public JPolygon(JFloor myFloor, Color foreground) {
+    public JPolygon(Color foreground) {
         super(foreground);
-        this.parentFloor = Objects.requireNonNull(myFloor);
+        //this.parentFloor = Objects.requireNonNull(myFloor);
 
         setOpaque(false);
 
@@ -292,7 +293,8 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
 
             areaVisibility.stream().forEach((areaType) -> {
                 for (Area a : areaAccessors.get(areaType).get()) {
-                    JPolygon areaPolygon = new JPolygon(parentFloor, graphicsStyle.getColorForArea(areaType));
+                    JPolygon areaPolygon = new JPolygon(graphicsStyle.getColorForArea(areaType));
+                    areaPolygon.setPopups(getPopups());
                     add(areaPolygon);
                     areaPolygon.displayPolygon(a.getPolygon());
                 }
@@ -300,7 +302,8 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
 
             if (areaVisibility.contains(Areas.Inaccessible)) {
                 for (Area a : room.getBarriers()) {
-                    JPolygon barrierPoly = new JPolygon(parentFloor, graphicsStyle.getWallColor());
+                    JPolygon barrierPoly = new JPolygon(graphicsStyle.getWallColor());
+                    barrierPoly.setPopups(getPopups());
                     add(barrierPoly);
                     barrierPoly.displayPolygon(a.getPolygon());
                 }
@@ -642,22 +645,22 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
                     // Show edge popup
                     if (!selectedUsed) {
                         PlanPoint newPoint = new PlanPoint(CoordinateTools.translateToModel(convertPointToFloorCoordinates((Component) e.getSource(), e.getPoint())));
-                        parentFloor.getPopups().getEdgePopup().setPopupEdge(hitEdge.edge, newPoint);
-                        parentFloor.getPopups().getEdgePopup().show(this, e.getX(), e.getY());
+                        getPopups().getEdgePopup().setPopupEdge(hitEdge.edge, newPoint);
+                        getPopups().getEdgePopup().show(this, e.getX(), e.getY());
                     }
                     selectedUsed = isSelected();
                 } else {
                     // Show point popup
                     if (!selectedUsed) {
-                        parentFloor.getPopups().getPointPopup().setPopupPoint(hitEdge.edge, hitPoint);
-                        parentFloor.getPopups().getPointPopup().show(this, e.getX(), e.getY());
+                        getPopups().getPointPopup().setPopupPoint(hitEdge.edge, hitPoint);
+                        getPopups().getPointPopup().show(this, e.getX(), e.getY());
                     }
                     selectedUsed = isSelected();
                 }
             } else if (Room.class.isInstance(myPolygon) && drawingPolygon.contains(e.getPoint())) {
                 if (!selectedUsed) {
-                    parentFloor.getPopups().getPolygonPopup().setPopupPolygon(myPolygon);
-                    parentFloor.getPopups().getPolygonPopup().show(this, e.getX(), e.getY());
+                    getPopups().getPolygonPopup().setPopupPolygon(myPolygon);
+                    getPopups().getPolygonPopup().show(this, e.getX(), e.getY());
                 }
                 selectedUsed = isSelected();
             }
@@ -687,7 +690,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
      * JFloor object.
      */
     public Point convertPointToFloorCoordinates( Component source, Point toConvert ) {
-        return SwingUtilities.convertPoint(source, toConvert, parentFloor );
+        return SwingUtilities.convertPoint(source, toConvert, getParent());
     }
 
     /**

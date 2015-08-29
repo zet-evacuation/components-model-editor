@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import org.zet.components.model.editor.JEditView.Panels;
-import org.zet.components.model.editor.floor.base.JPolygon;
+import org.zet.components.model.editor.polygon.JPolygon;
 import org.zet.components.model.editor.floor.FloorControl;
 import org.zet.components.model.editor.floor.FloorViewModel;
 import org.zet.components.model.editor.floor.SelectionEvent;

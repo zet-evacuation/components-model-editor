@@ -20,7 +20,7 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.Objects;
-import org.zet.components.model.editor.floor.base.JPolygon;
+import org.zet.components.model.editor.polygon.JPolygon;
 
 /**
  *

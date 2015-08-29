@@ -18,7 +18,7 @@ package org.zet.components.model.editor.floor;
 import java.awt.Component;
 import java.awt.Point;
 import java.util.List;
-import org.zet.components.model.editor.floor.base.JPolygon;
+import org.zet.components.model.editor.polygon.JPolygon;
 
 /**
  *

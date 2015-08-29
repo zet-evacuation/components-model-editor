@@ -23,7 +23,7 @@ import de.zet_evakuierung.model.Room;
 import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
-import org.zet.components.model.editor.panel.Displayable;
+import org.zetool.components.framework.Displayable;
 
 /**
  * View model gaining access to necessary information to display a floor.

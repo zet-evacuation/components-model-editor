@@ -19,7 +19,7 @@ package org.zet.components.model.editor.floor;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Objects;
-import org.zet.components.model.editor.floor.base.JPolygon;
+import org.zet.components.model.editor.polygon.JPolygon;
 
 /**
  *
@@ -40,7 +40,7 @@ public class CustomFloorCreateRectangleDrawer implements CustomFloorDrawer {
     @Override
     public void drawCustom(Graphics2D g2) {
         if (jPolygon == null) {
-            jPolygon = new JPolygon(floor, Color.red) {
+            jPolygon = new JPolygon(Color.red) {
             };
         }
         drawHelpRectangle(g2);

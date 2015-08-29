@@ -13,8 +13,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.zet.components.model.editor.floor.base;
+package org.zet.components.model.editor.floor;
 
+import org.zet.components.model.editor.floor.AbstractFloor;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Insets;

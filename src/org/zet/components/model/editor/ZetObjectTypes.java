@@ -16,7 +16,7 @@
 
 package org.zet.components.model.editor;
 
-import org.zet.components.model.editor.floor.base.DefaultGraphicsStyle;
+import org.zet.components.model.editor.floor.DefaultGraphicsStyle;
 import de.zet_evakuierung.model.AssignmentArea;
 import de.zet_evakuierung.model.Barrier;
 import de.zet_evakuierung.model.DelayArea;

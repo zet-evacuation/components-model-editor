@@ -14,8 +14,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.zet.components.model.editor.floor.base;
+package org.zet.components.model.editor.polygon;
 
+import org.zet.components.model.editor.floor.AbstractFloor;
 import de.zet_evakuierung.model.PlanEdge;
 import de.zet_evakuierung.model.PlanPoint;
 import de.zet_evakuierung.model.PlanPolygon;
@@ -26,7 +27,9 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Objects;
 import javax.swing.JComponent;
+import org.zet.components.model.editor.floor.popup.Popups;
 
 /**
  *
@@ -37,7 +40,8 @@ abstract public class AbstractPolygon<E extends AbstractFloor> extends JComponen
     protected Polygon drawingPolygon;
     /** Most global super type of PlanPolygon. */
     protected PlanPolygon<PlanEdge> myPolygon;
-    protected E parentFloor;
+    //protected E parentFloor;
+    private Popups popups;
 
     public AbstractPolygon( Color foreground ) {
         setForeground( foreground );
@@ -69,6 +73,14 @@ abstract public class AbstractPolygon<E extends AbstractFloor> extends JComponen
      */
     public final PlanPolygon<?> getPlanPolygon() {
         return myPolygon;
+    }
+
+    public Popups getPopups() {
+        return popups;
+    }
+
+    public void setPopups(Popups popups) {
+        this.popups = Objects.requireNonNull(popups);
     }
 
     /**

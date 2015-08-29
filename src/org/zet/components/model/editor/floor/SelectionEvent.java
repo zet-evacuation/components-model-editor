@@ -7,7 +7,7 @@ package org.zet.components.model.editor.floor;
 
 import de.zet_evakuierung.model.PlanEdge;
 import java.util.EventObject;
-import org.zet.components.model.editor.floor.base.JPolygon;
+import org.zet.components.model.editor.polygon.JPolygon;
 
 /**
  *

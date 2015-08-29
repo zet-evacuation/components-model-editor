@@ -14,7 +14,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.zet.components.model.editor.floor.base;
+package org.zet.components.model.editor.floor;
 
 import de.zet_evakuierung.model.Floor;
 import java.awt.AWTEvent;

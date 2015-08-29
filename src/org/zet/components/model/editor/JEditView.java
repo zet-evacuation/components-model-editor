@@ -43,8 +43,7 @@ import org.zetool.components.JRuler;
 import org.zet.components.model.editor.localization.EditorLocalization;
 import org.zet.components.model.editor.selectors.NamedComboBox;
 import org.zet.components.model.editor.selectors.NamedComboBoxRenderer;
-import org.zet.components.model.editor.floor.base.AbstractSplitPropertyWindow;
-import org.zet.components.model.editor.floor.base.JFloorScrollPane;
+import org.zet.components.model.editor.floor.JFloorScrollPane;
 import org.zet.components.model.editor.floor.FloorViewModel;
 
 /**
