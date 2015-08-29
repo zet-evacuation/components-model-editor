@@ -16,9 +16,8 @@
 
 package org.zet.components.model.editor.polygon;
 
-import org.zet.components.model.editor.floor.DefaultGraphicsStyle;
-import org.zet.components.model.editor.floor.GraphicsStyle;
 import de.zet_evakuierung.model.Area;
+import de.zet_evakuierung.model.AreaType;
 import de.zet_evakuierung.model.Barrier;
 import de.zet_evakuierung.model.PlanEdge;
 import de.zet_evakuierung.model.PlanPoint;
@@ -27,7 +26,6 @@ import de.zet_evakuierung.model.Room;
 import de.zet_evakuierung.model.RoomEdge;
 import de.zet_evakuierung.model.StairArea;
 import de.zet_evakuierung.model.TeleportEdge;
-import org.zet.components.model.editor.Areas;
 import org.zet.components.model.editor.CoordinateTools;
 import java.awt.AWTEvent;
 import java.awt.BasicStroke;
@@ -51,7 +49,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 import javax.swing.SwingUtilities;
-import org.zet.components.model.editor.floor.JFloor;
+import org.zet.components.model.editor.style.DefaultGraphicsStyle;
+import org.zet.components.model.editor.style.GraphicsStyle;
 import static org.zetool.common.util.Helper.in;
 import org.zetool.common.util.Selectable;
 
@@ -66,7 +65,7 @@ import org.zetool.common.util.Selectable;
  * @author Timon Kelter
  */
 @SuppressWarnings("serial")
-public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
+public class JPolygon extends AbstractPolygon implements Selectable {
 
     protected static Point lastPosition = new Point();
     protected static boolean selectedUsed = false;
@@ -280,16 +279,16 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
         if (Room.class.isInstance(myPolygon)) {
             Room room = Room.class.cast(myPolygon);
 
-            EnumSet<Areas> areaVisibility = EnumSet.allOf( Areas.class ); //@//GUIOptionManager.getAreaVisibility();
+            EnumSet<AreaType> areaVisibility = EnumSet.allOf( AreaType.class ); //@//GUIOptionManager.getAreaVisibility();
 
-            EnumMap<Areas, Supplier<List<? extends Area>>> areaAccessors = new EnumMap<>(Areas.class);
-            areaAccessors.put(Areas.Assignment, room::getAssignmentAreas);
-            areaAccessors.put(Areas.Delay, room::getDelayAreas);
-            areaAccessors.put(Areas.Evacuation, room::getEvacuationAreas);
-            areaAccessors.put(Areas.Save, room::getSaveAreas);
-            areaAccessors.put(Areas.Stair, room::getStairAreas);
-            areaAccessors.put(Areas.Inaccessible, room::getInaccessibleAreas);
-            areaAccessors.put(Areas.Teleportation, room::getTeleportAreas);
+            EnumMap<AreaType, Supplier<List<? extends Area>>> areaAccessors = new EnumMap<>(AreaType.class);
+            areaAccessors.put(AreaType.Assignment, room::getAssignmentAreas);
+            areaAccessors.put(AreaType.Delay, room::getDelayAreas);
+            areaAccessors.put(AreaType.Evacuation, room::getEvacuationAreas);
+            areaAccessors.put(AreaType.Save, room::getSaveAreas);
+            areaAccessors.put(AreaType.Stair, room::getStairAreas);
+            areaAccessors.put(AreaType.Inaccessible, room::getInaccessibleAreas);
+            areaAccessors.put(AreaType.Teleport, room::getTeleportAreas);
 
             areaVisibility.stream().forEach((areaType) -> {
                 for (Area a : areaAccessors.get(areaType).get()) {
@@ -300,7 +299,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
                 }
             });
 
-            if (areaVisibility.contains(Areas.Inaccessible)) {
+            if (areaVisibility.contains(AreaType.Inaccessible)) {
                 for (Area a : room.getBarriers()) {
                     JPolygon barrierPoly = new JPolygon(graphicsStyle.getWallColor());
                     barrierPoly.setPopups(getPopups());
@@ -431,7 +430,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
             EdgeData ed = itEdgeData.next();
 
             // Set various paint options
-            Color edgeColor = (myEdge instanceof TeleportEdge) ? graphicsStyle.getColorForArea(Areas.Teleportation) : getForeground();
+            Color edgeColor = (myEdge instanceof TeleportEdge) ? graphicsStyle.getColorForArea(AreaType.Teleport) : getForeground();
             if (!isDragged() || draggedCopy) {
                 g2.setPaint(edgeColor);
             } else {
@@ -555,7 +554,7 @@ public class JPolygon extends AbstractPolygon<JFloor> implements Selectable {
 
         // Set various paint options
         if (!isDragged()) {
-            Color edgeColor = myEdge instanceof TeleportEdge ? graphicsStyle.getColorForArea(Areas.Teleportation) : getForeground();
+            Color edgeColor = myEdge instanceof TeleportEdge ? graphicsStyle.getColorForArea(AreaType.Teleport) : getForeground();
             g2.setPaint(edgeColor);
         } else {
             Color baseColor = myEdge instanceof TeleportEdge ? graphicsStyle.getTeleportEdgeColor() : graphicsStyle.getHighlightColor();

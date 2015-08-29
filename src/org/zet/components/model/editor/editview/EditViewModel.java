@@ -14,7 +14,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.zet.components.model.editor;
+package org.zet.components.model.editor.editview;
 
 import java.util.Collections;
 import java.util.List;

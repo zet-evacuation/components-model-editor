@@ -1,5 +1,3 @@
-
-
 package org.zet.components.model.editor.floor;
 
 import java.util.EventListener;

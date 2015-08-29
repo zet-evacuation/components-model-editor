@@ -48,7 +48,7 @@ public class CustomFloorCreateRectangleDrawer implements CustomFloorDrawer {
 
     private void drawHelpRectangle(Graphics2D g2) {
         if (handler.isCreationActive()) {
-            Color t = handler.getZetObjectType().getEditorColor();
+            Color t = CustomFloorDrawer.colorForType(handler.getZetObjectType(), floor);
             g2.setPaint(t);
             g2.setStroke(jPolygon.stroke_thick);
             CustomFloorSelectionDrawer.drawRect(g2, handler.getLastClick(), handler.getCurrentPosition());

@@ -15,12 +15,12 @@
  */
 package org.zet.components.model.editor.floor;
 
-import org.zet.components.model.editor.CoordinateTools;
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import org.zet.components.model.editor.CoordinateTools;
 
 /**
  *

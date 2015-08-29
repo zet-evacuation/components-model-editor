@@ -13,10 +13,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+package org.zet.components.model.editor.floor;
 
-package org.zet.components.model.editor;
-
-import org.zet.components.model.editor.floor.DefaultGraphicsStyle;
+import de.zet_evakuierung.model.AreaType;
 import de.zet_evakuierung.model.AssignmentArea;
 import de.zet_evakuierung.model.Barrier;
 import de.zet_evakuierung.model.DelayArea;
@@ -26,9 +25,7 @@ import de.zet_evakuierung.model.Room;
 import de.zet_evakuierung.model.SaveArea;
 import de.zet_evakuierung.model.StairArea;
 import de.zet_evakuierung.model.TeleportArea;
-import java.awt.Color;
 import java.util.Objects;
-
 
 /**
  *
@@ -36,35 +33,29 @@ import java.util.Objects;
  */
 public enum ZetObjectTypes {
     // todo: remove duplication with graphics style and here
-    Room( Room.class, new DefaultGraphicsStyle().getWallColor() ),
-    Barrier( Barrier.class, new DefaultGraphicsStyle().getWallColor() ),
-    Inaccessible( InaccessibleArea.class, new DefaultGraphicsStyle().getColorForArea(Areas.Inaccessible) ),
-    Assignment( AssignmentArea.class, new DefaultGraphicsStyle().getColorForArea(Areas.Assignment) ),
-    Delay( DelayArea.class, new DefaultGraphicsStyle().getColorForArea(Areas.Delay) ),
-    Stair( StairArea.class, new DefaultGraphicsStyle().getColorForArea(Areas.Stair) ),
-    Save( SaveArea.class, new DefaultGraphicsStyle().getColorForArea(Areas.Save) ),
-    Evacuation( EvacuationArea.class, new DefaultGraphicsStyle().getColorForArea(Areas.Evacuation) ),
-    Teleport( TeleportArea.class, new DefaultGraphicsStyle().getColorForArea(Areas.Teleportation) );
+    Room( Room.class, null ),
+    Barrier( Barrier.class, AreaType.Inaccessible ),
+    Inaccessible( InaccessibleArea.class, AreaType.Inaccessible),
+    Assignment( AssignmentArea.class, AreaType.Assignment),
+    Delay( DelayArea.class, AreaType.Delay),
+    Stair( StairArea.class, AreaType.Stair),
+    Save( SaveArea.class, AreaType.Save),
+    Evacuation( EvacuationArea.class, AreaType.Evacuation),
+    Teleport( TeleportArea.class, AreaType.Teleport);
 
-    private Class<?>objectClass;
-    private Color editColor;
+    private final Class<?>objectClass;
+    public final AreaType area;
 
-    private ZetObjectTypes( Class<?> c, Color color ) {
+    private ZetObjectTypes( Class<?> c, AreaType area ) {
         this.objectClass = Objects.requireNonNull( c );
-        this.editColor = Objects.requireNonNull( color );
-    }
-
-    public Color getEditorColor() {
-        return editColor;
+        this.area = area;
     }
 
     public boolean isArea() {
-        return this == Room ? false : true;
+        return this != Room;
     }
 
     public Class<?> getObjectClass() {
         return objectClass;
     }
-
-
 }

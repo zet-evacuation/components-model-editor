@@ -1,4 +1,4 @@
-/* zet evacuation tool copyright (c) 2007-14 zet evacuation team
+/* zet evacuation tool copyright (c) 2007-15 zet evacuation team
  *
  * This program is free software; you can redistribute it and/or
  * as published by the Free Software Foundation; either version 2
@@ -13,19 +13,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
-package org.zet.components.model.editor;
-
-import javax.swing.DefaultComboBoxModel;
-import org.zet.components.model.editor.floor.FloorViewModel;
+package org.zet.components.model.editor.floor;
 
 /**
- * An immutable combo mox model displaying floors.
+ *
  * @author Jan-Philipp Kappmeier
  */
-public class FloorComboBoxModel extends DefaultComboBoxModel<FloorViewModel> {
-    public FloorComboBoxModel(EditViewModel model) {
-        super(model.getFloors().toArray(new FloorViewModel[model.getFloorCount()]));
-        setSelectedItem(model.getCurrentFloor());
-    }
+public enum EditMode {
+    /** Select rooms or polygon edges and move. *//** Select rooms or polygon edges and move. *//** Select rooms or polygon edges and move. *//** Select rooms or polygon edges and move. *//** Select rooms or polygon edges and move. *//** Select rooms or polygon edges and move. *//** Select rooms or polygon edges and move. *//** Select rooms or polygon edges and move. */
+    SELECTION,
+    /** Create new polygons pointwise. */
+    CREATE_POINTWISE,
+    /** Create new rectangular polygons. */
+    CREATE_RECTANGLE;
 }

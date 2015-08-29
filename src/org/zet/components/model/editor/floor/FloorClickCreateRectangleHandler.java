@@ -25,7 +25,6 @@ import java.awt.Point;
 import java.util.LinkedList;
 import java.util.List;
 import org.zet.components.model.editor.polygon.JPolygon;
-import org.zet.components.model.editor.ZetObjectTypes;
 
 /**
  *

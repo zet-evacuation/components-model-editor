@@ -20,7 +20,6 @@ import org.zetool.common.util.SelectedElements;
 import de.zet_evakuierung.model.PlanEdge;
 import org.zet.components.model.editor.polygon.JPolygon;
 
-
 /**
  *
  * @author Jan-Philipp Kappmeier

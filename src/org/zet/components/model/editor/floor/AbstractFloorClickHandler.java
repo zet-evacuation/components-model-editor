@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Objects;
 import org.zet.components.model.editor.CoordinateTools;
 import org.zet.components.model.editor.polygon.JPolygon;
-import org.zet.components.model.editor.ZetObjectTypes;
 
 
 /**
@@ -130,7 +129,6 @@ public abstract class AbstractFloorClickHandler implements FloorClickHandler {
         this.lastClick = p;
     }
 
-    //@// Only interesting for creation, thus probably move down to abstract class
     public ZetObjectTypes getZetObjectType() {
         return zetObjectType;
     }

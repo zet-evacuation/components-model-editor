@@ -14,7 +14,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.zet.components.model.editor;
+package org.zet.components.model.editor.editview;
 
 import de.zet_evakuierung.model.AssignmentArea;
 import de.zet_evakuierung.model.DelayArea;
@@ -28,7 +28,9 @@ import de.zet_evakuierung.model.ZControl;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import org.zet.components.model.editor.JEditView.Panels;
+import org.zet.components.model.editor.floor.EditMode;
+import org.zet.components.model.editor.editview.JEditView.Panels;
+import org.zet.components.model.editor.floor.ZetObjectTypes;
 import org.zet.components.model.editor.polygon.JPolygon;
 import org.zet.components.model.editor.floor.FloorControl;
 import org.zet.components.model.editor.floor.FloorViewModel;

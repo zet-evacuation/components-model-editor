@@ -15,6 +15,7 @@
  */
 package org.zet.components.model.editor.floor;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 /**
@@ -28,4 +29,12 @@ public interface CustomFloorDrawer {
 
     final static CustomFloorDrawer DEFAULT = (Graphics2D) -> {
     };
+    
+    static Color colorForType(ZetObjectTypes type, JFloor floor) {
+        if (type.isArea()) {
+            return floor.graphicsStyle.getColorForArea(type.area);
+        } else {
+            return floor.graphicsStyle.getWallColor();
+        }
+    }
 }

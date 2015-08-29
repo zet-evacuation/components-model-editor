@@ -45,6 +45,8 @@ import java.util.Map.Entry;
 import javax.swing.SwingUtilities;
 import org.zet.components.model.editor.polygon.JPolygon;
 import org.zet.components.model.editor.floor.popup.Popups;
+import org.zet.components.model.editor.style.DefaultGraphicsStyle;
+import org.zet.components.model.editor.style.GraphicsStyle;
 
 /**
  * Graphical representation of a Floor from the BuildingPlan.

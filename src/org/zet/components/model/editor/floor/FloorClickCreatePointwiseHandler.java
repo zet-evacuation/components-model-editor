@@ -21,12 +21,11 @@ import de.zet_evakuierung.model.Barrier;
 import de.zet_evakuierung.model.PlanPoint;
 import de.zet_evakuierung.model.PlanPolygon;
 import de.zet_evakuierung.model.Room;
-import org.zet.components.model.editor.CoordinateTools;
 import java.awt.Component;
 import java.awt.Point;
 import java.util.List;
+import org.zet.components.model.editor.CoordinateTools;
 import org.zet.components.model.editor.polygon.JPolygon;
-import org.zet.components.model.editor.ZetObjectTypes;
 
 /**
  *

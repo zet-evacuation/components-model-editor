@@ -13,8 +13,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.zet.components.model.editor;
+package org.zet.components.model.editor.editview;
 
+import de.zet_evakuierung.model.AreaType;
 import org.zetool.common.localization.Localization;
 import de.zet_evakuierung.model.FloorInterface;
 import de.zet_evakuierung.model.Floor;
@@ -433,7 +434,7 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
      *
      * @param mode
      */
-    public void changeAreaView(ArrayList<Areas> mode) {
+    public void changeAreaView(ArrayList<AreaType> mode) {
         // EnumSet.copyOf will not work for empty lists
         //@//GUIOptionManager.getAreaVisibility();
         //@//GUIOptionManager.setAreaVisibility( mode.isEmpty() ? EnumSet.noneOf( Areas.class ) : EnumSet.copyOf( mode ) );

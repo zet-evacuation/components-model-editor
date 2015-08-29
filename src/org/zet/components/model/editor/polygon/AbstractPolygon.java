@@ -16,7 +16,6 @@
 
 package org.zet.components.model.editor.polygon;
 
-import org.zet.components.model.editor.floor.AbstractFloor;
 import de.zet_evakuierung.model.PlanEdge;
 import de.zet_evakuierung.model.PlanPoint;
 import de.zet_evakuierung.model.PlanPolygon;
@@ -33,10 +32,9 @@ import org.zet.components.model.editor.floor.popup.Popups;
 
 /**
  *
- * @param <E>
  * @author Jan-Philipp Kappmeier
  */
-abstract public class AbstractPolygon<E extends AbstractFloor> extends JComponent {
+abstract public class AbstractPolygon extends JComponent {
     protected Polygon drawingPolygon;
     /** Most global super type of PlanPolygon. */
     protected PlanPolygon<PlanEdge> myPolygon;

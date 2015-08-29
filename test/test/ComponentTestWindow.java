@@ -22,9 +22,9 @@ import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import org.zet.components.model.editor.EditViewControl;
-import org.zet.components.model.editor.JEditView;
-import org.zet.components.model.editor.EditMode;
+import org.zet.components.model.editor.editview.EditViewControl;
+import org.zet.components.model.editor.editview.JEditView;
+import org.zet.components.model.editor.floor.EditMode;
 
 /**
  *

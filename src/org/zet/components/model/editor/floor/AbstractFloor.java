@@ -16,6 +16,8 @@
 
 package org.zet.components.model.editor.floor;
 
+import org.zet.components.model.editor.style.RasterPaintStyle;
+import org.zet.components.model.editor.style.GraphicsStyle;
 import de.zet_evakuierung.model.Floor;
 import java.awt.AWTEvent;
 import java.awt.Dimension;
@@ -29,7 +31,6 @@ import java.io.IOException;
 import java.util.Objects;
 import javax.swing.JPanel;
 import org.zet.components.model.editor.CoordinateTools;
-import org.zet.components.model.editor.floor.FloorViewModel;
 
 /**
  * A panel displaying a {@link Floor}.

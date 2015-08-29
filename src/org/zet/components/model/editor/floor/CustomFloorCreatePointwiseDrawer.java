@@ -52,10 +52,11 @@ public class CustomFloorCreatePointwiseDrawer implements CustomFloorDrawer {
         if (handler.isCreationStarted() && handler.getLastClick() != null) {
             Point p1 = handler.getLastClick();
             Point p2 = handler.getCurrentPosition();
-            Color t = handler.getZetObjectType().getEditorColor();
+            Color t = CustomFloorDrawer.colorForType(handler.getZetObjectType(), floor);
             g2.setPaint(t);
             g2.setStroke(jPolygon.stroke_thick);
             g2.drawLine(p1.x, p1.y, p2.x, p2.y);
         }
     }
+    
 }

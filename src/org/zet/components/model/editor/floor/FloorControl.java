@@ -25,8 +25,6 @@ import de.zet_evakuierung.model.ZControl;
 import de.zet_evakuierung.model.exception.AssignmentException;
 import java.util.List;
 import java.util.Objects;
-import org.zet.components.model.editor.EditMode;
-import org.zet.components.model.editor.ZetObjectTypes;
 
 /**
  * Control class (in the MVC model) for a floor in the zet model. The class is coupled to a floor model instance but

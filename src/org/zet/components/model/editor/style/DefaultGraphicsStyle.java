@@ -1,4 +1,4 @@
-package org.zet.components.model.editor.floor;
+package org.zet.components.model.editor.style;
 
 /**
  *
