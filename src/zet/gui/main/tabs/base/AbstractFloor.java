@@ -38,11 +38,11 @@ import zet.gui.main.tabs.editor.control.FloorViewModel;
  */
 @SuppressWarnings("serial")
 public class AbstractFloor extends JPanel {
-	//@//private int rasterSnap;
+    //@//private int rasterSnap;
     //@//private int bigRaster;
     //@//private int smallRaster;
 
-	// Variables for floor viewing
+    // Variables for floor viewing
     //@//protected int min_x,  min_y,  max_x,  max_y; // now in defaultArea
     protected int floorMin_x, floorMin_y, floorMax_x, floorMax_y;
     protected int xOffset, yOffset;
@@ -182,7 +182,7 @@ public class AbstractFloor extends JPanel {
      * changed.
      */
     final public void reloadValues() {
-		//@//min_x = PropertyContainer.getInstance().getAsInt( "editor.options.view.size.minx" );
+        //@//min_x = PropertyContainer.getInstance().getAsInt( "editor.options.view.size.minx" );
         //@//min_y = PropertyContainer.getInstance().getAsInt( "editor.options.view.size.miny" );
         //@//max_x = PropertyContainer.getInstance().getAsInt( "editor.options.view.size.maxx" );
         //@//max_y = PropertyContainer.getInstance().getAsInt( "editor.options.view.size.maxy" );

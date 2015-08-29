@@ -41,12 +41,12 @@ public class PolygonPopup extends JPopupMenu {
                 loc.getString("gui.editor.JEditorPanel.popupDefaultAssignmentArea") + " in room " + r.getName());
         if (assignment != null) {
             System.out.println(assignment.toString());
-            assignment.getAssignmentTypes().stream().forEach((t) -> {
+            assignment.getAssignmentTypes().stream().forEach((t) -> 
                 Menu.addMenuItem(createAssignmentAreaMenu, t.getName(), e -> {
                     polygonControl.setModel(r);
                     polygonControl.fillWithAssignmentArea(t);
-                });
-            });
+                })
+            );
             createAssignmentAreaMenu.setEnabled(true);
         } else {
             createAssignmentAreaMenu.setEnabled(false);
@@ -72,7 +72,6 @@ public class PolygonPopup extends JPopupMenu {
      * @param currentPolygon The PlanPolygon that is displayed by the JPolygon on which the PopupMenu shall be shown.
      */
     public void setPopupPolygon(PlanPolygon<?> currentPolygon) {
-        System.out.println("Popup now belongs to " + currentPolygon.toString());
         this.currentPolygon = currentPolygon;
         recreate();
     }

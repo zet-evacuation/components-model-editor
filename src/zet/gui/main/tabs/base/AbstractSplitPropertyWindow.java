@@ -29,32 +29,32 @@ import javax.swing.JSplitPane;
  * @author Jan-Philipp Kappmeier
  */
 public abstract class AbstractSplitPropertyWindow<T extends JComponent> extends JPanel implements Localized {
-	/** The class-type of the container. This is set only one single time in the constructor. */
-	private T leftPanel;
-	JSplitPane splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, false );
+    /** The class-type of the container. This is set only one single time in the constructor. */
+    private final T leftPanel;
+    JSplitPane splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, false );
 
-	public AbstractSplitPropertyWindow( T panel ) {
-		leftPanel = panel;
-	}
+    public AbstractSplitPropertyWindow( T panel ) {
+        leftPanel = panel;
+    }
 
-	protected final void addComponents() {
-		setLayout( new BorderLayout() );
-		// Initialize the window as a whole by putting everything together
-		//JSplitPane splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, false, getLeftPanel(), createEastBar() );#
-		splitPane.setRightComponent( createEastBar() );
-		splitPane.setLeftComponent( getLeftPanel() );
-		splitPane.setResizeWeight( 1.0d );
-		splitPane.setPreferredSize( new Dimension( 800, 600 ) );
-		splitPane.setDividerLocation( 680 );
-		splitPane.setOneTouchExpandable( false );
-		add( splitPane, BorderLayout.CENTER );
-	}
+    protected final void addComponents() {
+        setLayout( new BorderLayout() );
+        // Initialize the window as a whole by putting everything together
+        //JSplitPane splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, false, getLeftPanel(), createEastBar() );#
+        splitPane.setRightComponent( createEastBar() );
+        splitPane.setLeftComponent( getLeftPanel() );
+        splitPane.setResizeWeight( 1.0d );
+        splitPane.setPreferredSize( new Dimension( 800, 600 ) );
+        splitPane.setDividerLocation( 680 );
+        splitPane.setOneTouchExpandable( false );
+        add( splitPane, BorderLayout.CENTER );
+    }
 
-	abstract protected JPanel createEastBar();
+    abstract protected JPanel createEastBar();
 
-	public T getLeftPanel() {
-		return leftPanel;
-	}
+    public T getLeftPanel() {
+        return leftPanel;
+    }
 
-	abstract protected String getAdditionalTitleBarText();
+    abstract protected String getAdditionalTitleBarText();
 }

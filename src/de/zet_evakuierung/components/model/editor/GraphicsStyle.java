@@ -4,6 +4,7 @@ import gui.editor.Areas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Paint;
+import java.util.EnumMap;
 import javax.swing.JLabel;
 import zet.gui.main.tabs.base.RasterPaintStyle;
 
@@ -84,24 +85,16 @@ public interface GraphicsStyle {
         return Color.BLACK;
     }
     
-    default Color getColorForArea(Areas a) {
-        switch(a) {
-            case Assignment:
-                return Color.decode( "#0066FF" );
-            case Delay:
-                return Color.RED;
-            case Evacuation:
-                return Color.GREEN;
-            case Inaccessible:
-                return Color.BLACK;
-            case Save:
-                return Color.YELLOW;
-            case Stair:
-                return Color.ORANGE;
-            case Teleportation:
-                return Color.BLUE;
-        }
-        throw new AssertionError("Unknown Area type");
+    default Color getColorForArea(Areas areaType) {
+        EnumMap<Areas, Color> colorForArea = new EnumMap<>(Areas.class);
+        colorForArea.put(Areas.Assignment, Color.decode("#0066FF"));
+        colorForArea.put(Areas.Delay, Color.RED);
+        colorForArea.put(Areas.Evacuation, Color.GREEN);
+        colorForArea.put(Areas.Inaccessible, Color.BLACK);
+        colorForArea.put(Areas.Save, Color.YELLOW);
+        colorForArea.put(Areas.Stair, Color.ORANGE);
+        colorForArea.put(Areas.Teleportation, Color.BLUE);
+        return colorForArea.get(areaType);
     }
     
     default Font getLabelFont() {

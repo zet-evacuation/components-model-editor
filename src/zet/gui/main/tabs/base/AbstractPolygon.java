@@ -65,16 +65,21 @@ abstract public class AbstractPolygon<E extends AbstractFloor> extends JComponen
 
     /**
      * Returns the {@link de.zet_evakuierung.model.PlanPolygon} represented by this instance.
+     *
      * @return the polygon
      */
-    public final PlanPolygon<?> getPlanPolygon () { return myPolygon; }
+    public final PlanPolygon<?> getPlanPolygon() {
+        return myPolygon;
+    }
 
     /**
-     * Returns the real polygon area within the coordinate space of the bounding
-     * box of this {@code AbstractPolygon}.
+     * Returns the real polygon area within the coordinate space of the bounding box of this {@code AbstractPolygon}.
+     *
      * @return the real polygon area of this polygon
      */
-    public final Polygon getDrawingPolygon () { return drawingPolygon; }
+    public final Polygon getDrawingPolygon() {
+        return drawingPolygon;
+    }
 
     /**
      *

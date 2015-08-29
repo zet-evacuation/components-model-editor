@@ -13,7 +13,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package zet.gui.main.tabs.base;
 
 import org.zetool.common.localization.Localized;
@@ -26,6 +25,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.EnumMap;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -48,7 +48,17 @@ public class JFloorScrollPane<T extends AbstractFloor> extends JScrollPane imple
     private JButton unitButton;
     /** The localization string for the unit button. */
     private String locString = "gui.EditPanel.Unit.Meter";
+    private static final EnumMap<JRuler.RulerDisplayUnits, RulerStyle> styles = new EnumMap<>(JRuler.RulerDisplayUnits.class);
 
+    static {
+        styles.put(JRuler.RulerDisplayUnits.Centimeter, new RulerStyle(JRuler.RulerDisplayUnits.Decimeter, 4, 1, "gui.EditPanel.Unit.Decimeter"));
+        styles.put(JRuler.RulerDisplayUnits.Decimeter, new RulerStyle(JRuler.RulerDisplayUnits.Meter, 2, 1, "gui.EditPanel.Unit.Meter"));
+        styles.put(JRuler.RulerDisplayUnits.Meter, new RulerStyle(JRuler.RulerDisplayUnits.Inch, 10, 5, "gui.EditPanel.Unit.Inch"));
+        styles.put(JRuler.RulerDisplayUnits.Inch, new RulerStyle(JRuler.RulerDisplayUnits.Foot, 5, 1, "gui.EditPanel.Unit.Foot"));
+        styles.put(JRuler.RulerDisplayUnits.Foot, new RulerStyle(JRuler.RulerDisplayUnits.Yard, 2, 1, "gui.EditPanel.Unit.Yard"));
+        styles.put(JRuler.RulerDisplayUnits.Yard, new RulerStyle(JRuler.RulerDisplayUnits.Centimeter, 40, 10, "gui.EditPanel.Unit.Centimeter"));
+    }
+    
     public JFloorScrollPane( T floorPanel ) {
         super( floorPanel );
         this.floorPanel = floorPanel;
@@ -71,60 +81,22 @@ public class JFloorScrollPane<T extends AbstractFloor> extends JScrollPane imple
         unitButton.setFont( new Font( "SansSerif", Font.PLAIN, 11 ) );
         unitButton.setMargin( new Insets( 2, 2, 2, 2 ) );
         unitButton.setActionCommand( "unit" );
+        
+       
         unitButton.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed( ActionEvent e ) {
-                if( e.getActionCommand().equals( "unit" ) ) {
-                    JRuler.RulerDisplayUnits selectedUnit = JRuler.RulerDisplayUnits.Centimeter;
-                    int bigStep = 40;
-                    int smallStep = 10;
-                    switch( topRuler.getDisplayUnit() ) {
-                        case Centimeter:
-                            selectedUnit = JRuler.RulerDisplayUnits.Decimeter;
-                            bigStep = 4;
-                            smallStep = 1;
-                            locString = "gui.EditPanel.Unit.Decimeter";
-                            break;
-                        case Decimeter:
-                            selectedUnit = JRuler.RulerDisplayUnits.Meter;
-                            bigStep = 2;
-                            smallStep = 1;
-                            locString = "gui.EditPanel.Unit.Meter";
-                            break;
-                        case Meter:
-                            selectedUnit = JRuler.RulerDisplayUnits.Inch;
-                            bigStep = 10;
-                            smallStep = 5;
-                            locString = "gui.EditPanel.Unit.Inch";
-                            break;
-                        case Inch:
-                            selectedUnit = JRuler.RulerDisplayUnits.Foot;
-                            bigStep = 5;
-                            smallStep = 1;
-                            locString = "gui.EditPanel.Unit.Foot";
-                            break;
-                        case Foot:
-                            selectedUnit = JRuler.RulerDisplayUnits.Yard;
-                            bigStep = 2;
-                            smallStep = 1;
-                            locString = "gui.EditPanel.Unit.Yard";
-                            break;
-                        case Yard:
-                            selectedUnit = JRuler.RulerDisplayUnits.Centimeter;
-                            bigStep = 40;
-                            smallStep = 10;
-                            locString = "gui.EditPanel.Unit.Centimeter";
-                            break;
-                    }
-                    topRuler.setDisplayUnit( selectedUnit );
-                    topRuler.setBigScaleStep( bigStep );
-                    topRuler.setSmallScaleStep( smallStep );
-                    leftRuler.setDisplayUnit( selectedUnit );
-                    leftRuler.setBigScaleStep( bigStep );
-                    leftRuler.setSmallScaleStep( smallStep );
+                if( "unit".equals( e.getActionCommand() ) ) {
+                    RulerStyle style = styles.get(topRuler.getDisplayUnit());
+                    topRuler.setDisplayUnit( style.selectedUnit );
+                    topRuler.setBigScaleStep( style.bigStep );
+                    topRuler.setSmallScaleStep( style.smallStep );
+                    leftRuler.setDisplayUnit( style.selectedUnit );
+                    leftRuler.setBigScaleStep( style.bigStep );
+                    leftRuler.setSmallScaleStep( style.smallStep );
                     topRuler.repaint();
                     leftRuler.repaint();
-                    unitButton.setText( selectedUnit.toString() );
+                    unitButton.setText( style.selectedUnit.toString() );
                     unitButton.setToolTipText( EditorLocalization.LOC.getStringWithoutPrefix( locString ) );
                 }
             }
@@ -178,4 +150,20 @@ public class JFloorScrollPane<T extends AbstractFloor> extends JScrollPane imple
         leftRuler.setZoomFactor( zoomFactor );
         leftRuler.repaint();
     }
+
+    private static class RulerStyle {
+
+        private final int smallStep;
+        private final int bigStep;
+        private final String locString;
+        private final JRuler.RulerDisplayUnits selectedUnit;
+
+        public RulerStyle(JRuler.RulerDisplayUnits selectedUnit, int smallStep, int bigStep, String locString) {
+            this.smallStep = smallStep;
+            this.bigStep = bigStep;
+            this.locString = locString;
+            this.selectedUnit = selectedUnit;
+        }
+
+    };
 }

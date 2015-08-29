@@ -68,7 +68,6 @@ public class EditViewControl {
     private AssignmentAreaControl aac;
     private DelayAreaControl dac;
     private EvacuationAreaControl eac;
-    private InaccessibleAreaControl iac;
     private StairAreaControl sac;
     private TeleportAreaControl tac;
     private EdgeControl ec;
@@ -98,7 +97,7 @@ public class EditViewControl {
         aac = registerControl(new AssignmentAreaControl(control), JEditView.Panels.AssignmentArea);
         dac = registerControl(new DelayAreaControl(control), JEditView.Panels.DelayArea);
         eac = registerControl(new EvacuationAreaControl(control), JEditView.Panels.EvacuationArea);
-        iac = registerControl(new InaccessibleAreaControl(control), JEditView.Panels.InaccessibleArea);
+        registerControl(new InaccessibleAreaControl(control), JEditView.Panels.InaccessibleArea);
         sac = registerControl(new StairAreaControl(control), JEditView.Panels.StairArea);
         tac = registerControl(new TeleportAreaControl(control), JEditView.Panels.TeleportArea);
         ec = registerControl(new EdgeControl(control), JEditView.Panels.Edge);
@@ -136,9 +135,6 @@ public class EditViewControl {
         return new EditViewModel(floorViewModels, 1);
     }
     
-    public void initView() {
-    }
-    
     public JEditView getView() {
         return view;
     }
@@ -167,7 +163,6 @@ public class EditViewControl {
         currentFloor = floor;
         floorControl.setFloor(floor);
         getView().setEditViewModel(generateViewModel());
-        System.out.println("Stored new floor in model" );
     }
         
     private class FloorSelectionListener implements SelectionListener {

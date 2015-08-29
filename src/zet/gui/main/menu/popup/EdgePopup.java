@@ -1,5 +1,6 @@
 package zet.gui.main.menu.popup;
 
+import org.zetool.common.util.Functions;
 import org.zetool.common.localization.Localization;
 import de.zet_evakuierung.model.PlanEdge;
 import de.zet_evakuierung.model.PlanPoint;
@@ -27,15 +28,15 @@ public class EdgePopup extends JPopupMenu {
     boolean rasterizedPaintMode = true;
 
     /** The localization class. */
-    private final Localization loc = EditorLocalization.LOC;
+    private final static Localization loc = EditorLocalization.LOC;
     ZControl zcontrol;
     JMenu mCreateDoors;
     JMenu mCreateExitDoors;
     private PlanPoint mousePosition;
     private PlanEdge currentEdge;
     private EdgeControl edgeControl;
-    private TwoEdgeAction passageRoomCreator = new TwoEdgeAction((RoomEdge) -> {});
-    private TwoEdgeAction floorPassageCreator = new TwoEdgeAction((RoomEdge) -> {});
+    private TwoEdgeAction passageRoomCreator = new TwoEdgeAction(Functions::sinkConsumer);
+    private TwoEdgeAction floorPassageCreator = new TwoEdgeAction(Functions::sinkConsumer);
     
     public EdgePopup() {
         super();
@@ -43,7 +44,6 @@ public class EdgePopup extends JPopupMenu {
     }
     
     public void loadDoorTemplates(Templates<Door> doors) {
-        System.err.println("Door templates disabled!");
         int i = 0;
         for (Door d : doors) {
             Menu.addMenuItem(mCreateDoors, d.getName() + " (" + d.getSize() + ")", (ActionEvent e) -> {
@@ -56,7 +56,6 @@ public class EdgePopup extends JPopupMenu {
     }
 
     public void loadExitTemplates(Templates<ExitDoor> exitDoors) {
-        System.err.println("Exit templates disabled!");
         int i = 0;
         for (ExitDoor d : exitDoors) {
             Menu.addMenuItem(mCreateExitDoors, d.getName() + " (" + d.getSize() + ")", (ActionEvent e) -> {
@@ -96,9 +95,9 @@ public class EdgePopup extends JPopupMenu {
             edgeControl.setModel(currentEdge);
             edgeControl.makeExit();
         });
-        Menu.addMenuItem(this, loc.getString("popupShowPassageTarget"), e -> {
-            System.err.println("Showing targets of passages is not yet implemented!");
-        });
+        Menu.addMenuItem(this, loc.getString("popupShowPassageTarget"), e -> 
+            System.err.println("Showing targets of passages is not yet implemented!")
+        );
         Menu.addMenuItem(this, loc.getString("popupRevertPassage"), e -> {
             edgeControl.setModel(currentEdge);
             edgeControl.revertPassage();
@@ -143,7 +142,6 @@ public class EdgePopup extends JPopupMenu {
         ((JMenuItem) this.getComponent(8)).setVisible(!passable && mCreateExitDoors.getItemCount() > 0);
 
         this.currentEdge = currentEdge;
-        System.out.println("New point will be at " + mousePosition);
         this.mousePosition = mousePosition;
     }
 
@@ -158,11 +156,13 @@ public class EdgePopup extends JPopupMenu {
     }
     
     private static class TwoEdgeAction {
-        private final Consumer<RoomEdge> twoEdgeAction;
+        /** The action performed on two edges. */
+        private final Consumer<RoomEdge> action;
+        /** Buffer for the first of the two edges. */
         private RoomEdge firstEdge = null;
 
         public TwoEdgeAction(Consumer<RoomEdge> twoEdgeAction) {
-            this.twoEdgeAction = twoEdgeAction;
+            this.action = twoEdgeAction;
         }
         
         public void addEdge(PlanEdge e) {
@@ -172,7 +172,7 @@ public class EdgePopup extends JPopupMenu {
             if (firstEdge == null) {
                 firstEdge = (RoomEdge)e;
             } else {
-                twoEdgeAction.accept(firstEdge);
+                action.accept(firstEdge);
                 firstEdge = null;
             }
         }

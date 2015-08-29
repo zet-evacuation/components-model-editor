@@ -146,7 +146,6 @@ public class CoordinateTools {
         p.x = zoom(p.x);
         p.y = zoom(p.y);
         return p;
-        //return new Point( zoom( p.x ), zoom( p.y ) );
     }
 
     public static Rectangle zoom(Rectangle r) {
@@ -157,25 +156,24 @@ public class CoordinateTools {
         // rounding error here this will yield to painting errors, because
         // some edges may no longer be inside their polygons.
 
-        boolean double_rounding_error_x
-                = (Math.abs((r.x + r.width) - zoom(r.x + r.width)) > 0.5);
-        boolean double_rounding_error_y
-                = (Math.abs((r.y + r.height) - zoom(r.y + r.height)) > 0.5);
+        boolean doubleRoundingErrorX
+                = Math.abs(zoom(r.x + r.width) - zoomW(r.x + r.width)) > 0.5;
+        boolean doubleRoundingErrorY
+                = Math.abs(zoom(r.y + r.height) - zoomW(r.y + r.height)) > 0.5;
 
         r.x = zoom(r.x);
         r.y = zoom(r.y);
         r.width = zoom(r.width);
         r.height = zoom(r.height);
 
-        if (double_rounding_error_x) {
+        if (doubleRoundingErrorX) {
             r.width++;
         }
-        if (double_rounding_error_y) {
+        if (doubleRoundingErrorY) {
             r.height++;
         }
 
         return r;
-        //return new Rectangle( zoom( r.x ), zoom( r.y ), zoom( r.width ), zoom( r.height ) );
     }
 
     public static Polygon zoom(Polygon r) {

@@ -27,7 +27,7 @@ public class TeleportAreaControl extends AbstractInformationPanelControl<JTelepo
     }
 
     public void setModel(TeleportArea model) {
-        getView().setModel(new TeleportAreaViewModelImpl(model, control.getProject()));
+        super.setModel(new TeleportAreaViewModelImpl(model, control.getProject()));
         this.model = model;
     }
 
