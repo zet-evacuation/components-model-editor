@@ -11,8 +11,6 @@ import de.zet_evakuierung.model.ZControl;
  */
 public class DelayAreaControl extends AbstractControl<DelayArea, DelayAreaViewModel> {
 
-    private DelayArea model;
-
     public DelayAreaControl(ZControl zcontrol) {
         super(zcontrol);
     }

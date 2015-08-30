@@ -11,8 +11,6 @@ import de.zet_evakuierung.model.ZControl;
  */
 public class StairAreaControl extends AbstractControl<StairArea, StairAreaViewModel> {
 
-    private StairArea model;
-
     public StairAreaControl(ZControl control) {
         super(control);
     }

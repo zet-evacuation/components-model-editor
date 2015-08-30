@@ -9,7 +9,6 @@ import de.zet_evakuierung.model.ZControl;
  * @author Jan-Philipp Kappmeier
  */
 public class EvacuationAreaControl extends AbstractControl<EvacuationArea, EvacuationAreaViewModel> {
-    private EvacuationArea model;
 
     public EvacuationAreaControl(ZControl control) {
         super(control);
@@ -17,11 +16,9 @@ public class EvacuationAreaControl extends AbstractControl<EvacuationArea, Evacu
 
     public void setName(String name) {
         model.setName(name);
-        //((EvacuationArea) getLeftPanel().getMainComponent().getSelectedPolygons().get(0).getPlanPolygon()).setName(txtEvacuationAreaName.getText());
     }
 
     public void setAttractivity(int attractivity) {
-        EvacuationArea ea = model;
         model.setAttractivity(attractivity);
     }
 }

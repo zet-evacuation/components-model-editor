@@ -7,7 +7,6 @@ import de.zet_evakuierung.model.Room;
 import de.zet_evakuierung.model.ZControl;
 import java.util.ArrayList;
 import java.util.List;
-import org.zet.components.model.editor.panel.JRoomInformationPanel;
 
 /**
  * A control class for evacuation areas.
@@ -16,7 +15,6 @@ import org.zet.components.model.editor.panel.JRoomInformationPanel;
  */
 public class RoomControl extends AbstractControl<Room, RoomViewModel> {
 
-    private Room model;
 
     public RoomControl(ZControl control) {
         super(control);

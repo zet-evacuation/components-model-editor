@@ -10,7 +10,6 @@ import de.zet_evakuierung.model.ZControl;
  * @author Jan-Philipp Kappmeier
  */
 public class AssignmentAreaControl extends AbstractControl<AssignmentArea, AssignmentAreaViewModel> {
-    private AssignmentArea model;
 
     public AssignmentAreaControl(ZControl control) {
         super(control);

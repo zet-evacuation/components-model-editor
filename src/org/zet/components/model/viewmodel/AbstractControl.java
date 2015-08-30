@@ -15,7 +15,7 @@ import de.zet_evakuierung.model.ZControl;
 public class AbstractControl<M, V>  {
 
     protected ZControl zcontrol;
-    private M model;
+    protected M model;
     protected V viewModel;
 
     public AbstractControl(ZControl zcontrol) {
