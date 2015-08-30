@@ -60,7 +60,7 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
     private JLabel lblAreaSize;
     //private int typedPersons;
 
-    public JAssignmentAreaInformationPanel(AssignmentAreaViewModel model) {
+    public JAssignmentAreaInformationPanel(AssignmentAreaViewModel model, AssignmentAreaControl control) {
         super(new double[]{TableLayout.FILL},
                 new double[]{ //Rows
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20, // Assignment type
@@ -71,7 +71,7 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20, // Max number of persons for area
                     TableLayout.PREFERRED, // Warning
                     TableLayout.FILL // Fill the rest of space
-                });
+                }, control);
         init();
     }
 

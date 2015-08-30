@@ -57,15 +57,15 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaContr
     /** A label describing the current preset. */
     private JLabel lblStairPresetDescription;
 
-    public JStairAreaInformationPanel(StairAreaViewModel model) {
+    public JStairAreaInformationPanel(StairAreaViewModel model, StairAreaControl control) {
         super(new double[]{TableLayout.FILL},
                 new double[]{
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.FILL
-                }
-        );
+                },
+                control);
         init();
     }
 

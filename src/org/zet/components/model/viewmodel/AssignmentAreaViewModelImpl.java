@@ -10,10 +10,10 @@ import java.util.List;
  * The assignment area view model makes available all information necessary to display an assignment area.
  * @author Jan-Philipp Kappmeier
  */
-class AssignmentAreaViewModelImpl extends AbstractViewModel<AssignmentArea> implements AssignmentAreaViewModel {
+public class AssignmentAreaViewModelImpl extends AbstractViewModel<AssignmentArea> implements AssignmentAreaViewModel {
     private final Project project;
     
-    AssignmentAreaViewModelImpl(AssignmentArea a, Project p) {
+    public AssignmentAreaViewModelImpl(AssignmentArea a, Project p) {
         super(a);
         this.project = p;
     }

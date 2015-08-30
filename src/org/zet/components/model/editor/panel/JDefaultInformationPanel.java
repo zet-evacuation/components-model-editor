@@ -23,6 +23,10 @@ import org.zet.components.model.viewmodel.DefaultPanelControl;
  */
 public class JDefaultInformationPanel extends JInformationPanel<DefaultPanelControl, Void> {
 
+    public JDefaultInformationPanel(DefaultPanelControl control) {
+        super(control);
+    }
+
     @Override
     public void update() {
     }

@@ -37,14 +37,14 @@ public class JEdgeInformationPanel extends JInformationPanel<EdgeControl, EdgeVi
     private JLabel lblEdgeExitName;
     private JTextField txtEdgeExitName;
 
-    public JEdgeInformationPanel(EdgeViewModel model) {
+    public JEdgeInformationPanel(EdgeViewModel model, EdgeControl control) {
         super(new double[]{TableLayout.FILL},
                 new double[]{
                     TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.FILL
-                });
+                }, control);
         init();
     }
 

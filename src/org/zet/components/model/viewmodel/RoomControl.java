@@ -14,44 +14,27 @@ import org.zet.components.model.editor.panel.JRoomInformationPanel;
  *
  * @author Jan-Philipp Kappmeier
  */
-public class RoomInformationControl extends AbstractInformationControl<JRoomInformationPanel, RoomViewModel> {
+public class RoomControl extends AbstractControl<Room, RoomViewModel> {
 
     private Room model;
 
-    private RoomInformationControl(JRoomInformationPanel view, ZControl control) {
-        super(view, control);
-    }
-
-    public static RoomInformationControl create(ZControl control) {
-        JRoomInformationPanel panel = generateView();
-        RoomInformationControl result = new RoomInformationControl(panel, control);
-        panel.setControl(result);
-        return result;
-    }
-
-    private static JRoomInformationPanel generateView() {
-        return new JRoomInformationPanel(new RoomViewModel() {
-        });
-    }
-
-    public void setModel(Room model) {
-        getView().setModel(new RoomViewModelImpl(model, control.getProject()));
-        this.model = model;
+    public RoomControl(ZControl control) {
+        super(control);
     }
 
     public void setName(String name) {
         System.err.println("Name");
-        control.setRoomName(model, name);
+        zcontrol.setRoomName(model, name);
     }
 
     public void delete() {
         System.err.println("Attempt to delete " + model);
-        control.deletePolygon(model);
+        zcontrol.deletePolygon(model);
     }
 
     public void refineCoordinates() {
         System.err.println("RefineCoordinates");
-        control.refineRoomCoordinates(model.getPolygon(), 400);
+        zcontrol.refineRoomCoordinates(model.getPolygon(), 400);
     }
 
     /**
@@ -66,6 +49,6 @@ public class RoomInformationControl extends AbstractInformationControl<JRoomInfo
         points.stream().forEach((point) -> {
             newPoints.add(new PlanPoint(point.getXInt(), point.getYInt()));
         });
-        return control.createNewArea(model, assignmentType, newPoints);
+        return zcontrol.createNewArea(model, assignmentType, newPoints);
     }
 }

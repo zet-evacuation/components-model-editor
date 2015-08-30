@@ -41,13 +41,13 @@ public class JEvacuationAreaInformationPanel extends JInformationPanel<Evacuatio
     private JLabel lblEvacuationAttractivity;
     private JTextField txtEvacuationAttractivity;
 
-    public JEvacuationAreaInformationPanel() {
+    public JEvacuationAreaInformationPanel(EvacuationAreaControl control) {
         super(new double[]{TableLayout.FILL},
                 new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, 20, TableLayout.FILL
-                });
+                }, control);
         init();
     }
 

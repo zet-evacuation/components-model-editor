@@ -9,7 +9,7 @@ import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import org.zetool.components.framework.Menu;
 import org.zet.components.model.editor.localization.EditorLocalization;
-import org.zet.components.model.viewmodel.RoomInformationControl;
+import org.zet.components.model.viewmodel.RoomControl;
 import org.zetool.common.localization.Localization;
 
 /**
@@ -21,7 +21,7 @@ public class PolygonPopup extends JPopupMenu {
 
     /** The localization class. */
     private static final Localization LOC = EditorLocalization.LOC;
-    private RoomInformationControl polygonControl;
+    private RoomControl polygonControl;
     private PlanPolygon<?> currentPolygon;
     private Assignment assignment;
 
@@ -62,7 +62,7 @@ public class PolygonPopup extends JPopupMenu {
         }
     }
     
-    public void setPolygonControl(RoomInformationControl pc) {
+    public void setPolygonControl(RoomControl pc) {
         this.polygonControl = pc;
     }
 

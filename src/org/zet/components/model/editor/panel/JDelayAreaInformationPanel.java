@@ -50,12 +50,12 @@ public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaContr
     private JComboBox<DelayArea.DelayType> cbxDelayType;
     private JTextField txtDelayFactor;
 
-    public JDelayAreaInformationPanel(DelayAreaViewModel model) {
+    public JDelayAreaInformationPanel(DelayAreaViewModel model, DelayAreaControl control) {
         super(new double[]{TableLayout.FILL},
                 new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, 20, TableLayout.FILL
-                });
+                }, control);
         init();
     }
 

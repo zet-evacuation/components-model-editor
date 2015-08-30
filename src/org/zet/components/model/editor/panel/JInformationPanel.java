@@ -41,30 +41,27 @@ public abstract class JInformationPanel<C, M> extends JPanel implements Localize
     protected static NumberFormat nfInteger = LocalizationManager.getManager().getIntegerConverter();
     /** The control object for the object displayed. */
     private M model;
-    protected C control;
+    protected final C control;
 
-    public JInformationPanel() {
-        this(new double[]{TableLayout.FILL});
+    public JInformationPanel(C control) {
+        this(new double[]{TableLayout.FILL}, control);
     }
 
-    protected JInformationPanel(double[] rows) {
-        this(columns(), rows);
+    protected JInformationPanel(double[] rows, C control) {
+        this(columns(), rows, control);
         
     }
 
-    protected JInformationPanel(double[] columns, double[] rows) {
+    protected JInformationPanel(double[] columns, double[] rows, C control) {
         super(new TableLayout(columns, rows));
         loc = EditorLocalization.LOC;
-        //this.control = Objects.requireNonNull(control);
+        this.control = Objects.requireNonNull(control);
     }
 
     private static double[] columns() {
         return new double[]{10, TableLayout.FILL, 10};
     }
 
-    public void setControl(C control) {
-        this.control = control;
-    }
     @Override
     public void setModel(M model) {
         this.model = Objects.requireNonNull(model);

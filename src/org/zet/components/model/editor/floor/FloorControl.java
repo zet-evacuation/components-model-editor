@@ -23,8 +23,10 @@ import de.zet_evakuierung.model.PlanPolygon;
 import de.zet_evakuierung.model.Room;
 import de.zet_evakuierung.model.ZControl;
 import de.zet_evakuierung.model.exception.AssignmentException;
+import java.awt.Rectangle;
 import java.util.List;
 import java.util.Objects;
+import org.zet.components.model.viewmodel.AbstractControl;
 
 /**
  * Control class (in the MVC model) for a floor in the zet model. The class is coupled to a floor model instance but
@@ -32,8 +34,7 @@ import java.util.Objects;
  *
  * @author Jan-Philipp Kappmeier
  */
-public class FloorControl {
-    private final ZControl zcontrol;
+public class FloorControl extends AbstractControl<Floor, FloorViewModel> {
     private Floor floor;
     private final JFloor view;
     private FloorClickHandler originalHandler;
@@ -46,13 +47,13 @@ public class FloorControl {
      * @param floor
      */
     public FloorControl(ZControl zcontrol, Floor floor) {
-        this.zcontrol = Objects.requireNonNull(zcontrol);
+        super(zcontrol);
         this.floor = Objects.requireNonNull(floor);
         this.view = new JFloor(generateViewModel());
     }
     
     public FloorControl(ZControl zcontrol, JFloor view) {
-        this.zcontrol = Objects.requireNonNull(zcontrol);
+        super(zcontrol);
         this.view = view;
         this.floor = view.getFloorModel().floor;
     }
@@ -175,5 +176,33 @@ public class FloorControl {
         view.setPostActionListener(stairHandler);
         stairHandler.setFloor(view);
         handler.setZetObjectType(zetObjectType);
+    }
+    public void rename(String floorName) {
+        boolean success = zcontrol.renameFloor(floor, floorName);
+        if (!success) {
+            System.out.println("Renaming failed, floor with that name already exists");
+        } else {
+            System.out.println("Renaiming successful");
+        }
+    }
+
+    public void moveDown() {
+        System.out.println("Moving down floor.");
+        zcontrol.moveFloorDown(floor);
+    }
+
+    public void moveUp() {
+        System.out.println("Moving up floor");
+        zcontrol.moveFloorUp(floor);
+    }
+
+    public void rasterize() {
+        System.out.println("Rassterize");
+        zcontrol.getProject().getBuildingPlan().rasterize();
+    }
+
+    public void setDimension(Rectangle floorSize) {
+        System.out.println("Change dimension");
+        zcontrol.setFloorSize(floor, floorSize);
     }
 }

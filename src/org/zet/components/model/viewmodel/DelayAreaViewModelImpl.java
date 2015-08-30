@@ -7,9 +7,9 @@ import de.zet_evakuierung.model.DelayArea;
  *
  * @author Jan-Philipp Kappmeier
  */
-class DelayAreaViewModelImpl extends AbstractViewModel<DelayArea> implements DelayAreaViewModel {
+public class DelayAreaViewModelImpl extends AbstractViewModel<DelayArea> implements DelayAreaViewModel {
 
-    DelayAreaViewModelImpl(DelayArea model) {
+    public DelayAreaViewModelImpl(DelayArea model) {
         super(model);
     }
 

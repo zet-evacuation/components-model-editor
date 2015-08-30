@@ -53,13 +53,13 @@ public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAre
     /** Describes the target exit combo box. */
     private JLabel lblTargetExit;
 
-    public JTeleportAreaInformationPanel(TeleportAreaViewModel viewModel) {
+    public JTeleportAreaInformationPanel(TeleportAreaViewModel viewModel, TeleportAreaControl control) {
         super(new double[]{TableLayout.FILL},
                 new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, 20, TableLayout.FILL
-                });
+                }, control);
         init();
     }
 

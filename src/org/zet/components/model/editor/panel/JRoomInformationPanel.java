@@ -26,14 +26,14 @@ import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import org.zet.components.model.viewmodel.RoomInformationControl;
+import org.zet.components.model.viewmodel.RoomControl;
 import org.zet.components.model.viewmodel.RoomViewModel;
 
 /**
  * A panel displaying information about a room.
  * @author Jan-Philipp Kappmeier
  */
-public class JRoomInformationPanel extends JInformationPanel<RoomInformationControl, RoomViewModel> {
+public class JRoomInformationPanel extends JInformationPanel<RoomControl, RoomViewModel> {
 
     private JLabel lblRoomName;
     private JTextField txtRoomName;
@@ -42,7 +42,7 @@ public class JRoomInformationPanel extends JInformationPanel<RoomInformationCont
     private JButton deleteRoom;
     private JButton moveRoom;
 
-    public JRoomInformationPanel(RoomViewModel model) {
+    public JRoomInformationPanel(RoomViewModel model, RoomControl control) {
         super(new double[]{TableLayout.FILL},
                 new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED, 20,
                     TableLayout.PREFERRED, TableLayout.PREFERRED,
@@ -50,7 +50,7 @@ public class JRoomInformationPanel extends JInformationPanel<RoomInformationCont
                     TableLayout.PREFERRED,
                     10,
                     TableLayout.PREFERRED,
-                    TableLayout.FILL,});
+                    TableLayout.FILL,}, control);
         init();
     }
 

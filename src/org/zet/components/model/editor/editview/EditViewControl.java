@@ -36,17 +36,26 @@ import org.zet.components.model.editor.floor.FloorControl;
 import org.zet.components.model.editor.floor.FloorViewModel;
 import org.zet.components.model.editor.floor.SelectionEvent;
 import org.zet.components.model.editor.floor.SelectionListener;
+import org.zet.components.model.editor.panel.AssignmentAreaInformationPanelControl;
+import org.zet.components.model.editor.panel.DefaultAreaInformationPanelControl;
+import org.zet.components.model.editor.panel.DelayAreaInformationPanelControl;
+import org.zet.components.model.editor.panel.EdgeInformationPanelControl;
+import org.zet.components.model.editor.panel.EvacuationAreaInformationPanelControl;
+import org.zet.components.model.editor.panel.FloorInformationPanelControl;
+import org.zet.components.model.editor.panel.JInformationPanel;
+import org.zet.components.model.editor.panel.JRoomInformationPanel;
+import org.zet.components.model.editor.panel.RoomInformationPanelControl;
+import org.zet.components.model.editor.panel.StairAreaInformationPanelControl;
+import org.zet.components.model.editor.panel.TeleportAreaInformationPanelControl;
 import org.zet.components.model.viewmodel.AssignmentAreaControl;
-import org.zet.components.model.viewmodel.DefaultPanelControl;
 import org.zet.components.model.viewmodel.DelayAreaControl;
 import org.zet.components.model.viewmodel.EdgeControl;
 import org.zet.components.model.viewmodel.EvacuationAreaControl;
-import org.zet.components.model.viewmodel.FloorPanelControl;
-import org.zet.components.model.viewmodel.InaccessibleAreaControl;
-import org.zet.components.model.editor.panel.JInformationPanel;
+import org.zet.components.model.viewmodel.AbstractControl;
 import org.zet.components.model.viewmodel.AbstractInformationControl;
 import org.zet.components.model.viewmodel.PointControl;
-import org.zet.components.model.viewmodel.RoomInformationControl;
+import org.zet.components.model.viewmodel.RoomControl;
+import org.zet.components.model.viewmodel.RoomViewModel;
 import org.zet.components.model.viewmodel.StairAreaControl;
 import org.zet.components.model.viewmodel.TeleportAreaControl;
 
@@ -63,8 +72,8 @@ public class EditViewControl {
     private final ZControl control;
     private final SelectionListener floorSelectionListener = new FloorSelectionListener();
 
-    private FloorPanelControl fc;
-    private RoomInformationControl rc;
+    private FloorControl fc;
+    private RoomControl rc;
     private AssignmentAreaControl aac;
     private DelayAreaControl dac;
     private EvacuationAreaControl eac;
@@ -77,9 +86,9 @@ public class EditViewControl {
         this.control = control;
         currentFloor = floors.get(1);
         view = createView();
+        floorControl = new FloorControl(control, view.getFloor());
         registerControls();
         registerPopups();
-        floorControl = new FloorControl(control, view.getFloor());
         floorControl.setEditMode(EditMode.SELECTION);
     }
     
@@ -92,16 +101,18 @@ public class EditViewControl {
     }
     private void registerControls() {
         // Add all the panels to the map
-        fc = registerControl(FloorPanelControl.create(control), JEditView.Panels.Floor);
-        rc = registerControl(RoomInformationControl.create(control), JEditView.Panels.Room);
-        aac = registerControl(AssignmentAreaControl.create(control), JEditView.Panels.AssignmentArea);
-        dac = registerControl(DelayAreaControl.create(control), JEditView.Panels.DelayArea);
-        eac = registerControl(EvacuationAreaControl.create(control), JEditView.Panels.EvacuationArea);
-        registerControl(new InaccessibleAreaControl(control), JEditView.Panels.InaccessibleArea);
-        sac = registerControl(StairAreaControl.create(control), JEditView.Panels.StairArea);
-        tac = registerControl(TeleportAreaControl.create(control), JEditView.Panels.TeleportArea);
-        ec = registerControl(EdgeControl.create(control), JEditView.Panels.Edge);
-        registerControl(new DefaultPanelControl(control), JEditView.Panels.Default);
+        RoomInformationPanelControl rip = RoomInformationPanelControl.create(control);
+        AbstractInformationControl<JRoomInformationPanel, RoomControl, Room, RoomViewModel> d = rip;
+        fc = registerControl(FloorInformationPanelControl.create(control, floorControl), JEditView.Panels.Floor);
+        rc = registerControl(RoomInformationPanelControl.create(control), JEditView.Panels.Room);
+        aac = registerControl(AssignmentAreaInformationPanelControl.create(control), JEditView.Panels.AssignmentArea);
+        dac = registerControl(DelayAreaInformationPanelControl.create(control), JEditView.Panels.DelayArea);
+        eac = registerControl(EvacuationAreaInformationPanelControl.create(control), JEditView.Panels.EvacuationArea);
+        registerControl(DefaultAreaInformationPanelControl.create(control), JEditView.Panels.InaccessibleArea);
+        sac = registerControl(StairAreaInformationPanelControl.create(control), JEditView.Panels.StairArea);
+        tac = registerControl(TeleportAreaInformationPanelControl.create(control), JEditView.Panels.TeleportArea);
+        ec = registerControl(EdgeInformationPanelControl.create(control), JEditView.Panels.Edge);
+        registerControl(DefaultAreaInformationPanelControl.create(control), JEditView.Panels.Default);
     }
     
     private void registerPopups() {
@@ -113,10 +124,10 @@ public class EditViewControl {
         view.getFloor().getPopups().getPolygonPopup().setAssignment(control.getProject().getCurrentAssignment());
     }
     
-    private <E extends AbstractInformationControl<V, ?>, V extends JInformationPanel<?,?>> E registerControl(
-            E control, JEditView.Panels identifier) {
-        view.registerPanel(control.getView(), identifier.toString());
-        return control;
+    private <E extends AbstractInformationControl<J, C, ?, ?>, J extends JInformationPanel<C, ?>, C extends AbstractControl<?, ?>> C registerControl(
+            E panelControl, JEditView.Panels identifier) {
+        view.registerPanel(panelControl.getView(), identifier.toString());
+        return panelControl.getControl();
     }
     
     private List<Floor> validatedFloorList(List<Floor> floors) {

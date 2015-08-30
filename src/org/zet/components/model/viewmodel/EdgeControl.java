@@ -8,34 +8,16 @@ import de.zet_evakuierung.model.RoomEdge;
 import de.zet_evakuierung.model.ZControl;
 import de.zet_evakuierung.template.Door;
 import de.zet_evakuierung.template.ExitDoor;
-import org.zet.components.model.editor.panel.JEdgeInformationPanel;
 
 /**
  * A control class for evacuation areas.
  * @author Jan-Philipp Kappmeier
  */
-public class EdgeControl extends AbstractInformationControl<JEdgeInformationPanel, EdgeViewModel> {
+public class EdgeControl extends AbstractControl<PlanEdge, EdgeViewModel> {
     private PlanEdge model;
 
-    private EdgeControl(JEdgeInformationPanel view, ZControl control) {
-        super(view, control);
-    }
-
-    public static EdgeControl create(ZControl control) {
-        JEdgeInformationPanel panel = generateView();
-        EdgeControl result = new EdgeControl(panel, control);
-        panel.setControl(result);
-        return result;
-    }
-
-    private static JEdgeInformationPanel generateView() {
-        return new JEdgeInformationPanel(new EdgeViewModel() {
-        });
-    }
-    
-    public void setModel(PlanEdge model) {
-        super.setModel(new EdgeViewModelImpl(model, control.getProject()));
-        this.model = model;
+    public EdgeControl(ZControl control) {
+        super(control);
     }
 
     public void setExitName(String text) {
@@ -48,12 +30,12 @@ public class EdgeControl extends AbstractInformationControl<JEdgeInformationPane
     public void insertPoint(PlanPoint clickPoint) {
         // Compute a point that is ON the edge (the click is not neccessarily)
         PlanPoint pointOnEdge = model.getPointOnEdge(clickPoint);
-        control.insertPoint(model, this.getModelPoint(pointOnEdge));
+        zcontrol.insertPoint(model, this.getModelPoint(pointOnEdge));
     }
 
     public void makePassable() {
         if (viewModel.getEdgeType() == EdgeViewModel.EdgeType.WALL) {
-            boolean success = control.makePassable((RoomEdge) model);
+            boolean success = zcontrol.makePassable((RoomEdge) model);
             if (!success) {
                 //EventServer.getInstance().dispatchEvent(new MessageEvent(this, MessageEvent.MessageType.Error, "Erzeugen Sie zuerst 2 übereinanderliegende Raumbegrenzungen!"));
             }
@@ -64,7 +46,7 @@ public class EdgeControl extends AbstractInformationControl<JEdgeInformationPane
 
     public void makeExit() {
         if (viewModel.getEdgeType() == EdgeViewModel.EdgeType.WALL) {
-            control.getProject().getBuildingPlan().getDefaultFloor().addEvacuationRoom((RoomEdge) model);
+            zcontrol.getProject().getBuildingPlan().getDefaultFloor().addEvacuationRoom((RoomEdge) model);
         } else {
             //EventServer.getInstance().dispatchEvent(new MessageEvent(this, MessageEvent.MessageType.Error, "Nur Raumbegrenzungen können zu Evakuierungsausgängen gemacht werden!"));
         }
@@ -72,7 +54,7 @@ public class EdgeControl extends AbstractInformationControl<JEdgeInformationPane
 
     public void revertPassage() {
         if (viewModel.getEdgeType().isPassable()) {
-            control.disconnectAtEdge((RoomEdge) model);
+            zcontrol.disconnectAtEdge((RoomEdge) model);
         }
     }
 
@@ -81,7 +63,7 @@ public class EdgeControl extends AbstractInformationControl<JEdgeInformationPane
             return;
         }
         if ( viewModel.getEdgeType() == EdgeViewModel.EdgeType.WALL && !connectTo.isPassable() ) {
-            control.connectRooms((RoomEdge)model, connectTo);
+            zcontrol.connectRooms((RoomEdge)model, connectTo);
         }
     }
 
@@ -91,7 +73,7 @@ public class EdgeControl extends AbstractInformationControl<JEdgeInformationPane
         }
         if (viewModel.getEdgeType() == EdgeViewModel.EdgeType.WALL && !connectTo.isPassable()) {
             System.out.println("Try to connect " + model + " with " + connectTo);
-            control.connectToWithTeleportEdge((RoomEdge)model, connectTo);
+            zcontrol.connectToWithTeleportEdge((RoomEdge)model, connectTo);
         } else {
             //EventServer.getInstance().dispatchEvent(new MessageEvent(this, MessageEvent.MessageType.Error, "Nur Raumbegrenzungen können zu Stockwerksdurchgängen gemacht werden!"
         }
@@ -99,13 +81,13 @@ public class EdgeControl extends AbstractInformationControl<JEdgeInformationPane
 
     public void createTemplateExit(PlanPoint clickPoint, ExitDoor exit) {
         if (viewModel.getEdgeType() == EdgeViewModel.EdgeType.WALL) {
-            control.createExitDoor((RoomEdge) model, getModelPoint(clickPoint), exit.getSize());
+            zcontrol.createExitDoor((RoomEdge) model, getModelPoint(clickPoint), exit.getSize());
         }
     }
 
     public void createTemplatePassage(PlanPoint clickPoint, Door door) {
         if (viewModel.getEdgeType() == EdgeViewModel.EdgeType.WALL) {
-            control.createDoor((RoomEdge) model, getModelPoint(clickPoint), door.getSize());
+            zcontrol.createDoor((RoomEdge) model, getModelPoint(clickPoint), door.getSize());
         }
     }
     

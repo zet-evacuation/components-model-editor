@@ -29,15 +29,15 @@ import java.text.ParseException;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import org.zet.components.model.editor.floor.FloorControl;
 import org.zetool.components.framework.Button;
 import org.zet.components.model.editor.floor.FloorViewModel;
-import org.zet.components.model.viewmodel.FloorPanelControl;
 
 /**
  *
  * @author Jan-Philipp Kappmeier
  */
-public class JFloorInformationPanel extends JInformationPanel<FloorPanelControl, FloorViewModel> {
+public class JFloorInformationPanel extends JInformationPanel<FloorControl, FloorViewModel> {
     private JLabel lblFloorName;
     private JButton btnFloorUp;
     private JButton btnFloorDown;
@@ -53,7 +53,7 @@ public class JFloorInformationPanel extends JInformationPanel<FloorPanelControl,
     private JLabel lblFloorSize;
     private JLabel lblFloorSizeDesc;
 
-    public JFloorInformationPanel() {
+    public JFloorInformationPanel(FloorControl control) {
         super(new double[]{
             TableLayout.FILL, 10, TableLayout.FILL
         },
@@ -73,7 +73,7 @@ public class JFloorInformationPanel extends JInformationPanel<FloorPanelControl,
             20,
             TableLayout.PREFERRED,
             TableLayout.FILL
-        });
+        }, control);
         init();
     }
 

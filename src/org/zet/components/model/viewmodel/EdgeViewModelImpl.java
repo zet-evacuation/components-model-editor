@@ -13,8 +13,8 @@ import de.zet_evakuierung.model.TeleportEdge;
  *
  * @author Jan-Philipp Kappmeier
  */
-class EdgeViewModelImpl extends AbstractViewModel<PlanEdge> implements EdgeViewModel {
-    EdgeViewModelImpl(PlanEdge r, Project p) {
+public class EdgeViewModelImpl extends AbstractViewModel<PlanEdge> implements EdgeViewModel {
+    public EdgeViewModelImpl(PlanEdge r, Project p) {
         super(r);
     }
 

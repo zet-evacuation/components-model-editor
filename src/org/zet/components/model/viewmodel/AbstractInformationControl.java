@@ -1,32 +1,40 @@
 
 package org.zet.components.model.viewmodel;
 
-import de.zet_evakuierung.model.ZControl;
-import java.util.Objects;
 import org.zetool.components.framework.Displayable;
 
 /**
  *
  * @author Jan-Philipp Kappmeier
- * @param <V> the view
- * @param <M> the viewmodel
+ * @param <C> the control class for the model
+ * @param <P> the panel displaying the viewmodel
+ * @param <V> the viewmodel
+ * @param <M> the model
+ * 
  */
-public abstract class AbstractInformationControl<V extends Displayable<M>,M> {
-    private final V view;
-    protected M viewModel;
-    protected final ZControl control;
+public abstract class AbstractInformationControl<P extends Displayable<V>, C extends AbstractControl<M, V>, M, V> {
+    private final P view;
+    private final C control;
 
-    public AbstractInformationControl(V view, ZControl control) {
+    public AbstractInformationControl(P view, C control) {
         this.view = view;
-        this.control = Objects.requireNonNull(control);
+        this.control = control;
     }
     
-    public V getView() {
+    public P getView() {
         return view;
     }
 
-    protected void setModel(M m) {
-        getView().setModel(m);
-        this.viewModel = m;
+    public void setModel(M m) {
+        V viewModel = getViewModel(m);
+        getView().setModel(viewModel);
+        control.setModel(m);
+        control.setViewModel(viewModel);
+    }
+    
+    protected abstract V getViewModel(M m);
+
+    public C getControl() {
+        return control;
     }
 }

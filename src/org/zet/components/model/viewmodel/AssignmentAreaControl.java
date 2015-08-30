@@ -4,36 +4,16 @@ import de.zet_evakuierung.model.AssignmentArea;
 import de.zet_evakuierung.model.AssignmentType;
 import de.zet_evakuierung.model.EvacuationArea;
 import de.zet_evakuierung.model.ZControl;
-import org.zet.components.model.editor.panel.JAssignmentAreaInformationPanel;
 
 /**
  * A control class for evacuation areas.
  * @author Jan-Philipp Kappmeier
  */
-public class AssignmentAreaControl extends AbstractInformationControl<JAssignmentAreaInformationPanel, AssignmentAreaViewModel> {
+public class AssignmentAreaControl extends AbstractControl<AssignmentArea, AssignmentAreaViewModel> {
     private AssignmentArea model;
 
-    private AssignmentAreaControl(JAssignmentAreaInformationPanel view, ZControl control) {
-        super(view, control);
-    }
-    
-    public static AssignmentAreaControl create(ZControl control) {
-        JAssignmentAreaInformationPanel panel = generateView();
-        AssignmentAreaControl result = new AssignmentAreaControl(panel, control);
-        panel.setControl(result);
-        return result;
-    }
-
-    private static JAssignmentAreaInformationPanel generateView() {
-        return new JAssignmentAreaInformationPanel(new AssignmentAreaViewModel() {
-        });
-    }
-    
-    public void setModel(AssignmentArea model) {
-        AssignmentAreaViewModel vm = new AssignmentAreaViewModelImpl(model, control.getProject());
-        setModel(vm);
-        getView().setModel(vm);
-        this.model = model;
+    public AssignmentAreaControl(ZControl control) {
+        super(control);
     }
 
     public void setAssignmentType(AssignmentType assignmentType) {

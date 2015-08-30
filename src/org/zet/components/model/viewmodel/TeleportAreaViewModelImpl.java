@@ -13,11 +13,11 @@ import java.util.List;
  *
  * @author Jan-Philipp Kappmeier
  */
-class TeleportAreaViewModelImpl extends AbstractViewModel<TeleportArea> implements TeleportAreaViewModel {
+public class TeleportAreaViewModelImpl extends AbstractViewModel<TeleportArea> implements TeleportAreaViewModel {
 
     private final Project project;
 
-    TeleportAreaViewModelImpl(TeleportArea a, Project p) {
+    public TeleportAreaViewModelImpl(TeleportArea a, Project p) {
         super(a);
         this.project = p;
     }
