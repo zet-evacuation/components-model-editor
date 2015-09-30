@@ -17,6 +17,7 @@
 package org.zet.components.model.editor.editview;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import org.zet.components.model.editor.floor.FloorViewModel;
 
@@ -30,7 +31,7 @@ public class EditViewModel {
 
     public EditViewModel(List<FloorViewModel> floors, int currentFloorIndex) {
         floorViewModel = floors.get(currentFloorIndex);
-        this.floors = floors;
+        this.floors = new LinkedList<>(floors);
     }
     
     public List<FloorViewModel> getFloors() {

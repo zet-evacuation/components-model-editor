@@ -30,7 +30,7 @@ import org.zet.components.model.viewmodel.AbstractControl;
 
 /**
  * Control class (in the MVC model) for a floor in the zet model. The class is coupled to a floor model instance but
- * stateless and can thus be used for multiple view.
+ * stateless and can thus be used for multiple views.
  *
  * @author Jan-Philipp Kappmeier
  */
@@ -39,7 +39,6 @@ public class FloorControl extends AbstractControl<Floor, FloorViewModel> {
     private final JFloor view;
     private FloorClickHandler originalHandler;
     private ZetObjectTypes zetObjectType = ZetObjectTypes.Room;
-    /** The read only floor interface. */
 
     /**
      * The read only floor interface.
@@ -121,10 +120,6 @@ public class FloorControl extends AbstractControl<Floor, FloorViewModel> {
     }
     
     public void setEditMode( EditMode editMode ) {
-        //PostActionHandler stairHandler = new PostActionStairHandler();
-        //PostActionHandler stairHandler = new DefaultPostActionHandler();
-        //stairHandler.setFloor(jfloor);
-        
         switch( editMode ) {
             case SELECTION:
                 // Selection listener
@@ -153,7 +148,6 @@ public class FloorControl extends AbstractControl<Floor, FloorViewModel> {
     }
     
     public void setZetObjectType(ZetObjectTypes type) {
-        //originalHandler.setZetObjectType(type);
         this.zetObjectType = type;
         setZetObjectTypeInternal();
     }

@@ -17,7 +17,6 @@ package org.zet.components.model.editor.editview;
 
 import de.zet_evakuierung.model.AreaType;
 import org.zetool.common.localization.Localization;
-import de.zet_evakuierung.model.FloorInterface;
 import de.zet_evakuierung.model.Floor;
 import de.zet_evakuierung.model.Room;
 import de.zet_evakuierung.model.ZControl;
@@ -131,7 +130,7 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
     /** The control object for the loaded project. */
     private ZControl projectControl;
     /** The currently visible {@link de.zet_evakuierung.model.Floor} */
-    private Floor currentFloor;
+    //@//private Floor currentFloor;
     /** The floor-selector combo box. */
     private NamedComboBox<FloorViewModel> floorSelector;
     /** The room-selector combo box. */
@@ -261,6 +260,14 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
         loc.clearPrefix();
         return eastPanel;
     }
+    
+    public void addFloorActionListener(ActionListener a) {
+        floorSelector.addActionListener(a);
+    }
+    
+    public FloorViewModel getCurrentFloor() {
+        return floorSelector.getSelectedItem();
+    }
 
     @Override
     public void localize() {
@@ -292,7 +299,7 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
      */
     @Override
     protected String getAdditionalTitleBarText() {
-        return projectControl.getProject().getProjectFile() != null ? "[" + currentFloor.getName() + "]" : "[" + currentFloor.getName() + "]";
+        return projectControl.getProject().getProjectFile() != null ? "[" + "currentFloorName" + "]" : "[" + "currentFloorName" + "]";
     }
 
     /**
@@ -300,7 +307,7 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
      *
      * @param floor the new floor that is shown
      */
-    public void changeFloor(FloorInterface floor) {
+    public void changeFloor(FloorViewModel floor) {
         floorSelector.setSelectedItem(floor);
     }
 
@@ -353,15 +360,6 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
      */
     final public JFloor getFloor() {
         return getLeftPanel().getMainComponent();
-    }
-
-    /**
-     * Returns the z format floor that is currently visible.
-     *
-     * @return the z format floor that is currently visible
-     */
-    public Floor getCurrentFloor() {
-        return currentFloor;
     }
 
     /**
@@ -444,13 +442,13 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
     public void stateChanged() {
         final JRuler topRuler = getLeftPanel().getTopRuler();
         final JRuler leftRuler = getLeftPanel().getLeftRuler();
-        Floor floor = getCurrentFloor();
-        topRuler.setWidth(floor.getWidth());
-        leftRuler.setHeight(floor.getHeight());
+        FloorViewModel floor = getCurrentFloor();
+        //@//topRuler.setWidth(floor.getWidth());
+        //@//leftRuler.setHeight(floor.getHeight());
         //@//topRuler.offset = de.zet_evakuierung.util.ConversionTools.roundScale3( floor.getxOffset() / 1000.0 - 0.8 );
         //@//leftRuler.offset = de.zet_evakuierung.util.ConversionTools.roundScale3( floor.getyOffset() / 1000.0 - 0.8 );
-        topRuler.setOffset(floor.getxOffset());
-        leftRuler.setOffset(floor.getyOffset());
+        //@//topRuler.setOffset(floor.getxOffset());
+        //@//leftRuler.setOffset(floor.getyOffset());
         topRuler.repaint();
         leftRuler.repaint();
     }

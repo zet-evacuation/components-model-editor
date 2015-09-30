@@ -25,9 +25,13 @@ import de.zet_evakuierung.model.Room;
 import de.zet_evakuierung.model.StairArea;
 import de.zet_evakuierung.model.TeleportArea;
 import de.zet_evakuierung.model.ZControl;
-import java.util.LinkedList;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.zet.components.model.editor.floor.EditMode;
 import org.zet.components.model.editor.editview.JEditView.Panels;
 import org.zet.components.model.editor.floor.ZetObjectTypes;
@@ -65,13 +69,27 @@ import org.zet.components.model.viewmodel.TeleportAreaControl;
  */
 public class EditViewControl {
     private Floor currentFloor;
-    private List<Floor> floors;
+    //private List<Floor> floors;
     private final FloorControl floorControl;
     private final JEditView view;
-    private List<FloorViewModel> floorViewModels;
+    //private List<FloorViewModel> floorViewModels;
+    private LinkedHashMap<Floor,FloorViewModel> floorMap;
     private final ZControl control;
     private final SelectionListener floorSelectionListener = new FloorSelectionListener();
+    private final ActionListener floorActionListener = new ActionListener() {
 
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            FloorViewModel selected = getView().getCurrentFloor();
+            for( Entry<Floor,FloorViewModel> entry : floorMap.entrySet() ) {
+                if( entry.getValue().equals(selected)) {
+                    setCurrentFloor(entry.getKey());
+                    return;
+                }
+            }
+        }
+    };
+            
     private FloorControl fc;
     private RoomControl rc;
     private AssignmentAreaControl aac;
@@ -82,7 +100,7 @@ public class EditViewControl {
     private EdgeControl ec;
     
     public EditViewControl(ZControl control, List<Floor> floors) {
-        this.floors = validatedFloorList(floors);
+        validatedFloorList(floors);
         this.control = control;
         currentFloor = floors.get(1);
         view = createView();
@@ -93,10 +111,11 @@ public class EditViewControl {
     }
     
     private JEditView createView() {
-        JEditView editView = new JEditView(generateViewModel());
+        JEditView editView = new JEditView(generateViewModel(currentFloor));
         
         // Add selection listener to the edit view
         editView.getLeftPanel().getMainComponent().addSelectionListener(floorSelectionListener);
+        editView.addFloorActionListener(floorActionListener);
         return editView;
     }
     private void registerControls() {
@@ -130,20 +149,19 @@ public class EditViewControl {
         return panelControl.getControl();
     }
     
-    private List<Floor> validatedFloorList(List<Floor> floors) {
+    private void validatedFloorList(List<Floor> floors) {
         if( Objects.requireNonNull(floors).isEmpty()) {
             throw new IllegalArgumentException("Empty floor list!");
         }
-        floorViewModels = new LinkedList<>();
+        floorMap = new LinkedHashMap<>(floors.size());
         for( Floor floor : floors ) {
-            floorViewModels.add(new FloorViewModel(floor));
+            floorMap.put(floor, new FloorViewModel(floor));
         }
-        return floors;
-        
     }
     
-    private EditViewModel generateViewModel() {
-        return new EditViewModel(floorViewModels, 1);
+    private EditViewModel generateViewModel(Floor floor) {
+        List<FloorViewModel> floorModelList = floorMap.values().stream().collect(Collectors.toList());
+        return new EditViewModel(floorModelList, floorModelList.indexOf(floorMap.get(floor)));
     }
     
     public JEditView getView() {
@@ -163,17 +181,23 @@ public class EditViewControl {
     }
 
     public void setControlledProject(List<Floor> floors) {
-        this.floors = validatedFloorList(floors);
+        validatedFloorList(floors);
         setCurrentFloor(floors.get(1));
     }
     
     public void setCurrentFloor(Floor floor) {
-        if( !floors.contains(floor)) {
+        if( !floorMap.containsKey(floor)) {
             throw new IllegalArgumentException( "Floor '" + floor + "' is not in the floor list!" );
         }
         currentFloor = floor;
         floorControl.setFloor(floor);
-        getView().setEditViewModel(generateViewModel());
+        getView().setEditViewModel(generateViewModel(floor));
+    }
+
+    public void createNewFloor() {
+        Floor newFloor = control.createNewFloor();
+        validatedFloorList(control.getProject().getBuildingPlan().getFloors());
+        setCurrentFloor(newFloor);
     }
         
     private class FloorSelectionListener implements SelectionListener {
