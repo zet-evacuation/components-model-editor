@@ -39,8 +39,8 @@ public abstract class JInformationPanel<C, M> extends JPanel implements Localize
     protected Localization loc;
     protected static NumberFormat nfFloat = LocalizationManager.getManager().getFloatConverter();
     protected static NumberFormat nfInteger = LocalizationManager.getManager().getIntegerConverter();
-    /** The control object for the object displayed. */
     private M model;
+    /** The control object for the object displayed. */
     protected final C control;
 
     public JInformationPanel(C control) {

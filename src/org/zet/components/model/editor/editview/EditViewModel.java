@@ -16,6 +16,8 @@
 
 package org.zet.components.model.editor.editview;
 
+import de.zet_evakuierung.model.BuildingPlan;
+import de.zet_evakuierung.model.Floor;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,22 +28,40 @@ import org.zet.components.model.editor.floor.FloorViewModel;
  * @author Jan-Philipp Kappmeier
  */
 public class EditViewModel {
-    private final FloorViewModel floorViewModel;
-    List<FloorViewModel> floors;
+    private final BuildingPlan bp;
+    private List<FloorViewModel> floors;
+    private int currentFloor;
 
-    public EditViewModel(List<FloorViewModel> floors, int currentFloorIndex) {
-        floorViewModel = floors.get(currentFloorIndex);
-        this.floors = new LinkedList<>(floors);
+    public EditViewModel(BuildingPlan bp, int currentFloorIndex) {
+        this.bp = bp;
+        updateFloorViewModels();
+        currentFloor = currentFloorIndex;
     }
     
     public List<FloorViewModel> getFloors() {
+        updateFloorViewModels();
         return Collections.unmodifiableList(floors);
     }
     
-    public FloorViewModel getCurrentFloor() {
-        return floorViewModel;
+    private void updateFloorViewModels() {
+        this.floors = new LinkedList<>();
+        for( Floor floor : bp ) {
+            floors.add(new FloorViewModel(floor, bp));
+        }
     }
-
+    
+    public int getCurrentFloorIndex() {
+        return currentFloor;
+    }
+    
+    public FloorViewModel getCurrentFloor() {
+        return floors.get(currentFloor);
+    }
+    
+    public void setCurrentFloor(int currentFloorIndex) {
+        this.currentFloor = currentFloorIndex;
+    }
+    
     public int getFloorCount() {
         return floors.size();
     }

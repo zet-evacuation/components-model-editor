@@ -33,6 +33,6 @@ public class FloorInformationPanelControl extends AbstractInformationControl<JFl
 
     @Override
     protected FloorViewModel getViewModel(Floor m) {
-        return new FloorViewModel(m);
+        return new FloorViewModel(m, zcontrol.getProject().getBuildingPlan());
     }
 }

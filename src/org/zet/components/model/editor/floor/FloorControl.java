@@ -63,7 +63,7 @@ public class FloorControl extends AbstractControl<Floor, FloorViewModel> {
     }
     
     private FloorViewModel generateViewModel() {
-        return new FloorViewModel(floor);
+        return new FloorViewModel(floor, zcontrol.getProject().getBuildingPlan());
     }
     
     public void initView() {

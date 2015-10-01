@@ -15,6 +15,7 @@
  */
 package org.zet.components.model.editor.panel;
 
+import com.sun.media.sound.ModelAbstractChannelMixer;
 import de.zet_evakuierung.model.Room;
 import info.clearthought.layout.TableLayout;
 import java.awt.Rectangle;
@@ -198,6 +199,8 @@ public class JFloorInformationPanel extends JInformationPanel<FloorControl, Floo
         txtFlooryOffset.setText(Integer.toString(getModel().getLocation().y));
         txtFloorWidth.setText(Integer.toString(getModel().getLocation().width));
         txtFloorHeight.setText(Integer.toString(getModel().getLocation().height));
+        btnFloorUp.setEnabled(getModel().canMoveUp());
+        btnFloorDown.setEnabled(getModel().canMoveDown());
         double areaFloor = 0;
         for (Room r : getModel()) {
             areaFloor += r.getPolygon().areaMeter();

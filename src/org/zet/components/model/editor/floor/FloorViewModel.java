@@ -16,6 +16,7 @@
 
 package org.zet.components.model.editor.floor;
 
+import de.zet_evakuierung.model.BuildingPlan;
 import de.zet_evakuierung.model.Floor;
 import de.zet_evakuierung.model.FloorInterface;
 import de.zet_evakuierung.model.Named;
@@ -32,9 +33,11 @@ import org.zetool.components.framework.Displayable;
 public class FloorViewModel implements Iterable<Room>, Named, Displayable<FloorInterface> {
 
     final Floor floor;
+    final BuildingPlan bp;
 
-    public FloorViewModel(Floor floor) {
+    public FloorViewModel(Floor floor, BuildingPlan bp) {
         this.floor = floor;
+        this.bp = bp;
     }
     
     /**
@@ -49,6 +52,7 @@ public class FloorViewModel implements Iterable<Room>, Named, Displayable<FloorI
      * The name of the floor.
      * @return 
      */
+    @Override
     public String getName() {
         return floor.getName();
     }
@@ -72,7 +76,18 @@ public class FloorViewModel implements Iterable<Room>, Named, Displayable<FloorI
 
     @Override
     public void setModel(FloorInterface model) {
-        throw new IllegalStateException("Actually view model is immutable and should be recreated for each access!");
+        throw new IllegalStateException("Currently view model is immutable and should be recreated for each access!");
+    }
+
+    public Floor getFloor() {
+        return floor;
     }
     
+    public boolean canMoveUp() {
+        return bp.canMoveUp(floor);
+    }
+
+    public boolean canMoveDown() {
+        return bp.canMoveDown(floor);
+    }
 }

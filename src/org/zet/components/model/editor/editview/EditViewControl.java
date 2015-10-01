@@ -29,7 +29,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.zet.components.model.editor.floor.EditMode;
@@ -81,27 +80,23 @@ public class EditViewControl {
         @Override
         public void actionPerformed(ActionEvent e) {
             FloorViewModel selected = getView().getCurrentFloor();
-            for( Entry<Floor,FloorViewModel> entry : floorMap.entrySet() ) {
-                if( entry.getValue().equals(selected)) {
-                    setCurrentFloor(entry.getKey());
-                    return;
-                }
-            }
+            Floor f = selected.getFloor();
+            setCurrentFloor(f);
         }
     };
             
-    private FloorControl fc;
-    private RoomControl rc;
-    private AssignmentAreaControl aac;
-    private DelayAreaControl dac;
-    private EvacuationAreaControl eac;
-    private StairAreaControl sac;
-    private TeleportAreaControl tac;
-    private EdgeControl ec;
+    private FloorInformationPanelControl fc;
+    private RoomInformationPanelControl rc;
+    private AssignmentAreaInformationPanelControl aac;
+    private DelayAreaInformationPanelControl dac;
+    private EvacuationAreaInformationPanelControl eac;
+    private StairAreaInformationPanelControl sac;
+    private TeleportAreaInformationPanelControl tac;
+    private EdgeInformationPanelControl ec;
     
     public EditViewControl(ZControl control, List<Floor> floors) {
-        validatedFloorList(floors);
         this.control = control;
+        validatedFloorList(floors);
         currentFloor = floors.get(1);
         view = createView();
         floorControl = new FloorControl(control, view.getFloor());
@@ -136,17 +131,17 @@ public class EditViewControl {
     
     private void registerPopups() {
         // Set up listener for popup menus and initialize popups
-        view.getFloor().getPopups().getEdgePopup().setEdgeControl(ec);
+        view.getFloor().getPopups().getEdgePopup().setEdgeControl(ec.getControl());
         PointControl pc = new PointControl(control);
         view.getFloor().getPopups().getPointPopup().setPointControl(pc);
-        view.getFloor().getPopups().getPolygonPopup().setPolygonControl(rc);
+        view.getFloor().getPopups().getPolygonPopup().setPolygonControl(rc.getControl());
         view.getFloor().getPopups().getPolygonPopup().setAssignment(control.getProject().getCurrentAssignment());
     }
     
-    private <E extends AbstractInformationControl<J, C, ?, ?>, J extends JInformationPanel<C, ?>, C extends AbstractControl<?, ?>> C registerControl(
+    private <E extends AbstractInformationControl<J, C, ?, ?>, J extends JInformationPanel<C, ?>, C extends AbstractControl<?, ?>> E registerControl(
             E panelControl, JEditView.Panels identifier) {
         view.registerPanel(panelControl.getView(), identifier.toString());
-        return panelControl.getControl();
+        return panelControl;
     }
     
     private void validatedFloorList(List<Floor> floors) {
@@ -155,13 +150,13 @@ public class EditViewControl {
         }
         floorMap = new LinkedHashMap<>(floors.size());
         for( Floor floor : floors ) {
-            floorMap.put(floor, new FloorViewModel(floor));
+            floorMap.put(floor, new FloorViewModel(floor, control.getProject().getBuildingPlan()));
         }
     }
     
     private EditViewModel generateViewModel(Floor floor) {
         List<FloorViewModel> floorModelList = floorMap.values().stream().collect(Collectors.toList());
-        return new EditViewModel(floorModelList, floorModelList.indexOf(floorMap.get(floor)));
+        return new EditViewModel(control.getProject().getBuildingPlan(), floorModelList.indexOf(floorMap.get(floor)));
     }
     
     public JEditView getView() {
@@ -190,6 +185,7 @@ public class EditViewControl {
             throw new IllegalArgumentException( "Floor '" + floor + "' is not in the floor list!" );
         }
         currentFloor = floor;
+        fc.setModel(currentFloor);
         floorControl.setFloor(floor);
         getView().setEditViewModel(generateViewModel(floor));
     }
