@@ -22,7 +22,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -52,6 +51,7 @@ public class JEvacuationAreaInformationPanel extends JInformationPanel<Evacuatio
     }
 
     private void init() {
+        loc.setPrefix("Editview.Panel.");
         int row = 0;
         lblEvacuationAreaName = new JLabel(loc.getString("Evacuation.Name"));
         this.add(lblEvacuationAreaName, "0, " + row++);
@@ -70,10 +70,10 @@ public class JEvacuationAreaInformationPanel extends JInformationPanel<Evacuatio
         txtEvacuationAreaName.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER)
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    //fireChangeEvent(new EvacuationAreaChangeEvent(this, EvacuationAreaChangeEvent.EvacuationAreaChange.Name));
-                    control.setName(txtEvacuationAreaName.getText().trim());
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        control.setName(txtEvacuationAreaName.getText().trim());
+                    }
                 }
             }
         });
@@ -100,20 +100,20 @@ public class JEvacuationAreaInformationPanel extends JInformationPanel<Evacuatio
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    //fireChangeEvent(new EvacuationAreaChangeEvent(this, EvacuationAreaChangeEvent.EvacuationAreaChange.Attractivity));
-        try {
-            int attractivity = nfInteger.parse(txtEvacuationAttractivity.getText() ).intValue();
-            control.setAttractivity(attractivity);
-        } catch (ParseException ex) {
-            //ZETLoader.sendError( loc.getString( "gui.error.NonParsableNumberString" ) );
-            Logger.getLogger(JEvacuationAreaInformationPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
+                    try {
+                        int attractivity = nfInteger.parse(txtEvacuationAttractivity.getText()).intValue();
+                        control.setAttractivity(attractivity);
+                    } catch (ParseException ex) {
+                        Logger.getGlobal().severe(
+                                String.format(loc.getString("Editview.Panel.Evacuation.AttractivityInvalid"),
+                                txtEvacuationAttractivity.getText()));
+                    }
                 }
             }
         });
         this.add(txtEvacuationAttractivity, "0, " + row++);
         row++;
-
+        loc.clearPrefix();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class JEvacuationAreaInformationPanel extends JInformationPanel<Evacuatio
 
     @Override
     public void localize() {
-        loc.setPrefix("gui.EditPanel.");
+        loc.setPrefix("Editview.Panel.");
         lblEvacuationAreaName.setText(loc.getString("Evacuation.Name"));
         lblEvacuationAttractivity.setText(loc.getString("Evacuation.Attractivity"));
         loc.clearPrefix();

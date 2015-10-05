@@ -26,6 +26,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -43,9 +44,6 @@ import org.zet.components.model.viewmodel.AssignmentAreaViewModel;
  */
 public class JAssignmentAreaInformationPanel extends JInformationPanel<AssignmentAreaControl, AssignmentAreaViewModel> {
 
-    /**
-     * Model for a assignmentType-selector combo box.
-     */
     private JLabel lblAssignmentType;
     private JLabel lblAssignmentEvacueeNumber;
     private JButton btnAssignmentSetDefaultEvacuees;
@@ -58,7 +56,6 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
     private JComboBox<EvacuationArea> cbxPreferredExit;
     private JComboBox<AssignmentType> cbxAssignmentType;
     private JLabel lblAreaSize;
-    //private int typedPersons;
 
     public JAssignmentAreaInformationPanel(AssignmentAreaViewModel model, AssignmentAreaControl control) {
         super(new double[]{TableLayout.FILL},
@@ -76,6 +73,7 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
     }
 
     private void init() {
+        loc.setPrefix("Editview.Panel.");
         int row = 0;
 
         lblAssignmentType = new JLabel(loc.getString("Assignment.Type"));
@@ -109,15 +107,16 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
                         int typedPersons = nfInteger.parse(txtNumberOfPersons.getText()).intValue();
                         control.setEvacuees(typedPersons);
                     } catch (ParseException ex) {
-                        //ZETLoader.sendError( ex.getLocalizedMessage() );
-                        System.err.println("Number of persons not valid: " + txtNumberOfPersons.getText());
+                        Logger.getGlobal().info(String.format(loc.getString("Editview.Panel.Assignment.PersonsInvalid"),
+                                txtNumberOfPersons.getText()));
                     }
                 }
             }
         });
         this.add(txtNumberOfPersons, "0, " + row++);
         row++;
-        btnAssignmentSetDefaultEvacuees = Button.newButton(loc.getString("Assignment.SetDefaultEvacuees"), loc.getString("Assignment.SetDefaultEvacuees.ToolTip"));
+        btnAssignmentSetDefaultEvacuees = Button.newButton(loc.getString("Assignment.SetDefaultEvacuees"),
+                loc.getString("Assignment.SetDefaultEvacuees.ToolTip"));
         btnAssignmentSetDefaultEvacuees.setToolTipText(loc.getString("Assignment.SetDefaultEvacuees.ToolTip"));
         btnAssignmentSetDefaultEvacuees.addActionListener( e -> control.setStandardEvacuees() );
         this.add(btnAssignmentSetDefaultEvacuees, "0, " + row++);
@@ -146,6 +145,7 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
         lblMaxPersonsWarning = new JLabel(loc.getString("Assignment.AreaWarning"));
         this.add(lblMaxPersonsWarning, "0, " + row++);
         row++;
+        loc.clearPrefix();
     }
 
     /**
@@ -183,7 +183,7 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
         } else {
             double persons = Math.round((area / (0.4 * 0.4)) * 100) / 100.0;
             lblMaxPersons.setText(nfFloat.format(persons));
-            lblMaxPersonsWarning.setText(loc.getString("gui.EditPanel.Assignment.AreaWarning"));
+            lblMaxPersonsWarning.setText(loc.getString("Editview.Panel.Assignment.AreaWarning"));
         }
         
         // handle preferred exits
@@ -193,7 +193,7 @@ public class JAssignmentAreaInformationPanel extends JInformationPanel<Assignmen
 
     @Override
     public void localize() {
-        loc.setPrefix("gui.EditPanel.");
+        loc.setPrefix("Editview.Panel.");
         lblAssignmentType.setText(loc.getString("Assignment.Type"));
         lblAssignmentEvacueeNumber.setText(loc.getString("Assignment.Persons"));
         btnAssignmentSetDefaultEvacuees.setText(loc.getString("Assignment.SetDefaultEvacuees"));

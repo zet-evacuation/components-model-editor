@@ -50,17 +50,11 @@ import org.zet.components.model.editor.panel.JRoomInformationPanel;
 import org.zet.components.model.editor.panel.RoomInformationPanelControl;
 import org.zet.components.model.editor.panel.StairAreaInformationPanelControl;
 import org.zet.components.model.editor.panel.TeleportAreaInformationPanelControl;
-import org.zet.components.model.viewmodel.AssignmentAreaControl;
-import org.zet.components.model.viewmodel.DelayAreaControl;
-import org.zet.components.model.viewmodel.EdgeControl;
-import org.zet.components.model.viewmodel.EvacuationAreaControl;
 import org.zet.components.model.viewmodel.AbstractControl;
 import org.zet.components.model.viewmodel.AbstractInformationControl;
 import org.zet.components.model.viewmodel.PointControl;
 import org.zet.components.model.viewmodel.RoomControl;
 import org.zet.components.model.viewmodel.RoomViewModel;
-import org.zet.components.model.viewmodel.StairAreaControl;
-import org.zet.components.model.viewmodel.TeleportAreaControl;
 
 /**
  *
@@ -68,10 +62,8 @@ import org.zet.components.model.viewmodel.TeleportAreaControl;
  */
 public class EditViewControl {
     private Floor currentFloor;
-    //private List<Floor> floors;
-    private final FloorControl floorControl;
+    private final FloorControl currentFloorControl;
     private final JEditView view;
-    //private List<FloorViewModel> floorViewModels;
     private LinkedHashMap<Floor,FloorViewModel> floorMap;
     private final ZControl control;
     private final SelectionListener floorSelectionListener = new FloorSelectionListener();
@@ -84,7 +76,7 @@ public class EditViewControl {
             setCurrentFloor(f);
         }
     };
-            
+
     private FloorInformationPanelControl fc;
     private RoomInformationPanelControl rc;
     private AssignmentAreaInformationPanelControl aac;
@@ -99,10 +91,10 @@ public class EditViewControl {
         validatedFloorList(floors);
         currentFloor = floors.get(1);
         view = createView();
-        floorControl = new FloorControl(control, view.getFloor());
+        currentFloorControl = new FloorControl(control, view.getFloor());
         registerControls();
         registerPopups();
-        floorControl.setEditMode(EditMode.SELECTION);
+        currentFloorControl.setEditMode(EditMode.SELECTION);
     }
     
     private JEditView createView() {
@@ -117,7 +109,7 @@ public class EditViewControl {
         // Add all the panels to the map
         RoomInformationPanelControl rip = RoomInformationPanelControl.create(control);
         AbstractInformationControl<JRoomInformationPanel, RoomControl, Room, RoomViewModel> d = rip;
-        fc = registerControl(FloorInformationPanelControl.create(control, floorControl), JEditView.Panels.Floor);
+        fc = registerControl(FloorInformationPanelControl.create(control, currentFloorControl), JEditView.Panels.Floor);
         rc = registerControl(RoomInformationPanelControl.create(control), JEditView.Panels.Room);
         aac = registerControl(AssignmentAreaInformationPanelControl.create(control), JEditView.Panels.AssignmentArea);
         dac = registerControl(DelayAreaInformationPanelControl.create(control), JEditView.Panels.DelayArea);
@@ -164,15 +156,15 @@ public class EditViewControl {
     }
 
     public void setEditMode(EditMode editMode) {
-        floorControl.setEditMode(editMode);
+        currentFloorControl.setEditMode(editMode);
     }
     
     public void setZetObjectType(ZetObjectTypes type) {
-        floorControl.setZetObjectType(type);
+        currentFloorControl.setZetObjectType(type);
     }
     
     public void set() {
-        floorControl.setEditMode(EditMode.SELECTION);
+        currentFloorControl.setEditMode(EditMode.SELECTION);
     }
 
     public void setControlledProject(List<Floor> floors) {
@@ -186,10 +178,18 @@ public class EditViewControl {
         }
         currentFloor = floor;
         fc.setModel(currentFloor);
-        floorControl.setFloor(floor);
+        currentFloorControl.setFloor(floor);
         getView().setEditViewModel(generateViewModel(floor));
     }
-
+    
+    public void moveCurrentFloorUp() {
+        currentFloorControl.moveUp();
+    }
+    
+    public void moveCurrentFloorDown() {
+        currentFloorControl.moveDown();
+    }
+    
     public void createNewFloor() {
         Floor newFloor = control.createNewFloor();
         validatedFloorList(control.getProject().getBuildingPlan().getFloors());

@@ -47,16 +47,16 @@ public class JFloorScrollPane<T extends AbstractFloor> extends JScrollPane imple
     /** A button used to change the units of the rulers. */
     private JButton unitButton;
     /** The localization string for the unit button. */
-    private String locString = "gui.EditPanel.Unit.Meter";
+    private String locString = "Editview.Unit.Meter";
     private static final EnumMap<JRuler.RulerDisplayUnit, RulerStyle> styles = new EnumMap<>(JRuler.RulerDisplayUnit.class);
 
     static {
-        styles.put(JRuler.RulerDisplayUnit.CENTIMETER, new RulerStyle(JRuler.RulerDisplayUnit.DECIMETER, 4, 1, "gui.EditPanel.Unit.Decimeter"));
-        styles.put(JRuler.RulerDisplayUnit.DECIMETER, new RulerStyle(JRuler.RulerDisplayUnit.METER, 2, 1, "gui.EditPanel.Unit.Meter"));
-        styles.put(JRuler.RulerDisplayUnit.METER, new RulerStyle(JRuler.RulerDisplayUnit.INCH, 10, 5, "gui.EditPanel.Unit.Inch"));
-        styles.put(JRuler.RulerDisplayUnit.INCH, new RulerStyle(JRuler.RulerDisplayUnit.FOOT, 5, 1, "gui.EditPanel.Unit.Foot"));
-        styles.put(JRuler.RulerDisplayUnit.FOOT, new RulerStyle(JRuler.RulerDisplayUnit.YARD, 2, 1, "gui.EditPanel.Unit.Yard"));
-        styles.put(JRuler.RulerDisplayUnit.YARD, new RulerStyle(JRuler.RulerDisplayUnit.CENTIMETER, 40, 10, "gui.EditPanel.Unit.Centimeter"));
+        styles.put(JRuler.RulerDisplayUnit.CENTIMETER, new RulerStyle(JRuler.RulerDisplayUnit.DECIMETER, 4, 1, "Editview.Unit.Decimeter"));
+        styles.put(JRuler.RulerDisplayUnit.DECIMETER, new RulerStyle(JRuler.RulerDisplayUnit.METER, 2, 1, "Editview.Unit.Meter"));
+        styles.put(JRuler.RulerDisplayUnit.METER, new RulerStyle(JRuler.RulerDisplayUnit.INCH, 10, 5, "Editview.Unit.Inch"));
+        styles.put(JRuler.RulerDisplayUnit.INCH, new RulerStyle(JRuler.RulerDisplayUnit.FOOT, 5, 1, "Editview.Unit.Foot"));
+        styles.put(JRuler.RulerDisplayUnit.FOOT, new RulerStyle(JRuler.RulerDisplayUnit.YARD, 2, 1, "Editview.Unit.Yard"));
+        styles.put(JRuler.RulerDisplayUnit.YARD, new RulerStyle(JRuler.RulerDisplayUnit.CENTIMETER, 40, 10, "Editview.Unit.Centimeter"));
     }
     
     public JFloorScrollPane( T floorPanel ) {

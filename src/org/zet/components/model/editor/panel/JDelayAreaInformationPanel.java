@@ -27,6 +27,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -60,6 +61,7 @@ public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaContr
     }
 
     private void init() {
+        loc.setPrefix("Editview.Panel.");
         int row = 0;
 
         // Delay-Selector
@@ -115,10 +117,9 @@ public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaContr
                     try {
                         double speedFactor = nfFloat.parse(txtDelayFactor.getText()).doubleValue();
                         control.setSpeedFactor(speedFactor);
-                        //fireChangeEvent(new DelayAreaChangeEvent(this, DelayAreaChangeEvent.DelayAreaChange.Factor));
                     } catch (ParseException ex) {
-                        //ZETLoader.sendError(loc.getString("gui.error.NonParsableFloatString"));
-                        System.err.println("String not valid: " + txtDelayFactor.getText());
+                        Logger.getGlobal().info(String.format(loc.getString("Editview.Panel.Delay.SpeedFactorInvalid"),
+                                txtDelayFactor.getText()));
                     }
                 }
             }
@@ -126,25 +127,18 @@ public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaContr
         this.add(txtDelayFactor, "0, " + row++);
         row++;
 
-        btnDelaySetDefault = Button.newButton(loc.getString("Delay.TypeDefault"), loc.getString("Delay.TypeDefault.ToolTip"));
+        btnDelaySetDefault = Button.newButton(loc.getString("Delay.TypeDefault"),
+                loc.getString("Delay.TypeDefault.ToolTip"));
         btnDelaySetDefault.setToolTipText(loc.getString("Delay.TypeDefault.ToolTip"));
         btnDelaySetDefault.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 control.setDefaultType();
-                //fireChangeEvent(new DelayAreaChangeEvent(this, DelayAreaChangeEvent.DelayAreaChange.DefaultType));
             }
         });
         this.add(btnDelaySetDefault, "0, " + row++);
+        loc.clearPrefix();
     }
-
-//    double getSpeedFactor() {
-//        return speedFactor;
-//    }
-
-//    DelayArea.DelayType getDelayType() {
-//        return type;
-//    }
 
     @Override
     public void update() {
@@ -154,7 +148,7 @@ public class JDelayAreaInformationPanel extends JInformationPanel<DelayAreaContr
 
     @Override
     public void localize() {
-        loc.setPrefix("gui.EditPanel.");
+        loc.setPrefix("Editview.Panel.");
         lblDelayType.setText(loc.getString("Delay.Type") + ":");
         lblDelayFactor.setText(loc.getString("Delay.Factor"));
         btnDelaySetDefault.setText(loc.getString("Delay.TypeDefault"));

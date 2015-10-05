@@ -17,8 +17,6 @@
 package org.zet.components.model.editor.panel;
 
 import info.clearthought.layout.TableLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -55,6 +53,7 @@ public class JRoomInformationPanel extends JInformationPanel<RoomControl, RoomVi
     }
 
     private void init() {
+        loc.setPrefix("Editview.Panel.");
         int row = 0;
 
         lblRoomName = new JLabel(loc.getString("Room.Name"));
@@ -76,11 +75,6 @@ public class JRoomInformationPanel extends JInformationPanel<RoomControl, RoomVi
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     control.setName(txtRoomName.getText());
-                    //fireChangeEvent(new RoomChangeEvent(this, RoomChangeEvent.RoomChange.Name));
-                    //boolean success = projectControl.renameRoom(current, txtRoomName.getText());
-                    //if (!success) {
-                    //    System.out.println("Floor with that name already exists");
-                    //}
                 }
             }
         });
@@ -93,29 +87,16 @@ public class JRoomInformationPanel extends JInformationPanel<RoomControl, RoomVi
         this.add(lblRoomSizeDesc, "0, " + row++);
         this.add(lblRoomSize, "0, " + row++);
 
-        deleteRoom = new JButton("Raum Löschen");
-        deleteRoom.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //projectControl.deletePolygon(current);
-                control.delete();
-                //fireChangeEvent(new RoomChangeEvent(this, RoomChangeEvent.RoomChange.Delete));
-            }
-        });
+        deleteRoom = new JButton(loc.getString("Room.Delete"));
+        deleteRoom.addActionListener(e ->  control.delete());
         this.add(deleteRoom, "0, " + ++row);
         row++;
 
-        moveRoom = new JButton("Epsilon-Verschieben");
-        moveRoom.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //projectControl.refineRoomCoordinates(current.getPolygon(), gs.getRasterSizeSnap());
-                //fireChangeEvent(new RoomChangeEvent(this, RoomChangeEvent.RoomChange.RefineCoordinates));
-                control.refineCoordinates();
-            }
-        });
+        moveRoom = new JButton(loc.getString("Room.MoveEpsilon"));
+        moveRoom.addActionListener(e -> control.refineCoordinates());
         this.add(moveRoom, "0, " + ++row);
         row++;
+        loc.clearPrefix();
     }
 
     @Override
@@ -127,9 +108,11 @@ public class JRoomInformationPanel extends JInformationPanel<RoomControl, RoomVi
 
     @Override
     public void localize() {
-        loc.setPrefix("gui.EditPanel.");
+        loc.setPrefix("Editview.Panel.");
         lblRoomName.setText(loc.getString("Room.Name"));
         lblRoomSizeDesc.setText(loc.getString("Room.Area"));
+        deleteRoom.setText(loc.getString("Room.Delete"));
+        moveRoom.setText(loc.getString("Room.MoveEpsilon"));
         loc.clearPrefix();
     }
 }

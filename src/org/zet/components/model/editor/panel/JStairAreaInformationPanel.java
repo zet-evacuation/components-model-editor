@@ -28,6 +28,7 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.logging.Logger;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -70,10 +71,11 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaContr
     }
 
     private void init() {
+        loc.setPrefix("Editview.Panel.");
         int row = 0;
 
         // DelayFactor for going upwards
-        lblStairFactorUp = new JLabel(loc.getString("Stair.FactorUp") + ":");
+        lblStairFactorUp = new JLabel(loc.getString("Stair.FactorUp"));
         this.add(lblStairFactorUp, "0, " + row++);
         txtStairFactorUp = new JTextField(" ");
         txtStairFactorUp.addFocusListener(new FocusListener() {
@@ -95,7 +97,9 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaContr
                         double factorUp = nfFloat.parse(txtStairFactorUp.getText()).doubleValue();
                         control.setFactorUp(factorUp);
                     } catch (ParseException ex) {
-                        //@//ZETLoader.sendError( loc.getString( "gui.error.NonParsableFloatString" ) );
+                        Logger.getGlobal().severe(
+                                String.format(loc.getString("Editview.Panel.Stair.FactorUpInvalid"),
+                                txtStairFactorUp.getText()));
                     }
                 }
             }
@@ -126,7 +130,9 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaContr
                         double factorDown = nfFloat.parse(txtStairFactorDown.getText()).doubleValue();
                         control.setFactorDown(factorDown);
                     } catch (ParseException ex) {
-                        //@//ZETLoader.sendError( loc.getString( "gui.error.NonParsableFloatString" ) );
+                        Logger.getGlobal().severe(
+                                String.format(loc.getString("Editview.Panel.Stair.FactorDownInvalid"),
+                                txtStairFactorUp.getText()));
                     }
                 }
             }
@@ -135,7 +141,7 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaContr
         row++;
 
         // Add combo box with presets
-        lblStairPreset = new JLabel(loc.getString("Stair.Preset") + ":");
+        lblStairPreset = new JLabel(loc.getString("Stair.Preset"));
         cbxStairPresets = new JComboBox<>();
 
         cbxStairPresets.setRenderer(new ListCellRenderer<StairPreset>() {
@@ -167,7 +173,7 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaContr
         lblStairPresetDescription = new JLabel(ZLocalization.loc.getString(((StairPreset) cbxStairPresets.getSelectedItem()).getText()));
         this.add(lblStairPresetDescription, "0, " + row++);
         row++;
-
+        loc.clearPrefix();
     }
 
     @Override
@@ -178,10 +184,10 @@ public class JStairAreaInformationPanel extends JInformationPanel<StairAreaContr
 
     @Override
     public void localize() {
-        loc.setPrefix("gui.EditPanel.");
-        lblStairFactorUp.setText(loc.getString("Stair.FactorUp") + ":");
-        lblStairFactorDown.setText(loc.getString("Stair.FactorDown") + ":");
-        lblStairPreset.setText(loc.getString("Stair.Preset") + ":");
+        loc.setPrefix("Editview.Panel.");
+        lblStairFactorUp.setText(loc.getString("Stair.FactorUp"));
+        lblStairFactorDown.setText(loc.getString("Stair.FactorDown"));
+        lblStairPreset.setText(loc.getString("Stair.Preset"));
         lblStairPresetDescription.setText(ZLocalization.loc.getString(((StairPreset) cbxStairPresets.getSelectedItem()).getText()));
         loc.clearPrefix();
     }

@@ -15,7 +15,6 @@
  */
 package org.zet.components.model.editor.panel;
 
-import com.sun.media.sound.ModelAbstractChannelMixer;
 import de.zet_evakuierung.model.Room;
 import info.clearthought.layout.TableLayout;
 import java.awt.Rectangle;
@@ -79,6 +78,7 @@ public class JFloorInformationPanel extends JInformationPanel<FloorControl, Floo
     }
 
     private void init() {
+        loc.setPrefix("Editview.Panel.");
         lblFloorName = new JLabel(loc.getString("Floor.Name"));
         this.add(lblFloorName, "0,0,2,0");
         txtFloorName = new JTextField();
@@ -138,7 +138,8 @@ public class JFloorInformationPanel extends JInformationPanel<FloorControl, Floo
         this.add(lblFloorSizeDesc, "0,10,2,10");
         this.add(lblFloorSize, "0,11,2,11");
 
-        JButton cmdRasterizeBuilding = Button.newButton("Rastern!", aclFloor, "rasterize", loc.getString("Floor.Rasterize.ToolTip"));
+        JButton cmdRasterizeBuilding = Button.newButton(loc.getString("Floor.Rasterize"), aclFloor, "rasterize",
+                loc.getString("Floor.Rasterize.ToolTip"));
 
         this.add(cmdRasterizeBuilding, "0,13,2,13");
         cmdRasterizeBuilding.addActionListener(new ActionListener() {
@@ -147,6 +148,7 @@ public class JFloorInformationPanel extends JInformationPanel<FloorControl, Floo
             public void actionPerformed(ActionEvent e) {
             }
         });
+        loc.clearPrefix();
     }
 
     ActionListener aclFloor = new ActionListener() {
@@ -154,15 +156,12 @@ public class JFloorInformationPanel extends JInformationPanel<FloorControl, Floo
         public void actionPerformed(ActionEvent e) {
             switch (e.getActionCommand()) {
                 case "down":
-                    //fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.MoveDown));
                     control.moveDown();
                     break;
                 case "up":
-                    //fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.MoveUp));
                     control.moveUp();
                     break;
                 case "rasterize":
-                    //fireChangeEvent(new FloorChangeEvent(this, FloorChangeEvent.FloorChange.Rasterize));
                     control.rasterize();
                     break;
                 default:
@@ -211,8 +210,7 @@ public class JFloorInformationPanel extends JInformationPanel<FloorControl, Floo
 
     @Override
     public void localize() {
-        // Floor properties
-        loc.setPrefix("gui.EditPanel.");
+        loc.setPrefix("Editview.Panel.");
         lblFloorName.setText(loc.getString("Floor.Name"));
         btnFloorUp.setText(loc.getString("Floor.Up"));
         btnFloorUp.setToolTipText(loc.getString("Floor.Up.ToolTip"));

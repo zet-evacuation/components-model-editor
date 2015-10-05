@@ -64,6 +64,7 @@ public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAre
     }
 
     private void init() {
+        loc.setPrefix("Editview.Panel.");
         int row = 0;
 
         // The area name
@@ -107,6 +108,7 @@ public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAre
         cbxTargetExit.setRenderer(new NamedComboBoxRenderer<>());
         this.add(cbxTargetExit, "0, " + row++);
         row++;
+        loc.clearPrefix();
     }
 
     ItemListener targetExitChangedListener = (event) -> {
@@ -154,7 +156,7 @@ public class JTeleportAreaInformationPanel extends JInformationPanel<TeleportAre
 
     @Override
     public void localize() {
-        loc.setPrefix("gui.EditPanel.");
+        loc.setPrefix("Editview.Panel.");
         lblTeleportAreaName.setText(loc.getString("Teleportation.Name"));
         lblTargetArea.setText(loc.getString("Teleportation.TargetArea"));
         lblTargetExit.setText(loc.getString("Teleportation.TargetExit"));

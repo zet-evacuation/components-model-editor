@@ -21,6 +21,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import org.zet.components.model.viewmodel.EdgeControl;
@@ -49,17 +50,18 @@ public class JEdgeInformationPanel extends JInformationPanel<EdgeControl, EdgeVi
     }
 
     private void init() {
+        loc.setPrefix("Editview.Panel.");
         int row = 0;
 
-        lblEdgeType = new JLabel("Edge type");
+        lblEdgeType = new JLabel("");
         this.add(lblEdgeType, "0, " + row++);
         row++;
 
-        lblEdgeLength = new JLabel("Länge:");
+        lblEdgeLength = new JLabel("");
         this.add(lblEdgeLength, "0, " + row++);
         row++;
 
-        lblEdgeExitName = new JLabel(loc.getString("Evacuation.Name"));
+        lblEdgeExitName = new JLabel("");
         this.add(lblEdgeExitName, "0, " + row++);
         txtEdgeExitName = new JTextField();
         txtEdgeExitName.addFocusListener(new FocusListener() {
@@ -77,45 +79,54 @@ public class JEdgeInformationPanel extends JInformationPanel<EdgeControl, EdgeVi
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    // Find the attached exit and set the name
                     control.setExitName(txtEdgeExitName.getText());
                 }
-                //((EvacuationArea)getLeftPanel().getMainComponent().getSelectedPolygons().get( 0 ).getPlanPolygon()).setName( txtEdgeExitName.getText() );
             }
         });
         this.add(txtEdgeExitName, "0, " + row++);
         row++;
+        loc.clearPrefix();
     }
 
     @Override
     public void update() {
         txtEdgeExitName.setEnabled(false);
+
+        updateTypeText();
+        updateLengthText();
+    }
+    
+    private void updateTypeText() {
         lblEdgeExitName.setText("");
         switch (getModel().getEdgeType()) {
             case EXIT:
-                lblEdgeType.setText("Ausgang");
+                lblEdgeType.setText(loc.getString("EditView.Panel.Edge.Type.Exit"));
                 txtEdgeExitName.setEnabled(true);
                 EvacuationArea ea = getModel().getAssociatedExit();
-                lblEdgeExitName.setText("Ausgang");
+                lblEdgeExitName.setText(loc.getString("EditView.Panel.Edge.ExitName"));
                 txtEdgeExitName.setText(ea.getName());
                 break;
             case FLOOR_PASSAGE:
-                lblEdgeType.setText("Stockwerkübergang");
+                lblEdgeType.setText(loc.getString("EditView.Panel.Edge.Type.FloorPassage"));
                 break;
             case PASSAGE:
-                lblEdgeType.setText("Durchgang");
+                lblEdgeType.setText(loc.getString("EditView.Panel.Edge.Type.Passage"));
                 break;
             case WALL:
-                lblEdgeType.setText("Wand");
+                lblEdgeType.setText(loc.getString("EditView.Panel.Edge.Type.Wall"));
                 break;
             case AREA_BOUNDARY:
                 // easy peasy, this is an area boundry
-                lblEdgeType.setText("Area-Begrenzung");
+                lblEdgeType.setText(loc.getString("EditView.Panel.Edge.Type.AreaBoundary"));
                 break;
             default:
                 lblEdgeType.setText(getModel().getEdgeType().toString());
-                throw new AssertionError("Unsupported edge type: " + getModel().getEdgeType());
+                Logger.getGlobal().severe(String.format(loc.getString("Editview.Panel.Edge.TypeInvalid"),
+                        getModel().getEdgeType()));
         }
+    }
+    
+    private void updateLengthText() {
         String formattedLength = nfFloat.format((getModel().getLength()) * 0.001);
         String orientationText = getOrientationText();
         lblEdgeLength.setText(String.format("%s: %sm", orientationText, formattedLength));
@@ -123,18 +134,20 @@ public class JEdgeInformationPanel extends JInformationPanel<EdgeControl, EdgeVi
 
     @Override
     public void localize() {
-        loc.setPrefix("gui.EditPanel.");
-        loc.clearPrefix();
+        if( getModel() != null ) {
+            updateTypeText();
+            updateLengthText();
+        }
     }
 
     private String getOrientationText() {
         switch (getModel().getOrientation()) {
             case Horizontal:
-                return "Breite";
+                return loc.getString("EditView.Panel.Edge.Orientation.Horizontal");
             case Vertical:
-                return "Höhe";
+                return loc.getString("EditView.Panel.Edge.Orientation.Vertical");
             case Oblique:
-                return "Länge";
+                return loc.getString("EditView.Panel.Edge.Orientation.Oblique");
             default:
                 return getModel().getOrientation().toString();
         }

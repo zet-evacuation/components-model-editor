@@ -211,7 +211,7 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
                 roomSelector.setSelectedItem(null);
 
                 final int add = JEditView.this.hideDefaultFloor ? 1 : 0;
-                lblFloorNumber.setText(String.format(loc.getStringWithoutPrefix("gui.EditPanel.Default.OnFloor"), floorSelector.getSelectedIndex() + add));
+                lblFloorNumber.setText(String.format(loc.getStringWithoutPrefix("Editview.Panel.Default.OnFloor"), floorSelector.getSelectedIndex() + add));
 
                 //@//getLeftPanel().getTopRuler().setWidth( currentFloor.getWidth() );
                 //@//getLeftPanel().getLeftRuler().setHeight( currentFloor.getHeight() );
@@ -241,7 +241,7 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
 
         int row = 1;
 
-        loc.setPrefix("gui.EditPanel.");
+        loc.setPrefix("Editview.Panel.");
         lblFloorSelector = new JLabel(loc.getString("Default.Floors") + ":");
         eastPanel.add(lblFloorSelector, "1, " + row++);
         eastPanel.add(floorSelector, "1, " + row++);
@@ -275,10 +275,10 @@ public class JEditView extends AbstractSplitPropertyWindow<JFloorScrollPane<JFlo
         // Localization of child components
         getLeftPanel().localize();
 
-        loc.setPrefix("gui.EditPanel.");
+        loc.setPrefix("Editview.Panel.");
         // Localization of own components
         lblFloorSelector.setText(loc.getString("Default.Floors") + ":");
-        lblFloorNumber.setText(String.format(loc.getStringWithoutPrefix("gui.EditPanel.Default.OnFloor"),
+        lblFloorNumber.setText(String.format(loc.getStringWithoutPrefix("Editview.Panel.Default.OnFloor"),
                 floorSelector.getSelectedIndex() + (JEditView.this.hideDefaultFloor ? 1 : 0)));
         lblRoomSelector.setText(loc.getString("Default.Rooms") + ":");
 
