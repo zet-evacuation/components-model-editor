@@ -17,8 +17,8 @@ import javax.swing.JPopupMenu;
 import org.zetool.components.framework.Menu;
 import org.zet.components.model.editor.localization.EditorLocalization;
 import org.zet.components.model.viewmodel.EdgeControl;
+import org.zetool.common.function.Functions;
 import org.zetool.common.localization.Localization;
-import org.zetool.common.util.Functions;
 
 /**
  *
