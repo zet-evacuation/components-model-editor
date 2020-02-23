@@ -17,7 +17,6 @@ package org.zet.components.model.editor.editview;
 
 import de.zet_evakuierung.model.AreaType;
 import org.zetool.common.localization.Localization;
-import de.zet_evakuierung.model.Floor;
 import de.zet_evakuierung.model.Room;
 import de.zet_evakuierung.model.ZControl;
 import de.zet_evakuierung.model.ZModelRoomEvent;
