@@ -21,7 +21,7 @@
 
     <groupId>de.zet-evakuierung</groupId>
     <artifactId>components-model-editor</artifactId>
-    <version>0.101</version>
+    <version>0.102-SNAPSHOT</version>
     <name>zet-components-model-editor</name>
     <url>https://zetool.org</url>
 
@@ -100,6 +100,6 @@
     <scm>
         <connection>scm:git:https://github.com/zet-evacuation/components-model-editor</connection>
         <url>https://github.com/zet-evacuation/components-model-editor.git</url>
-        <tag>components-model-editor-0.101</tag>
+        <tag>HEAD</tag>
     </scm>
 </project>
