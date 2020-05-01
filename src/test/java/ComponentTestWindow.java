@@ -1,4 +1,11 @@
-package test;
+
+
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import de.zet_evakuierung.model.AssignmentArea;
 import de.zet_evakuierung.model.AssignmentType;
@@ -17,11 +24,6 @@ import de.zet_evakuierung.model.TeleportArea;
 import de.zet_evakuierung.model.ZControl;
 import de.zet_evakuierung.model.ZModelRoomEvent;
 import event.EventServer;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.HeadlessException;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 import org.zet.components.model.editor.editview.EditViewControl;
 import org.zet.components.model.editor.editview.JEditView;
 import org.zet.components.model.editor.floor.EditMode;
