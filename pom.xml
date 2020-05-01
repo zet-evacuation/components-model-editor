@@ -21,7 +21,7 @@
 
     <groupId>de.zet-evakuierung</groupId>
     <artifactId>components-model-editor</artifactId>
-    <version>0.102-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
     <name>zet-components-model-editor</name>
     <url>https://zetool.org</url>
 
